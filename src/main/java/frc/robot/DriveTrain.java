@@ -7,7 +7,7 @@ import frc.robot.lib.PID;
 public class DriveTrain extends Subsystem {
   private double leftSpeed;
   private double rightSpeed;
-  private PID pi;
+  private PID pid;
 
   private enum Mode_Types {
     TELEOP
@@ -23,7 +23,7 @@ public class DriveTrain extends Subsystem {
     rightMotor = new Talon(1);
     leftMotor = new Talon(0);
 
-    pid = new PID();
+    pid = new PID(1, 1, 1, 1);
   }
 
   public void arcadeDrive(double speed, double turn) {
