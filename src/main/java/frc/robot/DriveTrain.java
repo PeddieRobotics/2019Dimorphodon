@@ -32,11 +32,29 @@ public class DriveTrain extends Subsystem {
   }
 
   public void update() {
-    rightMotor.set(rightSpeed);
-    leftMotor.set(leftSpeed);
+    switch (mode) {
+    case TELEOP:
+      rightMotor.set(rightSpeed);
+      leftMotor.set(leftSpeed);
+    }
   }
 
   public void initDefaultCommand() {
 
   }
 }
+/*
+ * e e e e e e e e e e e e e e e e e e e e e e e e e e e e e e e e e e e e e e e
+ * e ee e e e e e e e e e e e e e e e e e e e e e e e e e e e e e e e e e e e e
+ * e e e ee e e e e e e e e e e e e e e e e e e e e e e e e e e e e e e e e e e
+ * e e e e e ee e e e e e e e e e e e e e e e e e e e e e e e e e e e e e e e e
+ * e e e e e e e ee e e e e e e e e e e e e e e e e e e e e e e e e e e e e e e
+ * e e e e e e e e e ee e e e e e e e e e e e e e e e e e e e e e e e e e e e e
+ * e e e e e e e e e e e ee e e e e e e e e e e e e e e e e e e e e e e e e e e
+ * e e e e e e e e e e e e e ee e e e e e e e e e e e e e e e e e e e e e e e e
+ * e e e e e e e e e e e e e e e ee e e e e e e e e e e e e e e e e e e e e e e
+ * e e e e e e e e e e e e e e e e e eve e e e e e e e e e e e e e e e e e e e e
+ * e e e e e e e e e e e e e e e e e e e e e e e e e e e e e e e e e e e e e e e
+ * e e e e e e e e e e e e e e e e e e e e e e
+ * 
+ */
