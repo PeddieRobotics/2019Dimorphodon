@@ -39,7 +39,7 @@ public class DriveTrain extends Subsystem {
     rightMotor = new Talon(1);
     leftMotor = new Talon(0);
 
-    pid = new PID();
+    pid = new PID(0.1, 0, 0, 0);
   }
 
   /**
@@ -67,12 +67,5 @@ public class DriveTrain extends Subsystem {
       rightMotor.set(rightSpeed);
       leftMotor.set(leftSpeed);
     }
-  }
-
-  /**
-   * 
-   */
-  public void initDefaultCommand() {
-
   }
 }
