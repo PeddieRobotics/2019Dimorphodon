@@ -1,47 +1,41 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2018 FIRST. All Rights Reserved.                             */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
-
 package frc.robot.lib;
 
 import edu.wpi.first.wpilibj.command.PIDSubsystem;
 
-/**
- * Add your docs here.
- */
-public class PID extends PIDSubsystem {
-  /**
-   * Add your docs here.
-   */
-  public PID() {
-    // Intert a subsystem name and PID values here
-    super("SubsystemName", 1, 2, 3);
-    // Use these to get going:
-    // setSetpoint() - Sets where the PID controller should move the system
-    // to
-    // enable() - Enables the PID controller.
+public class PID {
+  private final boolean RESET_ZERO_CROSS;
+  private final boolean RESET_I;
+
+  private final double Kp;
+  private final double Ki;
+  private final double Kd;
+  private final double dV;
+
+  private double setpoint;
+  private double capI;
+  private double lastTime = 0;
+  private double errorSum = 0;
+  private double lastError = 0;
+  private double lastSetpoint = 0;
+  private double lastOutput = 0;
+
+  public PID(double Kp, double Ki, double Kd, double dV, boolean reset_zero_cross, double capI, boolean resetI) {
+    this.Kp = Kp;
+    this.Ki = Ki;
+    this.Kd = Kd;
+    this.dV = dV;
+    this.capI = capI;
+    RESET_ZERO_CROSS = reset_zero_cross;
+    setpoint = 0;
+    lastTime = 0;
+    errorSum = 0;
+    lastError = 0;
+    lastSetpoint = 0;
+    lastOutput = 0;
+    RESET_I = resetI;
   }
 
-  @Override
-  public void initDefaultCommand() {
-    // Set the default command for a subsystem here.
-    // setDefaultCommand(new MySpecialCommand());
-  }
-
-  @Override
-  protected double returnPIDInput() {
-    // Return your input value for the PID loop
-    // e.g. a sensor, like a potentiometer:
-    // yourPot.getAverageVoltage() / kYourMaxVoltage;
-    return 0.0;
-  }
-
-  @Override
-  protected void usePIDOutput(double output) {
-    // Use output to drive your system, like a motor
-    // e.g. yourMotor.set(output);
+  public PID(double Kp, double Ki, double Kd, double dV) {
+    this(Kp, Ki, Kd, dV, true, Double.MAX_VALUE, true);
   }
 }
