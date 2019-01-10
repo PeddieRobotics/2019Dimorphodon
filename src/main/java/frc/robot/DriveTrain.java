@@ -22,8 +22,7 @@ public class DriveTrain extends Subsystem {
 
     rightMotor = new Talon(1);
     leftMotor = new Talon(0);
-
-    pid = new PID(1, 1, 1, 1);
+    pid = new PID(0.1, 0, 1, 1);
   }
 
   public void arcadeDrive(double speed, double turn) {
