@@ -68,4 +68,11 @@ public class DriveTrain extends Subsystem {
       leftMotor.set(leftSpeed);
     }
   }
+
+  /**
+   * 
+   */
+  public void initDefaultCommand() {
+
+  }
 }
