@@ -26,27 +26,27 @@ public class DriveTrain extends Subsystem {
   private PID drivePID;
   private static final double DRIVE_KP = 0.08;
   private static final double DRIVE_KI = 0.0000001;
-  private enum Mode_Type {AUTO_DRIVE, TELEOP};
+
+  private enum Mode_Type {
+    AUTO_DRIVE, TELEOP
+  };
+
   private Mode_Type mode = Mode_Type.TELEOP;
   private Talon leftMotor;
-   private Talon rightMotor;
+  private Talon rightMotor;
 
   private enum Mode_Types {
     TELEOP, AUTO_DRIVE
   };
-
-  Mode_Types mode;
-  Talon rightMotor;
-  Talon leftMotor;
 
   /**
    * set our starting mode to TELEOP set our motor ports
    */
   public DriveTrain() {
     mode = Mode_Types.TELEOP;
-    NavX = new NavX(); //angle that we are at.
-    leftEncoder.setDistancePerPulse(4/12.0*3.14/360);
-    rightEncoder.setDistancePerPulse(4/12.0*3.14/360);
+    NavX = new NavX(); // angle that we are at.
+    leftEncoder.setDistancePerPulse(4 / 12.0 * 3.14 / 360);
+    rightEncoder.setDistancePerPulse(4 / 12.0 * 3.14 / 360);
     drivePID = new PID(DRIVE_KP, DRIVE_KI, 0, 6);
 
     rightMotor = new Talon(1);
@@ -59,7 +59,6 @@ public class DriveTrain extends Subsystem {
     return leftEncoder.getDistance();
   }
 
- 
   /**
    * 
    * @param speed the speed that we should be running at if we want to drive
@@ -74,39 +73,39 @@ public class DriveTrain extends Subsystem {
     rightSpeed = speed + turn;
     mode = Mode_Types.TELEOP;
   }
-  
-  public void driveStraight(double distance){
-    
+
+  public void driveStraight(double distance) {
+
     resetEncodersAndNavX();
     drivePID.set(distance);
     mode = Mode_Type.AUTO_DRIVE;
     DriverStation.reportError("" + getDistance(), false);
- 
+
   }
-  
-  public void  resetEncodersAndNavX(){
+
+  public void resetEncodersAndNavX() {
     leftEncoder.reset();
     rightEncoder.reset();
     NavX.reset();
   }
- 
+
   /**
    * The main robot program will call this function It updates our speed and
    * turning
    */
   public void update() {
-    switch(mode){
-      case AUTO_DRIVE:
-           leftSpeed = drivePID.getOutput(getDistance());
-           rightSpeed = drivePID.getOutput(getDistance());
-           leftMotor.set(leftSpeed);
-            rightMotor.set(rightSpeed);
-      case TELEOP:
+    switch (mode) {
+    case AUTO_DRIVE:
+      leftSpeed = drivePID.getOutput(getDistance());
+      rightSpeed = drivePID.getOutput(getDistance());
+      leftMotor.set(leftSpeed);
+      rightMotor.set(rightSpeed);
+    case TELEOP:
       leftMotor.set(leftSpeed);
       rightMotor.set(rightSpeed);
       break;
     }
-      
+
   }
 
   /**
@@ -116,4 +115,3 @@ public class DriveTrain extends Subsystem {
 
   }
 }
-
