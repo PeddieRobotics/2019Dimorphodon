@@ -5,13 +5,15 @@ import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.TimedRobot;
 
 public class Robot extends TimedRobot {
+  Joystick steeringWheel;
   Joystick leftJoystick;
   Joystick rightJoystick;
   DriveTrain driveTrain;
-  
+
   public void robotInit() {
-    leftJoystick = new Joystick(0);
-    rightJoystick = new Joystick(1);
+    steeringWheel = new Joystick(0);
+    leftJoystick = new Joystick(1);
+    rightJoystick = new Joystick(2);
     driveTrain = new DriveTrain();
   }
 
@@ -27,7 +29,7 @@ public class Robot extends TimedRobot {
   }
 
   public void teleopPeriodic() {
-  
+
     driveTrain.update();
 
   }
