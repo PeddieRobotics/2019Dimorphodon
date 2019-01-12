@@ -29,7 +29,7 @@ public class Robot extends TimedRobot {
   }
 
   public void teleopPeriodic() {
-
+    driveTrain.arcadeDrive(steeringWheel.getZ(), steeringWheel.getX());
     driveTrain.update();
 
   }
