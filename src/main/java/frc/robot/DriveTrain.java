@@ -8,6 +8,9 @@ import edu.wpi.first.wpilibj.Talon;
 import frc.robot.lib.PID;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Joystick;
+import frc.robot.lib.NavX;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.DriverStation;
 
 /**
  * leftSpeed: controls the speed of our left side motors, we want them to move
@@ -43,7 +46,7 @@ public class DriveTrain extends Subsystem {
    * set our starting mode to TELEOP set our motor ports
    */
   public DriveTrain() {
-    mode = Mode_Types.TELEOP;
+    mode = Mode_Type.TELEOP;
     NavX = new NavX(); // angle that we are at.
     leftEncoder.setDistancePerPulse(4 / 12.0 * 3.14 / 360);
     rightEncoder.setDistancePerPulse(4 / 12.0 * 3.14 / 360);
@@ -71,7 +74,7 @@ public class DriveTrain extends Subsystem {
   public void arcadeDrive(double speed, double turn) {
     leftSpeed = speed - turn;
     rightSpeed = speed + turn;
-    mode = Mode_Types.TELEOP;
+    mode = Mode_Type.TELEOP;
   }
 
   public void driveStraight(double distance) {
