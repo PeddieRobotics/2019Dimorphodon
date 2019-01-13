@@ -6,8 +6,9 @@ package frc.robot;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.Talon;
 import frc.robot.lib.PID;
-import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.DriverStation;
 
 /**
  * leftSpeed: controls the speed of our left side motors, we want them to move
@@ -29,15 +30,13 @@ public class DriveTrain extends Subsystem {
   private enum Mode_Type {AUTO_DRIVE, TELEOP};
   private Mode_Type mode = Mode_Type.TELEOP;
   private Talon leftMotor;
-   private Talon rightMotor;
+  private Talon rightMotor;
 
   private enum Mode_Types {
     TELEOP, AUTO_DRIVE
   };
 
   Mode_Types mode;
-  Talon rightMotor;
-  Talon leftMotor;
 
   /**
    * set our starting mode to TELEOP set our motor ports
