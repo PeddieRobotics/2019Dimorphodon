@@ -35,13 +35,14 @@ public class DriveTrain extends Subsystem {
   private static final double capSpeed = 0.5;
 
  // private TrajectoryDriveController ...;
-  private enum Mode_Type {AUTO_DRIVE, TELEOP};
+  private enum Mode_Type {AUTO_DRIVE, TELEOP, AUTO_TURN};
   private Mode_Type mode = Mode_Type.TELEOP;
+
   private Talon leftMotor;
    private Talon rightMotor;
 
   private enum Mode_Types {
-    TELEOP, AUTO_DRIVE
+    TELEOP, AUTO_DRIVE, AUTO_TURN
   };
 
   Mode_Types mode;
@@ -67,7 +68,6 @@ public class DriveTrain extends Subsystem {
   public double getDistance() {
     return leftEncoder.getDistance();
   }
-
  
   /**
    * 
@@ -91,6 +91,19 @@ public class DriveTrain extends Subsystem {
     DriverStation.reportError("" + getDistance(), false);
   }
   
+  public boolean atAngle() {
+		return (Math.abs(turnPID.getSetpoint() - getDistance()) <= 2);
+	}
+  
+  public void turnTo(double angle) {
+		turnPID.set(angle);
+		mode = Mode_Type.AUTO_TURN;
+  }
+  
+  public boolean atDistance() {
+		return (Math.abs(drivePID.getSetpoint() - getDistance()) <= 2);
+  }
+  
   public void  resetEncodersAndNavX(){
     leftEncoder.reset();
     rightEncoder.reset();
@@ -104,14 +117,20 @@ public class DriveTrain extends Subsystem {
   public void update() {
     switch(mode){
       case AUTO_DRIVE:
-           leftSpeed = drivePID.getOutput(getDistance());
-           rightSpeed = drivePID.getOutput(getDistance());
-           leftMotor.set(leftSpeed);
-           rightMotor.set(rightSpeed);
+        leftSpeed = drivePID.getOutput(getDistance());
+        rightSpeed = drivePID.getOutput(getDistance());
+        leftMotor.set(leftSpeed);
+        rightMotor.set(rightSpeed);
 				break;	
       case TELEOP:
-      leftMotor.set(leftSpeed);
-      rightMotor.set(rightSpeed);
+        leftMotor.set(leftSpeed);
+        rightMotor.set(rightSpeed);
+        break;
+      case AUTO_TURN:
+        leftSpeed = -turnPID.getOutput(NavX.getAngle());
+        rightSpeed = -turnPID.getOutput(NavX.getAngle());
+        leftMotor.set(leftSpeed);
+        rightMotor.set(rightSpeed);	
       break;
     }
       
