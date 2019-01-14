@@ -4,11 +4,12 @@ package frc.robot;
   Drivetrain is where we control how the robot drives
 */
 import edu.wpi.first.wpilibj.command.Subsystem;
-import edu.wpi.first.wpilibj.Talon;
 import frc.robot.lib.PID;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Joystick;
-
+import frc.robot.lib.NavX;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.DriverStation;
 /**
  * leftSpeed: controls the speed of our left side motors, we want them to move
  * as a unit rightSpeed: controls the speed of our right side motors Pid: used
