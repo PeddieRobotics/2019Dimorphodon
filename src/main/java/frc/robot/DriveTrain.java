@@ -1,15 +1,13 @@
 package frc.robot;
 
-/*
+// /*
   Drivetrain is where we control how the robot drives
 */
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.Talon;
 import frc.robot.lib.PID;
-import frc.robot.lib.NavX;
+import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.DriverStation;
 
 /**
  * leftSpeed: controls the speed of our left side motors, we want them to move
@@ -25,19 +23,29 @@ public class DriveTrain extends Subsystem {
   private PID pid;
   private NavX NavX;
   private Encoder leftEncoder, rightEncoder;
+ 
   private PID drivePID;
+  private PID turnPID;
+  private boolean turning;
   private static final double DRIVE_KP = 0.08;
   private static final double DRIVE_KI = 0.0000001;
+  public static final double TURN_P = 0.03;
+  public static final double TURN_I = 0.00000001;
+  private static final double capSpeed = 0.5;
+
+ // private TrajectoryDriveController ...;
   private enum Mode_Type {AUTO_DRIVE, TELEOP};
   private Mode_Type mode = Mode_Type.TELEOP;
   private Talon leftMotor;
-  private Talon rightMotor;
+   private Talon rightMotor;
 
   private enum Mode_Types {
     TELEOP, AUTO_DRIVE
   };
 
   Mode_Types mode;
+  Talon rightMotor;
+  Talon leftMotor;
 
   /**
    * set our starting mode to TELEOP set our motor ports
@@ -48,7 +56,7 @@ public class DriveTrain extends Subsystem {
     leftEncoder.setDistancePerPulse(4/12.0*3.14/360);
     rightEncoder.setDistancePerPulse(4/12.0*3.14/360);
     drivePID = new PID(DRIVE_KP, DRIVE_KI, 0, 6);
-
+		turnPID = new PID(TURN_P, TURN_I, 0, 6, true, 1.0, true);
     rightMotor = new Talon(1);
     leftMotor = new Talon(0);
 
@@ -76,12 +84,10 @@ public class DriveTrain extends Subsystem {
   }
   
   public void driveStraight(double distance){
-    
     resetEncodersAndNavX();
     drivePID.set(distance);
     mode = Mode_Type.AUTO_DRIVE;
     DriverStation.reportError("" + getDistance(), false);
- 
   }
   
   public void  resetEncodersAndNavX(){
@@ -100,7 +106,8 @@ public class DriveTrain extends Subsystem {
            leftSpeed = drivePID.getOutput(getDistance());
            rightSpeed = drivePID.getOutput(getDistance());
            leftMotor.set(leftSpeed);
-            rightMotor.set(rightSpeed);
+           rightMotor.set(rightSpeed);
+				break;	
       case TELEOP:
       leftMotor.set(leftSpeed);
       rightMotor.set(rightSpeed);
