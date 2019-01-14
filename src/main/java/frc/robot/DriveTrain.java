@@ -1,6 +1,6 @@
 package frc.robot;
 
-// /*
+ /**
   Drivetrain is where we control how the robot drives
 */
 import edu.wpi.first.wpilibj.command.Subsystem;
@@ -22,7 +22,7 @@ public class DriveTrain extends Subsystem {
   private double leftSpeed;
   private double rightSpeed;
   private PID pid;
-  private NavX NavX;
+  private NavX navx;
   private Encoder leftEncoder, rightEncoder;
  
   private PID drivePID;
@@ -30,8 +30,10 @@ public class DriveTrain extends Subsystem {
   private boolean turning;
   private static final double DRIVE_KP = 0.08;
   private static final double DRIVE_KI = 0.0000001;
-  public static final double TURN_P = 0.03;
-  public static final double TURN_I = 0.00000001;
+  private static final double DRIVE_KD = 0.0;
+  public static final double TURN_KP = 0.03;
+  public static final double TURN_KI = 0.00000001;
+  public static final double TURN_KD = 0.0;
   private static final double capSpeed = 0.5;
 
  // private TrajectoryDriveController ...;
@@ -45,20 +47,16 @@ public class DriveTrain extends Subsystem {
     TELEOP, AUTO_DRIVE, AUTO_TURN
   };
 
-  Mode_Types mode;
-  Talon rightMotor;
-  Talon leftMotor;
-
   /**
    * set our starting mode to TELEOP set our motor ports
    */
   public DriveTrain() {
-    mode = Mode_Types.TELEOP;
-    NavX = new NavX(); //angle that we are at.
+    mode = Mode_Type.TELEOP;
+    navx = new NavX(); //angle that we are at.
     leftEncoder.setDistancePerPulse(4/12.0*3.14/360);
     rightEncoder.setDistancePerPulse(4/12.0*3.14/360);
-    drivePID = new PID(DRIVE_KP, DRIVE_KI, 0, 6);
-		turnPID = new PID(TURN_P, TURN_I, 0, 6, true, 1.0, true);
+    drivePID = new PID(DRIVE_KP, DRIVE_KI, DRIVE_KD, 6);
+		turnPID = new PID(TURN_KP, TURN_KI, DRIVE_KD, 6, true, 1.0, true);
     rightMotor = new Talon(1);
     leftMotor = new Talon(0);
 
@@ -81,21 +79,21 @@ public class DriveTrain extends Subsystem {
   public void arcadeDrive(double speed, double turn) {
     leftSpeed = speed - turn;
     rightSpeed = speed + turn;
-    mode = Mode_Types.TELEOP;
+    mode = Mode_Type.TELEOP;
   }
   
   public void driveStraight(double distance){
     resetEncodersAndNavX();
     drivePID.set(distance);
     mode = Mode_Type.AUTO_DRIVE;
-    DriverStation.reportError("" + getDistance(), false);
   }
   
   public boolean atAngle() {
-		return (Math.abs(turnPID.getSetpoint() - getDistance()) <= 2);
+		return (Math.abs(turnPID.getSetpoint() - navx.getAngle()) <= 2);
 	}
   
   public void turnTo(double angle) {
+    resetEncodersAndNavX();
 		turnPID.set(angle);
 		mode = Mode_Type.AUTO_TURN;
   }
@@ -107,7 +105,7 @@ public class DriveTrain extends Subsystem {
   public void  resetEncodersAndNavX(){
     leftEncoder.reset();
     rightEncoder.reset();
-    NavX.reset();
+    navx.reset();
   }
  
   /**
@@ -119,20 +117,16 @@ public class DriveTrain extends Subsystem {
       case AUTO_DRIVE:
         leftSpeed = drivePID.getOutput(getDistance());
         rightSpeed = drivePID.getOutput(getDistance());
-        leftMotor.set(leftSpeed);
-        rightMotor.set(rightSpeed);
 				break;	
       case TELEOP:
-        leftMotor.set(leftSpeed);
-        rightMotor.set(rightSpeed);
         break;
       case AUTO_TURN:
-        leftSpeed = -turnPID.getOutput(NavX.getAngle());
-        rightSpeed = -turnPID.getOutput(NavX.getAngle());
-        leftMotor.set(leftSpeed);
-        rightMotor.set(rightSpeed);	
+        leftSpeed = turnPID.getOutput(navx.getAngle());
+        rightSpeed = turnPID.getOutput(navx.getAngle());
       break;
     }
+    leftMotor.set(leftSpeed);
+    rightMotor.set(rightSpeed);
       
   }
 
