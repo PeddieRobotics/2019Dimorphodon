@@ -81,8 +81,8 @@ public class CargoIntake extends Subsystem {
 		     
 		  speed = 1.0;
 		     
-		  if(hasCargo()) { //get rid off lasthasCargo
-			 	mode = ModeType.HOLDING; //once we have the cube, we prepare to hold and clamp
+		  if(hasCargo()) { 
+			 	mode = ModeType.HOLDING; 
        }
        
 			break;
