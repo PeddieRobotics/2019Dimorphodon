@@ -1,4 +1,4 @@
-package org.usfirst.frc.team5895.robot.lib;
+package frc.robot.lib;
 
 import edu.wpi.first.wpilibj.Timer;
 
@@ -174,9 +174,5 @@ public class PID{
 		
 		return output;
 	}
+}
 
-}
-  public PID(double Kp, double Ki, double Kd, double dV) {
-    this(Kp, Ki, Kd, dV, true, Double.MAX_VALUE, true);
-  }
-}

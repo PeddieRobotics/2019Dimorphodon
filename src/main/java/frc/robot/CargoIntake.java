@@ -21,7 +21,7 @@ public class CargoIntake extends Subsystem {
   private CANPIDController spid;
   private CANPIDController wpid;
 
-  private boolean isDown;
+  public boolean isDown;
   private double ejectSpeed;
   private double speed;
 
@@ -69,10 +69,11 @@ public class CargoIntake extends Subsystem {
     mode = ModeType.INTAKING;
   }
 
+  /*
+  will use if we have a sensor
   public boolean hasCargo() {
-    //will use if we have a sensor
   }
-
+  */
   public void update(){
 		
 		switch(mode) {
@@ -81,9 +82,11 @@ public class CargoIntake extends Subsystem {
 		     
 		  speed = 1.0;
 		     
-		  if(hasCargo()) { 
+      /*
+      if(hasCargo()) { 
 			 	mode = ModeType.HOLDING; 
        }
+       */
        
 			break;
 		
