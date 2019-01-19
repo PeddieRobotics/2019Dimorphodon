@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.DigitalInput;
 
 
 public class CargoIntake extends Subsystem {
@@ -24,23 +25,34 @@ public class CargoIntake extends Subsystem {
   public boolean isDown;
   private double ejectSpeed;
   private double speed;
+  private double encoderOffset;
 
+  DigitalInput shoulderLimitSwitch;
 //  private CANEncoder sEncoder;
 //  private CANEncoder wEncoder;
 
-  public void initDefaultCommand() {
-
+  public CargoIntake() {
     shoulder = new CANSparkMax( 0, MotorType.kBrushless );
     wrist = new CANSparkMax( 1, MotorType.kBrushless );
 
     spid = shoulder.getPIDController();
     wpid = wrist.getPIDController();
 
+    shoulderLimitSwitch = new DigitalInput(8);
   //  sEncoder = shoulder.getEncoder();
   //  wEncoder = wrist.getEncoder();
-
   }
 
+  public void home() {
+    if (shoulderLimitSwitch.get()) {
+      shoulder.set(0.1);
+    }
+    else { 
+      shoulder.set(0);
+      encoderOffset = shoulder.getEncoder().getPosition();
+    }
+  }
+  
   public void intake() {
     mode = ModeType.INTAKING;  //intakes
   }
@@ -109,5 +121,9 @@ public class CargoIntake extends Subsystem {
 		wrist.set(speed);
 		
 	}
+
+  
+  public void initDefaultCommand() {
+  }
 
 }
