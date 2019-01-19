@@ -9,6 +9,7 @@ public class Robot extends TimedRobot {
   DriveTrain drivetrain;
   CargoIntake cIntake;
   HatchIntake hIntake;
+  ShoulderPivot shoulder;
   Looper loop;
 
   boolean isDown = false;
@@ -21,11 +22,13 @@ public class Robot extends TimedRobot {
     drivetrain = new DriveTrain();
     cIntake = new CargoIntake();
     hIntake = new HatchIntake();
+    shoulder = new ShoulderPivot();
     
     loop = new Looper(10);
     loop.add(drivetrain::update);
     loop.add(cIntake::update);
     loop.add(hIntake::update);
+    loop.add(shoulder::update);
     loop.start();
 
   }
@@ -51,11 +54,12 @@ public class Robot extends TimedRobot {
       }else {
         cIntake.clawDown();
       }
-
-
+    } else if(leftJoystick.getRisingEdge(2)) {
+      shoulder.setTargetPosition(0.0);
     }
 
   }
+
 
   public void testPeriodic() {
   }

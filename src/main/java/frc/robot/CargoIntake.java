@@ -4,11 +4,10 @@ package frc.robot;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
-import edu.wpi.first.wpilibj.DigitalInput;
 
 
 public class CargoIntake extends Subsystem {
@@ -16,43 +15,28 @@ public class CargoIntake extends Subsystem {
   private static enum ModeType {INTAKING, EJECTING, HOLDING, DISABLED};
   private ModeType mode = ModeType.DISABLED;
 
-  private CANSparkMax shoulder;
   private CANSparkMax wrist;
-
-  private CANPIDController spid;
   private CANPIDController wpid;
+  private CANEncoder wEncoder;
 
   public boolean isDown;
   private double ejectSpeed;
   private double speed;
-  private double encoderOffset;
 
-  DigitalInput shoulderLimitSwitch;
-//  private CANEncoder sEncoder;
-//  private CANEncoder wEncoder;
-
-  public CargoIntake() {
-    shoulder = new CANSparkMax( 0, MotorType.kBrushless );
-    wrist = new CANSparkMax( 1, MotorType.kBrushless );
-
-    spid = shoulder.getPIDController();
+  public void initDefaultCommand() {
+    wrist = new CANSparkMax(1, MotorType.kBrushless );
     wpid = wrist.getPIDController();
+    wEncoder = wrist.getEncoder();
 
-    shoulderLimitSwitch = new DigitalInput(8);
-  //  sEncoder = shoulder.getEncoder();
-  //  wEncoder = wrist.getEncoder();
+    wpid.setP(0.0);
+    wpid.setI(0.0);
+    wpid.setD(0.0);
+    wpid.setFF(0.0);
+    wpid.setOutputRange(-1.0, 1,0);
+
+    wrist.setSmartCurrentLimit(50);
   }
 
-  public void home() {
-    if (shoulderLimitSwitch.get()) {
-      shoulder.set(0.1);
-    }
-    else { 
-      shoulder.set(0);
-      encoderOffset = shoulder.getEncoder().getPosition();
-    }
-  }
-  
   public void intake() {
     mode = ModeType.INTAKING;  //intakes
   }
@@ -118,12 +102,8 @@ public class CargoIntake extends Subsystem {
 			break;
 		}
 		
-		wrist.set(speed);
+		wpid.setReference(speed, ControlType.kVelocity);
 		
 	}
-
-  
-  public void initDefaultCommand() {
-  }
 
 }
