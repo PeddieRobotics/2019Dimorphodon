@@ -7,24 +7,21 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 
 public class HatchIntake extends Subsystem {  
 
-  private boolean intaking;
-  private boolean locking;
-
+  private boolean pushedOut;
 
   private Solenoid pushTheWholeThingOut;  //pushes the entire mechanism out
-  private boolean out;
 
   private Solenoid intakeS;     //brings the intake up/down
-  private boolean down;
+  private boolean intaking;
 
   private Solenoid clampS;      //clamps on the hatch
-  private boolean clamped;
+  private boolean clamping;
 
   private Solenoid grabberS;    //controls the middle claw grabber
-  private boolean grabbed;
+  private boolean grabbing;
 
   private Solenoid puncherS;    //punches the hatch off the middle claw grabber
-  private boolean punched;
+  private boolean punching;
   
   public void initDefaultCommand() {
 
@@ -34,34 +31,59 @@ public class HatchIntake extends Subsystem {
     clampS = new Solenoid (4);
     intakeS = new Solenoid(5);
 
-    out = true;   //when competition starts, it pushes the thing out right away
+    pushedOut = true;   //when competition starts, it pushes the thing out right away
 
   }
 
   public void hIntake() {
-    intaking = true;  //hatch panel intake thing down
+    intaking = true;     //brings the panel down
+    clamping = false;    //unclamps
+    grabbing = false;    //middle grabber ready to grab
+    punching = false;    //puncher back
   }
 
   public void hHold() {
-    intaking = false;   //hatch panel intake thing up
+    intaking = false;    //brings the panel up
+    clamping = true;     //unclamps
+    grabbing = false;    //middle grabber ready to grab
+    punching = false;    //puncher back
   }
 
   public void hLock() {
-    locking = true;      //middle grabber UP a hatch panel
+    grabbing = true;     //middle grabber locks/holding on a hatch panel
+    clamping = false;    //unclamps
+    intaking = true;     //puts the panel down
+    punching = false;    //puncher back
   }
 
   public void hEject() {
-    locking = false;    //middle grabber open/not UP hatch panel
+    clamping = false;    //unclamping
+    intaking = true;     //panel down
+    grabbing = false;    //middle grabber open/not holding hatch panel
+    punching = true;     //punches
   }
 
-  public boolean hasHatch() {
-    //will use if we have a sensor
+  public void pullBack() {
+    intaking = false;   //panel up
+    clamping = false;   //unclamped
+    grabbing = false;   //not grabbing
+    punching = false;   //puncher back
+    pushedOut = false;    //pulls the whole thing back
   }
+
+//  public boolean hasHatch() {
+//    //will use if we have a sensor
+//  }
 
   public void update(){
 
+    pushTheWholeThingOut.set(pushedOut);
+
     intakeS.set(intaking);
-    
+    clampS.set(clamping);
+    grabberS.set(grabbing);
+    puncherS.set(punching);
+
 	}
 
 }
