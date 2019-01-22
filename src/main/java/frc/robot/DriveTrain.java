@@ -1,120 +1,222 @@
 package frc.robot;
 
-/*
-  Drivetrain is where we control how the robot drives
-*/
-import edu.wpi.first.wpilibj.command.Subsystem;
-import edu.wpi.first.wpilibj.Talon;
-import frc.robot.lib.PID;
-import edu.wpi.first.wpilibj.Talon;
-import edu.wpi.first.wpilibj.Joystick;
-import frc.robot.lib.NavX;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.TimedRobot;
 
-/**
- * leftSpeed: controls the speed of our left side motors, we want them to move
- * as a unit rightSpeed: controls the speed of our right side motors Pid: used
- * to callibrate the speed that our left and right motors should run at mode: an
- * enum that tells us what state we are in(an enum assigns numerical values to
- * states that can be accesed) rightMotor: our rightmotor leftMotor: our left
- * motor
- */
-public class DriveTrain extends Subsystem {
-  private double leftSpeed;
-  private double rightSpeed;
-  private PID pid;
-  private NavX NavX;
-  private Encoder leftEncoder, rightEncoder;
-  private PID drivePID;
-  private static final double DRIVE_KP = 0.08;
-  private static final double DRIVE_KI = 0.0000001;
+import frc.robot.lib.pathfinder.*;
+import frc.robot.lib.PathfinderFollower;
+
+import com.revrobotics.CANPIDController;
+import com.revrobotics.CANEncoder;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.ControlType;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.ctre.phoenix.sensors.*;
+
+public class DriveTrain {
+
+  private CANSparkMax leftDriveMaster, rightDriveMaster, leftDriveFollower1, leftDriveFollower2, rightDriveFollower1,
+      rightDriveFollower2;
+  private double leftspeed, rightspeed;
+
+  private PigeonIMU pigeon;
+  double angle = 0;
+
+  private CANPIDController turnPID;
+  private boolean turning;
+  private CANPIDController drivePID;
+
+  private CANEncoder leftEncoder, rightEncoder;
 
   private enum Mode_Type {
-    AUTO_DRIVE, TELEOP
-  };
+    TELEOP, AUTO_PATHFINDER
+  }
 
   private Mode_Type mode = Mode_Type.TELEOP;
-  private Talon leftMotor;
-  private Talon rightMotor;
 
-  private enum Mode_Types {
-    TELEOP, AUTO_DRIVE
-  };
+  public static final double TURN_P = 0.0;
+  public static final double TURN_I = 0.0;
+  private static final double DRIVE_KP = 0.15;
+  private static final double DRIVE_KI = 0.000001;
+  private static final double capSpeed = 0.5;
 
-  /**
-   * set our starting mode to TELEOP set our motor ports
-   */
+  // tracking
+  private double posX, posY; // feet
+  private double lastDistance = 0d; // distance traveled the last time update() was called
+
+  private PathfinderGenerator pathMaster;
+  private PathfinderFollower p_straight;
+  private PathfinderFollower p_in_use;
+
   public DriveTrain() {
-    mode = Mode_Type.TELEOP;
-    NavX = new NavX(); // angle that we are at.
-    leftEncoder.setDistancePerPulse(4 / 12.0 * 3.14 / 360);
-    rightEncoder.setDistancePerPulse(4 / 12.0 * 3.14 / 360);
-    drivePID = new PID(DRIVE_KP, DRIVE_KI, 0, 6);
 
-    rightMotor = new Talon(1);
-    leftMotor = new Talon(0);
+    // initialize drive motors
+    leftDriveMaster = new CANSparkMax(0, MotorType.kBrushless);
+    leftDriveFollower1 = new CANSparkMax(1, MotorType.kBrushless);
+    leftDriveFollower2 = new CANSparkMax(2, MotorType.kBrushless);
+    rightDriveMaster = new CANSparkMax(3, MotorType.kBrushless);
+    rightDriveFollower1 = new CANSparkMax(4, MotorType.kBrushless);
+    rightDriveFollower2 = new CANSparkMax(5, MotorType.kBrushless);
 
-    pid = new PID(0.1, 0, 0, 0);
+    leftDriveFollower1.follow(leftDriveMaster);
+    leftDriveFollower2.follow(leftDriveMaster);
+    rightDriveFollower1.follow(rightDriveMaster);
+    rightDriveFollower2.follow(rightDriveMaster);
+
+    // initialize pigeonIMU
+    pigeon = new PigeonIMU(leftDriveMaster.getDeviceId());
+    pigeon.setFusedHeading(angle);
+
+    // initialize encoders
+    leftEncoder = leftDriveMaster.getEncoder();
+    rightEncoder = rightDriveMaster.getEncoder();
+
+    // initialize PID
+    drivePID = leftDriveMaster.getPIDController();
+    drivePID.setP(DRIVE_KP);
+    drivePID.setI(DRIVE_KI);
+    drivePID.setD(0.0);
+    drivePID.setFF(0.0);
+    drivePID.setOutputRange(-1.0, 1.0);
+
+    turnPID = rightDriveMaster.getPIDController();
+    turnPID.setP(TURN_P);
+    turnPID.setI(TURN_I);
+    turnPID.setD(0.0);
+    turnPID.setFF(0.0);
+    turnPID.setOutputRange(-1.0, 1.0);
+
+    pathMaster = new PathfinderGenerator(false);
+
+    try {
+      DriverStation.reportError("Start generating paths with pathfinder", false);
+      // kp ki kd kv ka kturn
+      p_straight = new PathfinderFollower(pathMaster.Straight(), 0.1, 0, 0, 1.0 / 13.75, 1.0 / 75.0, -0.009);
+    } catch (Exception e) {
+      DriverStation.reportError("Pathfinder: error generate paths", false);
+    }
   }
 
-  public double getDistance() {
-    return leftEncoder.getDistance();
+  public void auto_straight() {
+    p_in_use = p_straight;
+    p_in_use.reset();
+    mode = Mode_Type.AUTO_PATHFINDER;
+  }
+
+  public void resetPigeon() {
+    pigeon.setFusedHeading(0);
+  }
+
+  public void turnTo(double angle) {
+    pigeon.setFusedHeading(angle); // need to change this part with turnPIDs involved?
+    turning = true;
+    mode = Mode_Type.TELEOP;
   }
 
   /**
-   * 
-   * @param speed the speed that we should be running at if we want to drive
-   *              striaght
-   * @param turn  offsets the speed so that we can turn, basically if our left
-   *              motors are running faster and our right motors are running
-   *              slower we will turn right
-   * 
+   * makes the robot stop turning using the PID
    */
+  public void stopTurning() {
+    turning = false;
+  }
+
+  /**
+   * returns if the robot is turning to an angle using the PID
+   * 
+   * @return if the robot is turning to an angle using the PID
+   */
+  public boolean isTurning() {
+    return turning;
+  }
+
+  public double getAngle() {
+    PigeonIMU.FusionStatus fusionStatus = new PigeonIMU.FusionStatus();
+    pigeon.getFusedHeading(fusionStatus);
+    return fusionStatus.heading;
+  }
+
   public void arcadeDrive(double speed, double turn) {
-    leftSpeed = speed - turn;
-    rightSpeed = speed + turn;
+    leftspeed = speed - turn;
+    rightspeed = speed + turn;
     mode = Mode_Type.TELEOP;
-  }
-
-  public void driveStraight(double distance) {
-
-    resetEncodersAndNavX();
-    drivePID.set(distance);
-    mode = Mode_Type.AUTO_DRIVE;
-    DriverStation.reportError("" + getDistance(), false);
-
-  }
-
-  public void resetEncodersAndNavX() {
-    leftEncoder.reset();
-    rightEncoder.reset();
-    NavX.reset();
+    turning = false;
   }
 
   /**
-   * The main robot program will call this function It updates our speed and
-   * turning
+   * @return the average velocity in feet per second from the left and right
+   *         encoders.
    */
+  public double getVelocity() {
+    return (leftEncoder.getVelocity() + rightEncoder.getVelocity()) / 2;
+  }
+
+  /**
+   * @return the average distance traveled in feet from the left and right
+   *         encoders.
+   */
+  public double getDistanceTraveled() {
+    return (leftEncoder.getPosition() + rightEncoder.getPosition()) / 2;
+  }
+
+  /**
+   * gets the x position of the drivetrain
+   * 
+   * @return the x position of the drivetrain in feet
+   */
+  public double getXPosition() {
+    return posX;
+  }
+
+  public double getYPosition() {
+    return posY;
+  }
+
   public void update() {
+    double distance = getDistanceTraveled() - lastDistance;
+
+    // posX += distance*Math.cos(Math.toRadians(getAngle()));
+    // posY += distance*Math.sin(Math.toRadians(getAngle()));
+
+    distance = getDistanceTraveled();
+
     switch (mode) {
-    case AUTO_DRIVE:
-      leftSpeed = drivePID.getOutput(getDistance());
-      rightSpeed = drivePID.getOutput(getDistance());
-      leftMotor.set(leftSpeed);
-      rightMotor.set(rightSpeed);
     case TELEOP:
-      leftMotor.set(leftSpeed);
-      rightMotor.set(rightSpeed);
+      if (turning) {
+
+        leftspeed = leftDriveMaster.get(); // current set speed of a speed controller
+        rightspeed = rightDriveMaster.get();
+
+        if (leftspeed > capSpeed) {
+          leftspeed = capSpeed;
+        }
+        if (rightspeed > capSpeed) {
+          rightspeed = capSpeed;
+        }
+        if (leftspeed < -capSpeed) {
+          leftspeed = -capSpeed;
+        }
+        if (rightspeed < -capSpeed) {
+          rightspeed = -capSpeed;
+        }
+      }
+
+      double setpoint = 2000.0;
+      drivePID.setReference(setpoint, ControlType.kVelocity);
+      break;
+
+    case AUTO_PATHFINDER:
+      double[] p = p_in_use.getOutput(rightEncoder.getPosition(), leftEncoder.getPosition(),
+          getAngle() * Math.PI / 180);
+
+      leftDriveMaster.set(p[1]);
+      rightDriveMaster.set(-p[0]);
+
+      DriverStation.reportError("right: " + p[0], false);
+      DriverStation.reportError("left: " + p[1], false);
       break;
     }
 
   }
 
-  /**
-   * 
-   */
-  public void initDefaultCommand() {
-
-  }
 }

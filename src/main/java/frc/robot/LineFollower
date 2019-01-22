@@ -1,0 +1,99 @@
+package frc.robot;
+
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.revrobotics.CANPIDController;
+
+import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.DigitalInput;
+public class LineFollower extends Subsystem {  
+    private enum lineState{NotFollowingLine, LookingForLine, FoundLine, CalibratingLine, FollowingLine};
+    DigitalInput infared1;
+    DigitalInput infared2;
+    DigitalInput infared3;
+    DriveTrain train;
+    private lineState state = lineState.NotFollowingLine;
+    int lineColor = 0;
+    boolean turnRight = false;
+    boolean turnLeft = false;
+    public LineFollower(){
+        train = new DriveTrain();
+        infared1 = new DigitalInput(0);
+        infared2 = new DigitalInput(1);
+        infared3 = new DigitalInput(2);
+
+    }
+    public void initDefaultCommand(){
+        
+        
+    }
+    public void callibrateLine(){//we are centering ourselves on a line 
+        state = lineState.CalibratingLine;
+    }
+    public void stop(){//stop following the line and stop moving
+        state = lineState.NotFollowingLine;
+    }
+    public void lookForLine(){//drive in the direction we are currently moving until we hit a line 
+        state = lineState.LookingForLine;
+    }
+    public void start(){//follow the line 
+        state = lineState.FollowingLine;
+    }
+    public void update(){
+        switch(state){
+            case NotFollowingLine:
+                //do nothing 
+                break;
+            case LookingForLine:
+                train.arcadeDrive(train.getRightSpeed(),0);
+                if(infared1.get()||infared2.get()||infared3.get()){//we have found a line, now center us on the line
+                    //add vision target so we go forwards on the line not backward 
+                    state = lineState.CalibratingLine;
+                } 
+                break;
+            
+            case CalibratingLine:
+                //find a vision target
+                double turnConstants = 0;
+                if(!infared1.get()&&infared2.get()&&!infared3.get()){//if we are centered do not turn 
+                     state = lineState.FollowingLine;
+                } 
+                if(!infared1.get()&&!infared2.get()&&infared3.get()){// if we are to the right of the line turn left
+                    turnConstants = 0.1;
+                }  
+                if(infared1.get()&&!infared2.get()&&!infared3.get()){//if we are to the left of the line turn right
+                    turnConstants = -0.1;
+                }
+            
+                train.arcadeDrive(0,turnConstants);
+                break;
+            case FollowingLine:
+                 boolean moveForward = true;
+                 double turnConstant =0;
+                if(!infared1.get()&&infared2.get()&&!infared3.get()){//if we are centered do not turn 
+                    turnConstant = 0;
+                    turnRight = false;
+                    turnLeft = false;
+                } 
+                if(!infared1.get()&&!infared2.get()&&infared3.get()){// if we are to the right of the line turn left
+                    turnConstant = -0.1;
+                    turnRight = false;
+                    turnLeft = true;
+                }  
+                if(infared1.get()&&!infared2.get()&&!infared3.get()){//if we are to the left of the line turn right
+                    turnConstant = 0.1;
+                    turnRight = true;
+                    turnLeft = false;
+                }
+                if(infared1.get()&&infared2.get()&&infared3.get()){//if we are perpendicular to the line turn 90 degrees
+                    
+                    turnConstant = -1;
+                }
+                if(moveForward){
+                    train.arcadeDrive(train.getRightSpeed(),turnConstant);//move at our current speed turning how we should turn 
+                }else{
+                    train.arcadeDrive(0,turnConstant);// if we are completely off the line then turn in the last direction that we were turning 
+                }
+                break;
+        }
+    }
+}
