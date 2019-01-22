@@ -4,6 +4,9 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 
+import frc.robot.lib.pathfinder.*;
+import frc.robot.lib.PathfinderFollower;
+
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
@@ -26,10 +29,10 @@ public class DriveTrain {
 
   private CANEncoder leftEncoder, rightEncoder;
 
-  private enum Mode_Type {TELEOP}
+  private enum Mode_Type {TELEOP, AUTO_PATHFINDER}
   private Mode_Type mode = Mode_Type.TELEOP;
 
-  public static final double TURN_P = 0.02549; 
+  public static final double TURN_P = 0.0; 
   public static final double TURN_I = 0.0;
   private static final double DRIVE_KP = 0.15;
   private static final double DRIVE_KI = 0.000001;
@@ -38,6 +41,10 @@ public class DriveTrain {
   // tracking
   private double posX, posY; // feet
   private double lastDistance = 0d; // distance traveled the last time update() was called
+
+  private PathfinderGenerator pathMaster;
+  private PathfinderFollower p_straight;
+  private PathfinderFollower p_in_use;
 
   public DriveTrain() {
 
@@ -77,12 +84,28 @@ public class DriveTrain {
     turnPID.setFF(0.0);
     turnPID.setOutputRange(-1.0, 1.0);
 
+    pathMaster = new PathfinderGenerator(false);
+
+    try {
+        DriverStation.reportError("Start generating paths with pathfinder", false);
+        //kp ki kd kv ka kturn
+          p_straight = new PathfinderFollower(pathMaster.Straight(), 0.1, 0, 0, 1.0/13.75, 1.0/75.0, -0.009);    
+   }catch(Exception e) {
+       DriverStation.reportError("Pathfinder: error generate paths", false);
+   }
   }
 
+  public void auto_straight() {
+    p_in_use = p_straight;
+    p_in_use.reset();
+    mode = Mode_Type.AUTO_PATHFINDER;
+    }
+
+  
   public void resetPigeon() {
       pigeon.setFusedHeading(0);
   }
-  
+
   public void turnTo(double angle) {
       pigeon.setFusedHeading(angle); //need to change this part with turnPIDs involved?
       turning = true;
@@ -115,7 +138,7 @@ public class DriveTrain {
     rightspeed = speed + turn;
     mode = Mode_Type.TELEOP;
     turning = false;
-    }
+}
 
     /**
 	 * @return the average velocity in feet per second from the left and right encoders.
@@ -137,12 +160,12 @@ public class DriveTrain {
 	 */
 	public double getXPosition() {
 		return posX;
-	}
-	
+    }
 
 	public double getYPosition() {
 		return posY;
-	}
+    }
+    
     public void update() {
         double distance = getDistanceTraveled() - lastDistance;
 
@@ -175,16 +198,19 @@ public class DriveTrain {
             double setpoint = 2000.0;
             drivePID.setReference(setpoint, ControlType.kVelocity);
             break;
-        
+
+            case AUTO_PATHFINDER:
+            double[] p = p_in_use.getOutput(rightEncoder.getPosition(), leftEncoder.getPosition(), getAngle()*Math.PI/180);
+                
+            leftDriveMaster.set(p[1]);
+            rightDriveMaster.set(-p[0]);
+            
+            DriverStation.reportError("right: " + p[0], false);
+            DriverStation.reportError("left: " + p[1], false);
+            break;
         }
 
 
     }
-	
-
-
-
-  
-   
 
 }
