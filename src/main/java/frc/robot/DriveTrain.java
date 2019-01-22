@@ -29,7 +29,7 @@ public class DriveTrain {
   private enum Mode_Type {TELEOP}
   private Mode_Type mode = Mode_Type.TELEOP;
 
-  public static final double TURN_P = 0.0; 
+  public static final double TURN_P = 0.02549; 
   public static final double TURN_I = 0.0;
   private static final double DRIVE_KP = 0.15;
   private static final double DRIVE_KI = 0.000001;
@@ -82,7 +82,7 @@ public class DriveTrain {
   public void resetPigeon() {
       pigeon.setFusedHeading(0);
   }
-
+  
   public void turnTo(double angle) {
       pigeon.setFusedHeading(angle); //need to change this part with turnPIDs involved?
       turning = true;
@@ -115,9 +115,9 @@ public class DriveTrain {
     rightspeed = speed + turn;
     mode = Mode_Type.TELEOP;
     turning = false;
-}
+    }
 
-/**
+    /**
 	 * @return the average velocity in feet per second from the left and right encoders.
 	 */
 	public double getVelocity() {
