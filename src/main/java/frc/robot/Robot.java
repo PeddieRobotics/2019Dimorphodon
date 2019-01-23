@@ -13,8 +13,8 @@ public class Robot extends TimedRobot {
   Looper loop;
 
   boolean isDown = false;
-  
-  BetterJoystick  leftJoystick, rightJoystick;
+
+  BetterJoystick leftJoystick, rightJoystick;
 
   public void robotInit() {
     leftJoystick = new BetterJoystick(0);
@@ -23,7 +23,7 @@ public class Robot extends TimedRobot {
     cIntake = new CargoIntake();
     hIntake = new HatchIntake();
     shoulder = new ShoulderPivot();
-    
+
     loop = new Looper(10);
     loop.add(drivetrain::update);
     loop.add(cIntake::update);
@@ -47,19 +47,18 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     drivetrain.arcadeDrive(leftJoystick.getRawAxis(1), -rightJoystick.getRawAxis(0));
 
-    //left joystick controls
-    if(leftJoystick.getRisingEdge(1)) {
-      if(cIntake.isDown) {
+    // left joystick controls
+    if (leftJoystick.getRisingEdge(1)) {
+      if (cIntake.isDown) {
         cIntake.clawUp();
-      }else {
+      } else {
         cIntake.clawDown();
       }
-    } else if(leftJoystick.getRisingEdge(2)) {
+    } else if (leftJoystick.getRisingEdge(2)) {
       shoulder.setTargetPosition(0.0);
     }
 
   }
-
 
   public void testPeriodic() {
   }
