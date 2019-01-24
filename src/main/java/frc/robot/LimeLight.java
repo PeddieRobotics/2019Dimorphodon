@@ -34,6 +34,7 @@ public class LimeLight {
             yAngle = ty.getDouble(0.0);
             xAngle = tx.getDouble(0.0);
             SmartDashboard.putNumber("xAngle", xAngle);
+            SmartDashboard.putNumber("Distance", calcDist());
         }
     }
 
