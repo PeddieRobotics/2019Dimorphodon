@@ -37,8 +37,9 @@ public class DriveTrain {
 
   public static final double TURN_P = 0.0;
   public static final double TURN_I = 0.0;
-  private static final double DRIVE_KP = 0.15;
+  private static final double DRIVE_KP = 0.081;
   private static final double DRIVE_KI = 0.000001;
+  private static final double DRIVE_KD = 0.11;
   private static final double capSpeed = 0.5;
 
   // tracking
@@ -76,7 +77,7 @@ public class DriveTrain {
     drivePID = leftDriveMaster.getPIDController();
     drivePID.setP(DRIVE_KP);
     drivePID.setI(DRIVE_KI);
-    drivePID.setD(0.0);
+    drivePID.setD(DRIVE_KD);
     drivePID.setFF(0.0);
     drivePID.setOutputRange(-1.0, 1.0);
 
