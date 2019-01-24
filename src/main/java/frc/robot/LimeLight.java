@@ -17,7 +17,7 @@ public class LimeLight {
     double yAngle = 0;
     double xAngle = 0;
 
-    public Limelight() {
+    public LimeLight() {
         table = NetworkTableInstance.getDefault().getTable("limelight");
         tx = table.getEntry("tx");
         ty = table.getEntry("ty");
