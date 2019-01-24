@@ -11,6 +11,7 @@ public class Robot extends TimedRobot {
   HatchIntake hIntake;
   ShoulderPivot shoulder;
   Looper loop;
+  LimeLight lime;
 
   boolean isDown = false;
 
@@ -23,6 +24,7 @@ public class Robot extends TimedRobot {
     cIntake = new CargoIntake();
     hIntake = new HatchIntake();
     shoulder = new ShoulderPivot();
+    lime = new LimeLight();
 
     loop = new Looper(10);
     loop.add(drivetrain::update);
@@ -57,7 +59,7 @@ public class Robot extends TimedRobot {
     } else if (leftJoystick.getRisingEdge(2)) {
       shoulder.setTargetPosition(0.0);
     }
-
+    lime.update();
   }
 
   public void testPeriodic() {
