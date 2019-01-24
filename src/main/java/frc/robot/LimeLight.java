@@ -1,40 +1,56 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2018 FIRST. All Rights Reserved.                             */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
-
 package frc.robot;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
-import java.sql.Driver;
+public class Limelight {
 
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.command.Subsystem;
-import edu.wpi.first.wpilibj.shuffleboard.*;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+    NetworkTableEntry tx;
+    NetworkTableEntry ty;
+    final double mountAngle = 0.0;
+    final double targetHeight = 5;
+    final double mountHeight = 2;
+    double yAngle = 0;
+    double xAngle = 0;
 
-/**
- * Add your docs here.
- */
-public class LimeLight extends Subsystem {
+    public Limelight() {
+        table = NetworkTableInstance.getDefault().getTable("limelight");
+        tx = table.getEntry("tx");
+        ty = table.getEntry("ty");
 
-  NetworkTable limeLightTable = NetworkTableInstance.getDefault().getTable("limelight");
-  NetworkTableEntry tx = limeLightTable.getEntry("tx");
+    }
 
-  @Override
-  public void initDefaultCommand() {
-    // Set the default command for a subsystem here.
-    // setDefaultCommand(new MySpecialCommand());
-  }
+    /**
+     * Make sure we are constantly updating our network table values
+     */
+    public void update() {
+        yAngle = ty.getDouble(0.0);
+        xAngle = tx.getDouble(0.0);
+    }
 
-  public void update() {
-    double xOff = tx.getDouble(0.0);
-    SmartDashboard.putNumber("X Offset", xOff);
+    /**
+     * Assuming we know the mount height, mount angle, and the height of the target,
+     * and we are pointed straight at the target Then our distance is the tangent of
+     * our targetHeight - mountHeight/yAngle + mountAngle In order to make this work
+     * we need to be alligned with the target so our x angle is 0
+     * 
+     * @return the distance to the target
+     */
+    public double calcDist() {
+        double distance = (targetHeight - mountHeight) / Math.tan(Math.toRadians(yAngle + mountAngle));
+        return distance;
+    }
 
-  }
+    /**
+     * this angle is just our crosshair angle(i think)
+     * 
+     * @return
+     */
+    public double calcAngle() {
+        return xAngle;
+    }
+
 }
