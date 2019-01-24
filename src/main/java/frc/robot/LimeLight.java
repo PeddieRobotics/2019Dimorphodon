@@ -1,6 +1,6 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -10,6 +10,7 @@ public class Limelight {
     NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
     NetworkTableEntry tx;
     NetworkTableEntry ty;
+    NetworkTableEntry tv;
     final double mountAngle = 0.0;
     final double targetHeight = 5;
     final double mountHeight = 2;
@@ -20,6 +21,7 @@ public class Limelight {
         table = NetworkTableInstance.getDefault().getTable("limelight");
         tx = table.getEntry("tx");
         ty = table.getEntry("ty");
+        tv = table.getEntry("tv");
 
     }
 
@@ -27,8 +29,12 @@ public class Limelight {
      * Make sure we are constantly updating our network table values
      */
     public void update() {
-        yAngle = ty.getDouble(0.0);
-        xAngle = tx.getDouble(0.0);
+        double hasTarget = tv.getDouble(0.0);
+        if (hasTarget == 1) {
+            yAngle = ty.getDouble(0.0);
+            xAngle = tx.getDouble(0.0);
+            SmartDashboard.putNumber("xAngle", xAngle);
+        }
     }
 
     /**
