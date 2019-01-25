@@ -11,9 +11,11 @@ public class LimeLight {
     NetworkTableEntry tx;
     NetworkTableEntry ty;
     NetworkTableEntry tv;
+    NetworkTableEntry cy0;
+    NetworkTableEntry cx0;
     final double mountAngle = 0.0;
-    final double targetHeight = 5;
-    final double mountHeight = 2;
+    final double targetHeight = 31.5;
+    final double mountHeight = 8.75;
     double yAngle = 0;
     double xAngle = 0;
 
@@ -22,6 +24,8 @@ public class LimeLight {
         tx = table.getEntry("tx");
         ty = table.getEntry("ty");
         tv = table.getEntry("tv");
+        cy0 = table.getEntry("cy0");
+        cx0 = table.getEntry("cx0");
 
     }
 
@@ -35,6 +39,8 @@ public class LimeLight {
             xAngle = tx.getDouble(0.0);
             SmartDashboard.putNumber("xAngle", xAngle);
             SmartDashboard.putNumber("Distance", calcDist());
+            SmartDashboard.putNumber("yAngle", yAngle);
+            SmartDashboard.putNumber("radYAngle", Math.toRadians(yAngle));
         }
     }
 
@@ -47,7 +53,7 @@ public class LimeLight {
      * @return the distance to the target
      */
     public double calcDist() {
-        double distance = (targetHeight - mountHeight) / Math.tan(Math.toRadians(yAngle + mountAngle));
+        double distance = (targetHeight - mountHeight) / Math.tan(Math.toRadians(yAngle + cy0.getDouble(0.0) * 20.5));
         return distance;
     }
 
