@@ -7,6 +7,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 public class CargoIntake extends Subsystem {
@@ -25,10 +26,14 @@ public class CargoIntake extends Subsystem {
   private double ejectSpeed;
   private double speed;
 
+  private Solenoid clampS;
+  private boolean clamping;
+
   public void initDefaultCommand() {
     wrist = new CANSparkMax(1, MotorType.kBrushless);
     wpid = wrist.getPIDController();
     wEncoder = wrist.getEncoder();
+    clampS = new Solenoid(ElectricalLayout.SOLENOID_CARGO_CLAMP);
 
     wpid.setP(0.0);
     wpid.setI(0.0);
@@ -74,32 +79,38 @@ public class CargoIntake extends Subsystem {
 
     switch (mode) {
 
-    case INTAKING:
+      case INTAKING:
 
-      speed = 1.0;
+        speed = 1.0;
+        clamping = false;
 
-      /*
-       * if(hasCargo()) { mode = ModeType.HOLDING; }
-       */
-
-      break;
-
-    case HOLDING:
-
-      speed = 0.001;
-      // DriverStation.reportError("holding", false);
+        /*
+        * if(hasCargo()) { mode = ModeType.HOLDING; }
+        */
 
       break;
 
-    case EJECTING:
-      speed = -ejectSpeed;
+      case HOLDING:
+
+        speed = 0.001;
+       clamping = true;
+        // DriverStation.reportError("holding", false);
+
       break;
 
-    case DISABLED:
-      speed = 0;
+      case EJECTING:
+        speed = -ejectSpeed;
+       clamping = false;
       break;
+
+      case DISABLED:
+        speed = 0;
+        clamping = false;
+      break;
+      
     }
 
+    clampS.set(clamping);
     wpid.setReference(speed, ControlType.kVelocity);
 
   }

@@ -1,93 +1,75 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
+
+import frc.robot.lib.NavX;
+import frc.robot.lib.PID;
 
 import frc.robot.lib.pathfinder.*;
 import frc.robot.lib.PathfinderFollower;
 
-import com.revrobotics.CANPIDController;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.ctre.phoenix.sensors.*;
 
 public class DriveTrain {
 
   private CANSparkMax leftDriveMaster, rightDriveMaster, leftDriveFollower1, leftDriveFollower2, rightDriveFollower1,
       rightDriveFollower2;
   private double leftspeed, rightspeed;
+  private NavX navX;
 
-  private PigeonIMU pigeon;
-  double angle = 0;
-
-  private CANPIDController turnPID;
+  private PID turnPID;
   private boolean turning;
-  private CANPIDController drivePID;
+  private PID drivePID;
 
   private CANEncoder leftEncoder, rightEncoder;
 
-  private enum Mode_Type {
-    TELEOP, AUTO_PATHFINDER
-  }
-
+  private enum Mode_Type {TELEOP, AUTO_PATHFINDER};
   private Mode_Type mode = Mode_Type.TELEOP;
 
   public static final double TURN_P = 0.0;
   public static final double TURN_I = 0.0;
   private static final double DRIVE_KP = 0.081;
   private static final double DRIVE_KI = 0.000001;
-  private static final double DRIVE_KD = 0.11;
   private static final double capSpeed = 0.5;
-
-  // tracking
-  private double posX, posY; // feet
-  private double lastDistance = 0d; // distance traveled the last time update() was called
 
   private PathfinderGenerator pathMaster;
   private PathfinderFollower p_straight;
   private PathfinderFollower p_in_use;
 
+  // tracking
+  private double posX, posY; // feet
+  private double lastDistance = 0d; // distance traveled the last time update() was called
+
   public DriveTrain() {
 
     // initialize drive motors
-    leftDriveMaster = new CANSparkMax(0, MotorType.kBrushless);
-    leftDriveFollower1 = new CANSparkMax(1, MotorType.kBrushless);
-    leftDriveFollower2 = new CANSparkMax(2, MotorType.kBrushless);
-    rightDriveMaster = new CANSparkMax(3, MotorType.kBrushless);
-    rightDriveFollower1 = new CANSparkMax(4, MotorType.kBrushless);
-    rightDriveFollower2 = new CANSparkMax(5, MotorType.kBrushless);
+    leftDriveMaster = new CANSparkMax(ElectricalLayout.MOTOR_DRIVE_LEFT_MASTER, MotorType.kBrushless);
+    leftDriveFollower1 = new CANSparkMax(ElectricalLayout.MOTOR_DRIVE_LEFT_FOLLOWER1, MotorType.kBrushless);
+    leftDriveFollower2 = new CANSparkMax(ElectricalLayout.MOTOR_DRIVE_LEFT_FOLLOWER2, MotorType.kBrushless);
+    rightDriveMaster = new CANSparkMax(ElectricalLayout.MOTOR_DRIVE_RIGHT_MASTER, MotorType.kBrushless);
+    rightDriveFollower1 = new CANSparkMax(ElectricalLayout.MOTOR_DRIVE_RIGHT_FOLLOWER1, MotorType.kBrushless);
+    rightDriveFollower2 = new CANSparkMax(ElectricalLayout.MOTOR_DRIVE_RIGHT_FOLLOWER2, MotorType.kBrushless);
 
     leftDriveFollower1.follow(leftDriveMaster);
     leftDriveFollower2.follow(leftDriveMaster);
     rightDriveFollower1.follow(rightDriveMaster);
     rightDriveFollower2.follow(rightDriveMaster);
 
-    // initialize pigeonIMU
-    pigeon = new PigeonIMU(leftDriveMaster.getDeviceId());
-    pigeon.setFusedHeading(angle);
-
     // initialize encoders
     leftEncoder = leftDriveMaster.getEncoder();
     rightEncoder = rightDriveMaster.getEncoder();
 
+    // initialize navX
+    navX = new NavX();
+
     // initialize PID
-    drivePID = leftDriveMaster.getPIDController();
-    drivePID.setP(DRIVE_KP);
-    drivePID.setI(DRIVE_KI);
-    drivePID.setD(DRIVE_KD);
-    drivePID.setFF(0.0);
-    drivePID.setOutputRange(-1.0, 1.0);
+    turnPID = new PID(TURN_P, TURN_I, 0, 6);
+    drivePID = new PID(DRIVE_KP, DRIVE_KI, 0, 6);
 
-    turnPID = rightDriveMaster.getPIDController();
-    turnPID.setP(TURN_P);
-    turnPID.setI(TURN_I);
-    turnPID.setD(0.0);
-    turnPID.setFF(0.0);
-    turnPID.setOutputRange(-1.0, 1.0);
-
+    //initialize pathfinder
     pathMaster = new PathfinderGenerator(false);
 
     try {
@@ -105,12 +87,15 @@ public class DriveTrain {
     mode = Mode_Type.AUTO_PATHFINDER;
   }
 
-  public void resetPigeon() {
-    pigeon.setFusedHeading(0);
-  }
+  /**
+	 * resets the NavX to 0
+	 */
+	public void resetNavX() {
+		navX.reset();
+	}
 
   public void turnTo(double angle) {
-    pigeon.setFusedHeading(angle); // need to change this part with turnPIDs involved?
+    turnPID.set(angle);
     turning = true;
     mode = Mode_Type.TELEOP;
   }
@@ -123,8 +108,6 @@ public class DriveTrain {
   }
 
   /**
-   * returns if the robot is turning to an angle using the PID
-   * 
    * @return if the robot is turning to an angle using the PID
    */
   public boolean isTurning() {
@@ -132,9 +115,7 @@ public class DriveTrain {
   }
 
   public double getAngle() {
-    PigeonIMU.FusionStatus fusionStatus = new PigeonIMU.FusionStatus();
-    pigeon.getFusedHeading(fusionStatus);
-    return fusionStatus.heading;
+    return navX.getAngle();
   }
 
   public void arcadeDrive(double speed, double turn) {
@@ -145,16 +126,14 @@ public class DriveTrain {
   }
 
   /**
-   * @return the average velocity in feet per second from the left and right
-   *         encoders.
+   * @return the average velocity in feet per second from the left and right encoders.
    */
   public double getVelocity() {
     return (leftEncoder.getVelocity() + rightEncoder.getVelocity()) / 2;
   }
 
   /**
-   * @return the average distance traveled in feet from the left and right
-   *         encoders.
+   * @return the average distance traveled in feet from the left and right encoders.
    */
   public double getDistanceTraveled() {
     return (leftEncoder.getPosition() + rightEncoder.getPosition()) / 2;
@@ -162,31 +141,59 @@ public class DriveTrain {
 
   /**
    * gets the x position of the drivetrain
-   * 
    * @return the x position of the drivetrain in feet
    */
   public double getXPosition() {
     return posX;
   }
 
+  /**
+   * gets the y position of the drivetrain
+   * @return the y position of the drivetrain in feet
+   */
   public double getYPosition() {
     return posY;
   }
 
+  /**
+	 * stop turnPID when robot is at correct angle
+	 * @return whether PID is at correct angle 
+	 */
+	public boolean atAngle() {
+		return (Math.abs(turnPID.getSetpoint() - getAngle()) <= 5);
+	}
+	
+	/**
+	 * stop drivePID when robot is at correct distance
+	 * @return whether PID is at correct distance 
+	 */
+	public boolean atDistance() {
+		return (Math.abs(drivePID.getSetpoint() - getDistanceTraveled()) <= 2);
+	}
+
   public void update() {
     double distance = getDistanceTraveled() - lastDistance;
 
-    // posX += distance*Math.cos(Math.toRadians(getAngle()));
-    // posY += distance*Math.sin(Math.toRadians(getAngle()));
+    posX += distance*Math.cos(Math.toRadians(getAngle()));
+    posY += distance*Math.sin(Math.toRadians(getAngle()));
 
     distance = getDistanceTraveled();
 
     switch (mode) {
+
+      case AUTO_PATHFINDER:
+      double[] p = p_in_use.getOutput(rightEncoder.getPosition(), leftEncoder.getPosition(), getAngle() * Math.PI / 180);
+
+      leftDriveMaster.set(p[1]);
+      rightDriveMaster.set(-p[0]);
+      //DriverStation.reportError("right: " + p[0], false);
+      //DriverStation.reportError("left: " + p[1], false);
+      break;
+    
     case TELEOP:
       if (turning) {
-
-        leftspeed = leftDriveMaster.get(); // current set speed of a speed controller
-        rightspeed = rightDriveMaster.get();
+        leftspeed = -turnPID.getOutput(navX.getAngle());
+        rightspeed = turnPID.getOutput(navX.getAngle());
 
         if (leftspeed > capSpeed) {
           leftspeed = capSpeed;
@@ -201,23 +208,9 @@ public class DriveTrain {
           rightspeed = -capSpeed;
         }
       }
-
-      double setpoint = 2000.0;
-      drivePID.setReference(setpoint, ControlType.kVelocity);
-      break;
-
-    case AUTO_PATHFINDER:
-      double[] p = p_in_use.getOutput(rightEncoder.getPosition(), leftEncoder.getPosition(),
-          getAngle() * Math.PI / 180);
-
-      leftDriveMaster.set(p[1]);
-      rightDriveMaster.set(-p[0]);
-
-      DriverStation.reportError("right: " + p[0], false);
-      DriverStation.reportError("left: " + p[1], false);
+      leftDriveMaster.set(-leftspeed);
+      rightDriveMaster.set(rightspeed);
       break;
     }
-
   }
-
 }
