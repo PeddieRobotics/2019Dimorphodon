@@ -46,12 +46,12 @@ public class DriveTrain {
   public DriveTrain() {
 
     // initialize drive motors
-    leftDriveMaster = new CANSparkMax(0, MotorType.kBrushless);
-    leftDriveFollower1 = new CANSparkMax(1, MotorType.kBrushless);
-    leftDriveFollower2 = new CANSparkMax(2, MotorType.kBrushless);
-    rightDriveMaster = new CANSparkMax(3, MotorType.kBrushless);
-    rightDriveFollower1 = new CANSparkMax(4, MotorType.kBrushless);
-    rightDriveFollower2 = new CANSparkMax(5, MotorType.kBrushless);
+    leftDriveMaster = new CANSparkMax(ElectricalLayout.MOTOR_DRIVE_LEFT_MASTER, MotorType.kBrushless);
+    leftDriveFollower1 = new CANSparkMax(ElectricalLayout.MOTOR_DRIVE_LEFT_FOLLOWER1, MotorType.kBrushless);
+    leftDriveFollower2 = new CANSparkMax(ElectricalLayout.MOTOR_DRIVE_LEFT_FOLLOWER2, MotorType.kBrushless);
+    rightDriveMaster = new CANSparkMax(ElectricalLayout.MOTOR_DRIVE_RIGHT_MASTER, MotorType.kBrushless);
+    rightDriveFollower1 = new CANSparkMax(ElectricalLayout.MOTOR_DRIVE_RIGHT_FOLLOWER1, MotorType.kBrushless);
+    rightDriveFollower2 = new CANSparkMax(ElectricalLayout.MOTOR_DRIVE_RIGHT_FOLLOWER2, MotorType.kBrushless);
 
     leftDriveFollower1.follow(leftDriveMaster);
     leftDriveFollower2.follow(leftDriveMaster);
