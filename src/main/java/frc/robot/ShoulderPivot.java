@@ -31,7 +31,7 @@ public class ShoulderPivot extends Subsystem{
     private double conversion; //need to figure out this number
 
     public void initDefaultCommand() {
-        shoulderMotor = new CANSparkMax(0, MotorType.kBrushless);
+        shoulderMotor = new CANSparkMax(ElectricalLayout.MOTOR_CARGO_SHOULDER, MotorType.kBrushless);
         spid = shoulderMotor.getPIDController();
         sEncoder = shoulderMotor.getEncoder();
         forwardLimitSwitch = shoulderMotor.getForwardLimitSwitch(LimitSwitchPolarity.kNormallyOpen);

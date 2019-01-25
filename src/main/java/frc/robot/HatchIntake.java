@@ -29,7 +29,7 @@ public class HatchIntake extends Subsystem {
     puncherS = new Solenoid(ElectricalLayout.SOLENOID_HATCH_PUNCHER);
     grabberS = new Solenoid(ElectricalLayout.SOLENOID_HATCH_GRABBER);
     clampS = new Solenoid (ElectricalLayout.SOLENOID_FLOOR_CLAMP);
-    intakeS = new Solenoid(ElectricalLayout.SOLENOID_FLOOR_INTAKE);
+    intakeS = new Solenoid(ElectricalLayout.SOLENOID_FLOOR_PIVOT);
 
     pushedOut = true;   //when competition starts, it pushes the thing out right away
 
