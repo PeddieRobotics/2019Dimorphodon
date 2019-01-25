@@ -25,11 +25,11 @@ public class HatchIntake extends Subsystem {
   
   public void initDefaultCommand() {
 
-    pushTheWholeThingOut = new Solenoid(1);
-    puncherS = new Solenoid(2);
-    grabberS = new Solenoid(3);
-    clampS = new Solenoid (4);
-    intakeS = new Solenoid(5);
+    pushTheWholeThingOut = new Solenoid(ElectricalLayout.SOLENOID_HATCH_DEPLOY);
+    puncherS = new Solenoid(ElectricalLayout.SOLENOID_HATCH_PUNCHER);
+    grabberS = new Solenoid(ElectricalLayout.SOLENOID_HATCH_GRABBER);
+    clampS = new Solenoid (ElectricalLayout.SOLENOID_FLOOR_CLAMP);
+    intakeS = new Solenoid(ElectricalLayout.SOLENOID_FLOOR_INTAKE);
 
     pushedOut = true;   //when competition starts, it pushes the thing out right away
 
