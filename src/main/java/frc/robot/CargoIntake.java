@@ -79,36 +79,37 @@ public class CargoIntake extends Subsystem {
 
     switch (mode) {
 
-    case INTAKING:
+      case INTAKING:
 
-      speed = 1.0;
-      clamping = false;
+        speed = 1.0;
+        clamping = false;
 
-      /*
-       * if(hasCargo()) { mode = ModeType.HOLDING; }
-       */
-
-      break;
-
-    case HOLDING:
-
-      speed = 0.001;
-      clamping = true;
-      // DriverStation.reportError("holding", false);
+        /*
+        * if(hasCargo()) { mode = ModeType.HOLDING; }
+        */
 
       break;
 
-    case EJECTING:
-      speed = -ejectSpeed;
-      clamping = false;
+      case HOLDING:
+
+        speed = 0.001;
+       clamping = true;
+        // DriverStation.reportError("holding", false);
+
       break;
 
-    case DISABLED:
-      speed = 0;
-      clamping = false;
+      case EJECTING:
+        speed = -ejectSpeed;
+       clamping = false;
       break;
+
+      case DISABLED:
+        speed = 0;
+        clamping = false;
+      break;
+      
     }
-    
+
     clampS.set(clamping);
     wpid.setReference(speed, ControlType.kVelocity);
 

@@ -31,8 +31,14 @@ public class HatchIntake extends Subsystem {
     clampS = new Solenoid (ElectricalLayout.SOLENOID_FLOOR_CLAMP);
     intakeS = new Solenoid(ElectricalLayout.SOLENOID_FLOOR_PIVOT);
 
-    pushedOut = true;   //when competition starts, it pushes the thing out right away
+  }
 
+  public void pushOut() {
+    intaking = false;
+    clamping = false;
+    grabbing = false;
+    punching = false;
+    pushedOut = true;   //pushes out
   }
 
   public void hIntake() {
@@ -68,7 +74,7 @@ public class HatchIntake extends Subsystem {
     clamping = false;   //unclamped
     grabbing = false;   //not grabbing
     punching = false;   //puncher back
-    pushedOut = false;    //pulls the whole thing back
+    pushedOut = false;  //pulls the whole thing back
   }
 
 //  public boolean hasHatch() {
