@@ -26,7 +26,10 @@ public class DriveTrain {
 
   private CANEncoder leftEncoder, rightEncoder;
 
-  private enum Mode_Type {TELEOP, AUTO_PATHFINDER};
+  private enum Mode_Type {
+    TELEOP, AUTO_PATHFINDER, TELEOP_REVERSE, AUTO_PATHFINDER_REVERSE
+  };
+
   private Mode_Type mode = Mode_Type.TELEOP;
 
   public static final double TURN_P = 0.0;
@@ -69,7 +72,7 @@ public class DriveTrain {
     turnPID = new PID(TURN_P, TURN_I, 0, 6);
     drivePID = new PID(DRIVE_KP, DRIVE_KI, 0, 6);
 
-    //initialize pathfinder
+    // initialize pathfinder
     pathMaster = new PathfinderGenerator(false);
 
     try {
@@ -88,11 +91,11 @@ public class DriveTrain {
   }
 
   /**
-	 * resets the NavX to 0
-	 */
-	public void resetNavX() {
-		navX.reset();
-	}
+   * resets the NavX to 0
+   */
+  public void resetNavX() {
+    navX.reset();
+  }
 
   public void turnTo(double angle) {
     turnPID.set(angle);
@@ -125,15 +128,24 @@ public class DriveTrain {
     turning = false;
   }
 
+  public void arcadeDriveReverse(double speed, double turn) {
+    leftspeed = speed - turn;
+    rightspeed = speed + turn;
+    mode = Mode_Type.TELEOP_REVERSE;
+    turning = false;
+  }
+
   /**
-   * @return the average velocity in feet per second from the left and right encoders.
+   * @return the average velocity in feet per second from the left and right
+   *         encoders.
    */
   public double getVelocity() {
     return (leftEncoder.getVelocity() + rightEncoder.getVelocity()) / 2;
   }
 
   /**
-   * @return the average distance traveled in feet from the left and right encoders.
+   * @return the average distance traveled in feet from the left and right
+   *         encoders.
    */
   public double getDistanceTraveled() {
     return (leftEncoder.getPosition() + rightEncoder.getPosition()) / 2;
@@ -141,6 +153,7 @@ public class DriveTrain {
 
   /**
    * gets the x position of the drivetrain
+   * 
    * @return the x position of the drivetrain in feet
    */
   public double getXPosition() {
@@ -149,6 +162,7 @@ public class DriveTrain {
 
   /**
    * gets the y position of the drivetrain
+   * 
    * @return the y position of the drivetrain in feet
    */
   public double getYPosition() {
@@ -156,40 +170,43 @@ public class DriveTrain {
   }
 
   /**
-	 * stop turnPID when robot is at correct angle
-	 * @return whether PID is at correct angle 
-	 */
-	public boolean atAngle() {
-		return (Math.abs(turnPID.getSetpoint() - getAngle()) <= 5);
-	}
-	
-	/**
-	 * stop drivePID when robot is at correct distance
-	 * @return whether PID is at correct distance 
-	 */
-	public boolean atDistance() {
-		return (Math.abs(drivePID.getSetpoint() - getDistanceTraveled()) <= 2);
-	}
+   * stop turnPID when robot is at correct angle
+   * 
+   * @return whether PID is at correct angle
+   */
+  public boolean atAngle() {
+    return (Math.abs(turnPID.getSetpoint() - getAngle()) <= 5);
+  }
+
+  /**
+   * stop drivePID when robot is at correct distance
+   * 
+   * @return whether PID is at correct distance
+   */
+  public boolean atDistance() {
+    return (Math.abs(drivePID.getSetpoint() - getDistanceTraveled()) <= 2);
+  }
 
   public void update() {
     double distance = getDistanceTraveled() - lastDistance;
 
-    posX += distance*Math.cos(Math.toRadians(getAngle()));
-    posY += distance*Math.sin(Math.toRadians(getAngle()));
+    posX += distance * Math.cos(Math.toRadians(getAngle()));
+    posY += distance * Math.sin(Math.toRadians(getAngle()));
 
     distance = getDistanceTraveled();
 
     switch (mode) {
 
-      case AUTO_PATHFINDER:
-      double[] p = p_in_use.getOutput(rightEncoder.getPosition(), leftEncoder.getPosition(), getAngle() * Math.PI / 180);
+    case AUTO_PATHFINDER:
+      double[] p = p_in_use.getOutput(rightEncoder.getPosition(), leftEncoder.getPosition(),
+          getAngle() * Math.PI / 180);
 
       leftDriveMaster.set(p[1]);
       rightDriveMaster.set(-p[0]);
-      //DriverStation.reportError("right: " + p[0], false);
-      //DriverStation.reportError("left: " + p[1], false);
+      // DriverStation.reportError("right: " + p[0], false);
+      // DriverStation.reportError("left: " + p[1], false);
       break;
-    
+
     case TELEOP:
       if (turning) {
         leftspeed = -turnPID.getOutput(navX.getAngle());
@@ -210,6 +227,28 @@ public class DriveTrain {
       }
       leftDriveMaster.set(-leftspeed);
       rightDriveMaster.set(rightspeed);
+      break;
+
+    case TELEOP_REVERSE:
+      if (turning) {
+        leftspeed = turnPID.getOutput(navX.getAngle());
+        rightspeed = -turnPID.getOutput(navX.getAngle());
+
+        if (leftspeed > -capSpeed) {
+          leftspeed = -capSpeed;
+        }
+        if (rightspeed > -capSpeed) {
+          rightspeed = -capSpeed;
+        }
+        if (leftspeed < capSpeed) {
+          leftspeed = capSpeed;
+        }
+        if (rightspeed < capSpeed) {
+          rightspeed = capSpeed;
+        }
+      }
+      leftDriveMaster.set(leftspeed);
+      rightDriveMaster.set(-rightspeed);
       break;
     }
   }
