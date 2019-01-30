@@ -47,7 +47,13 @@ public class Robot extends TimedRobot {
   }
 
   public void teleopPeriodic() {
-    drivetrain.arcadeDrive(leftJoystick.getRawAxis(1), -rightJoystick.getRawAxis(0));
+    if (leftJoystick.getRisingEdge(2)){
+      drivetrain.arcadeDrive(leftJoystick.getRawAxis(1), -rightJoystick.getRawAxis(0));
+    }
+    else if (rightJoystick.getRisingEdge(2)){
+      drivetrain.arcadeDriveReverse(leftJoystick.getRawAxis(1), -rightJoystick.getRawAxis(0))
+    }
+
 
     // left joystick controls
     if (leftJoystick.getRisingEdge(1)) {
