@@ -7,9 +7,14 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 
 public class HatchIntake extends Subsystem {  
 
+  private static enum ModeType {
+    INTAKING, HOLDING, LOCKING, PUNCHING, DISABLED, ENABLED
+  };
+  private ModeType mode = ModeType.DISABLED;
+
   private boolean pushedOut;
 
-  private Solenoid pushTheWholeThingOut;  //pushes the entire mechanism out
+  private Solenoid pushOut;  //pushes the entire mechanism out
 
   private Solenoid intakeS;     //brings the intake up/down
   private boolean intaking;
@@ -22,68 +27,127 @@ public class HatchIntake extends Subsystem {
 
   private Solenoid puncherS;    //punches the hatch off the middle claw grabber
   private boolean punching;
-  
-  public void initDefaultCommand() {
 
-    pushTheWholeThingOut = new Solenoid(ElectricalLayout.SOLENOID_HATCH_DEPLOY);
+  public boolean hasHatch;
+
+  public HatchIntake() {
+    pushOut = new Solenoid(ElectricalLayout.SOLENOID_HATCH_DEPLOY);
     puncherS = new Solenoid(ElectricalLayout.SOLENOID_HATCH_PUNCHER);
     grabberS = new Solenoid(ElectricalLayout.SOLENOID_HATCH_GRABBER);
     clampS = new Solenoid (ElectricalLayout.SOLENOID_FLOOR_CLAMP);
     intakeS = new Solenoid(ElectricalLayout.SOLENOID_FLOOR_PIVOT);
-
+  }
+  
+  public void initDefaultCommand() {
   }
 
   public void pushOut() {
-    intaking = false;
-    clamping = false;
-    grabbing = false;
-    punching = false;
-    pushedOut = true;   //pushes out
+    mode = ModeType.ENABLED;
   }
 
   public void hIntake() {
-    intaking = true;     //brings the panel down
-    clamping = false;    //unclamps
-    grabbing = false;    //middle grabber ready to grab
-    punching = false;    //puncher back
+    mode = ModeType.INTAKING;
   }
 
   public void hHold() {
-    intaking = false;    //brings the panel up
-    clamping = true;     //unclamps
-    grabbing = false;    //middle grabber ready to grab
-    punching = false;    //puncher back
+    mode = ModeType.HOLDING;
   }
 
   public void hLock() {
-    grabbing = true;     //middle grabber locks/holding on a hatch panel
-    clamping = false;    //unclamps
-    intaking = true;     //puts the panel down
-    punching = false;    //puncher back
+    mode = ModeType.LOCKING;
   }
 
   public void hEject() {
-    clamping = false;    //unclamping
-    intaking = true;     //panel down
-    grabbing = false;    //middle grabber open/not holding hatch panel
-    punching = true;     //punches
+    mode = ModeType.PUNCHING;
   }
 
   public void pullBack() {
-    intaking = false;   //panel up
-    clamping = false;   //unclamped
-    grabbing = false;   //not grabbing
-    punching = false;   //puncher back
-    pushedOut = false;  //pulls the whole thing back
+    mode = ModeType.DISABLED;
+  }
+
+  public boolean hasHatch(){
+    return hasHatch;
   }
 
 //  public boolean hasHatch() {
 //    //will use if we have a sensor
 //  }
 
-  public void update(){
+  public void update() {
 
-    pushTheWholeThingOut.set(pushedOut);
+    switch (mode) {
+
+      case INTAKING:
+       
+        intaking = true;     //brings the panel down
+        clamping = false;    //unclamps
+        grabbing = false;    //middle grabber ready to grab
+        punching = false;    //puncher back
+  
+        hasHatch = false;
+
+      break;
+
+      case HOLDING:
+
+        intaking = false;    //brings the panel up
+        clamping = true;     //unclamps
+        grabbing = false;    //middle grabber ready to grab
+        punching = false;    //puncher back
+  
+        hasHatch = true;
+
+      break;
+
+      case LOCKING:
+
+        grabbing = true;     //middle grabber locks/holding on a hatch panel
+        clamping = false;    //unclamps
+        intaking = true;     //puts the panel down
+        punching = false;    //puncher back
+  
+        hasHatch = true;
+
+      break;
+
+      case PUNCHING:
+
+        clamping = false;    //unclamping
+        intaking = true;     //panel down
+        grabbing = false;    //middle grabber open/not holding hatch panel
+        punching = true;     //punches
+  
+        hasHatch = false;
+
+      break;
+
+      case DISABLED:
+
+        intaking = false;
+        clamping = false;
+        grabbing = false;
+        punching = false;
+        pushedOut = false;   //pushes out
+  
+        hasHatch = false;
+
+      break;
+
+      case ENABLED:
+
+      intaking = false;
+      clamping = false;
+      grabbing = false;
+      punching = false;
+      pushedOut = true;   //pushes out
+
+      hasHatch = false;
+
+    break;
+      
+    }
+
+    pushOut.set(pushedOut);
 
     intakeS.set(intaking);
     clampS.set(clamping);
