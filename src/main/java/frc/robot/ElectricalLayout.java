@@ -21,4 +21,15 @@ public class ElectricalLayout {
   public static final int SOLENOID_HATCH_DEPLOY = 4;  //pushes the whole thing out
   public static final int SOLENOID_CARGO_CLAMP = 5;
 
+  //digital inputs
+  public static final int SENSOR_ARM_UP = 2;
+  public static final int SENSOR_ARM_DOWN = 1;
+  public static final int SENSOR_ARM_BREAK = 0;
+
+  //analog inputs
+  public static final int SENSOR_DRIVE_DISTANCE_LEFT = 0;
+  public static final int SENSOR_DRIVE_DISTANCE_RIGHT = 1;
+  public static final int SENSOR_HATCH_INTAKE = 2;
+  public static final int SENSOR_CARGO_INTAKE = 3;
+
 }
