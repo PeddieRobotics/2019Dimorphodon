@@ -51,25 +51,35 @@ public class LimeLight {
      * our targetHeight - mountHeight/yAngle + mountAngle In order to make this work
      * we need to be alligned with the target so our x angle is 0
      * 
-     * @return the distance to the target
+     * @return the x distance to the target
      */
-    public double calcYDist() {
-        double distance = (targetHeight - mountHeight) / Math.tan(Math.toRadians(yAngle));
-        return distance;
-    }
-
-    public double calcXDist() {
-        double distance = (calcYDist() * Math.tan(Math.toRadians(xAngle)));
-        return distance;
-    }
-
-    /**
-     * this angle is just our crosshair angle(i think)
-     * 
-     * @return
-     */
-    public double calcAngle() {
+    public double getTX(){
+        SmartDashboard.putNumber("X angle", xAngle);
         return xAngle;
     }
-
-}
+    /**
+     * Returns our y angle
+     */
+    public double getTY(){
+        SmartDashboard.putNumber("Y Angle", yAngle);
+        return yAngle;
+    }
+    /**
+     * Tentative Y dist calculations 
+     * They are accuarate to an inch if we are pointed perpendicular to the target 
+     */
+    public double calcYDist() {
+        
+        double distance = (targetHeight - mountHeight) / Math.tan(Math.toRadians(yAngle));
+        SmartDashboard.putNumber("Y distance ", distance);
+        return distance;
+    }
+    /**
+     * Same as above accept tentative calculations for x distance 
+     * Assumes we have all the variables we need 
+     */
+    public double calcXDist() {
+        double distance = (calcYDist() * Math.tan(Math.toRadians(xAngle)));
+        SmartDashboard.putNumber("X distance", distance);
+        return distance;
+    }
