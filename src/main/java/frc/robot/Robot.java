@@ -12,6 +12,7 @@ public class Robot extends TimedRobot {
   ShoulderPivot shoulder;
   Looper loop;
   LimeLight lime;
+  Vision vision;
 
   boolean isDown = false;
 
@@ -25,6 +26,7 @@ public class Robot extends TimedRobot {
     hIntake = new HatchIntake();
     shoulder = new ShoulderPivot();
     lime = new LimeLight();
+    vision = new Vision();
 
     loop = new Looper(10);
     loop.add(drivetrain::update);
@@ -50,15 +52,23 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     drivetrain.arcadeDrive(leftJoystick.getRawAxis(1), -rightJoystick.getRawAxis(0));
 
-    // left joystick controls
+    // left joystick controls - Will control hatch intake
     if (leftJoystick.getRisingEdge(1)) {
-      if (cIntake.isDown) {
-        cIntake.clawUp();
+    }
+
+    // right joystick controls - Will control cargo intake
+    if (rightJoystick.getRisingEdge(1)) {
+      cIntake.ejectFast();
+    } else if (rightJoystick.getRisingEdge(2)) {
+      if (shoulder.getTargetPosition() == 0.0) {
+        // Move up
       } else {
-        cIntake.clawDown();
+        // Move down
       }
-    } else if (leftJoystick.getRisingEdge(2)) {
-      shoulder.setTargetPosition(0.0);
+    } else if (rightJoystick.getRisingEdge(3)) {
+      cIntake.intake();
+    } else if (rightJoystick.getRisingEdge(4)) {
+      cIntake.ejectSlow();
     }
   }
 
