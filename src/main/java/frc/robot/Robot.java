@@ -31,6 +31,7 @@ public class Robot extends TimedRobot {
     loop.add(cIntake::update);
     loop.add(hIntake::update);
     loop.add(shoulder::update);
+    loop.add(lime::update);
     loop.start();
 
   }
@@ -59,7 +60,6 @@ public class Robot extends TimedRobot {
     } else if (leftJoystick.getRisingEdge(2)) {
       shoulder.setTargetPosition(0.0);
     }
-    lime.update();
   }
 
   public void testPeriodic() {
