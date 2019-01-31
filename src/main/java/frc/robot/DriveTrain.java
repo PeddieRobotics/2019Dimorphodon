@@ -21,13 +21,12 @@ public class DriveTrain {
   private NavX navX;
 
   private PID turnPID;
-  private boolean turning;
   private PID drivePID;
 
   private CANEncoder leftEncoder, rightEncoder;
 
   private enum Mode_Type {
-    TELEOP, AUTO_PATHFINDER, TELEOP_REVERSE, AUTO_PATHFINDER_REVERSE
+    AUTO_PATHFINDER, AUTO_PATHFINDER_REVERSE, DRIVE_STRAIGHT, TURNING, TELEOP, TELEOP_REVERSE
   };
 
   private Mode_Type mode = Mode_Type.TELEOP;
@@ -99,22 +98,7 @@ public class DriveTrain {
 
   public void turnTo(double angle) {
     turnPID.set(angle);
-    turning = true;
-    mode = Mode_Type.TELEOP;
-  }
-
-  /**
-   * makes the robot stop turning using the PID
-   */
-  public void stopTurning() {
-    turning = false;
-  }
-
-  /**
-   * @return if the robot is turning to an angle using the PID
-   */
-  public boolean isTurning() {
-    return turning;
+    mode = Mode_Type.TURNING;
   }
 
   public double getAngle() {
@@ -125,14 +109,12 @@ public class DriveTrain {
     leftspeed = speed - turn;
     rightspeed = speed + turn;
     mode = Mode_Type.TELEOP;
-    turning = false;
   }
 
   public void arcadeDriveReverse(double speed, double turn) {
     leftspeed = speed - turn;
     rightspeed = speed + turn;
     mode = Mode_Type.TELEOP_REVERSE;
-    turning = false;
   }
 
   /**
@@ -144,11 +126,24 @@ public class DriveTrain {
   }
 
   /**
-   * @return the average distance traveled in feet from the left and right
-   *         encoders.
+   * @return the distance traveled in feet from the left encoder
    */
-  public double getDistanceTraveled() {
-    return (leftEncoder.getPosition() + rightEncoder.getPosition()) / 2;
+  public double getLeftDistanceTraveled() {
+    return leftEncoder.getPosition();
+  }
+
+  /**
+   * @return the distance traveled in feet from the right encoder
+   */
+  public double getRightDistanceTraveled() {
+    return rightEncoder.getPosition();
+  }
+
+  /**
+   * @return the average distance traveled in feet from left and right encoders
+   */
+  public double getAvgDistanceTraveled() {
+    return (leftEncoder.getPosition()+rightEncoder.getPosition())/2.0;
   }
 
   /**
@@ -184,16 +179,16 @@ public class DriveTrain {
    * @return whether PID is at correct distance
    */
   public boolean atDistance() {
-    return (Math.abs(drivePID.getSetpoint() - getDistanceTraveled()) <= 2);
+    return (Math.abs(drivePID.getSetpoint() - getAvgDistanceTraveled()) <=2);
   }
 
   public void update() {
-    double distance = getDistanceTraveled() - lastDistance;
+    double distance = getAvgDistanceTraveled() - lastDistance;
 
     posX += distance * Math.cos(Math.toRadians(getAngle()));
     posY += distance * Math.sin(Math.toRadians(getAngle()));
 
-    distance = getDistanceTraveled();
+    distance = getAvgDistanceTraveled();
 
     switch (mode) {
 
@@ -203,50 +198,58 @@ public class DriveTrain {
 
       leftDriveMaster.set(p[1]);
       rightDriveMaster.set(-p[0]);
-      // DriverStation.reportError("right: " + p[0], false);
-      // DriverStation.reportError("left: " + p[1], false);
+      break;
+
+    case AUTO_PATHFINDER_REVERSE:
+      double[] p_rev = p_in_use.getOutput(rightEncoder.getPosition(), leftEncoder.getPosition(),
+        getAngle() * Math.PI / 180);
+        
+      leftDriveMaster.set(-p_rev[1]);
+      rightDriveMaster.set(p_rev[0]);
+      break;
+
+    case DRIVE_STRAIGHT:
+      leftspeed = drivePID.getOutput(leftEncoder.getPosition());
+      rightspeed = drivePID.getOutput(rightEncoder.getPosition());
+
+      if (leftspeed > capSpeed) {
+        leftspeed = capSpeed;
+      }
+      if (rightspeed > capSpeed) {
+        rightspeed = capSpeed;
+      }
+      if (leftspeed < -capSpeed) {
+        leftspeed = -capSpeed;
+      }
+      if (rightspeed < -capSpeed) {
+        rightspeed = -capSpeed;
+      }
+      break;
+
+    case TURNING:
+      leftspeed = -turnPID.getOutput(navX.getAngle());
+      rightspeed = turnPID.getOutput(navX.getAngle());
+
+      if (leftspeed > capSpeed) {
+        leftspeed = capSpeed;
+      }
+      if (rightspeed > capSpeed) {
+        rightspeed = capSpeed;
+      }
+      if (leftspeed < -capSpeed) {
+        leftspeed = -capSpeed;
+      }
+      if (rightspeed < -capSpeed) {
+        rightspeed = -capSpeed;
+      }
       break;
 
     case TELEOP:
-      if (turning) {
-        leftspeed = -turnPID.getOutput(navX.getAngle());
-        rightspeed = turnPID.getOutput(navX.getAngle());
-
-        if (leftspeed > capSpeed) {
-          leftspeed = capSpeed;
-        }
-        if (rightspeed > capSpeed) {
-          rightspeed = capSpeed;
-        }
-        if (leftspeed < -capSpeed) {
-          leftspeed = -capSpeed;
-        }
-        if (rightspeed < -capSpeed) {
-          rightspeed = -capSpeed;
-        }
-      }
       leftDriveMaster.set(-leftspeed);
       rightDriveMaster.set(rightspeed);
       break;
 
     case TELEOP_REVERSE:
-      if (turning) {
-        leftspeed = turnPID.getOutput(navX.getAngle());
-        rightspeed = -turnPID.getOutput(navX.getAngle());
-
-        if (leftspeed > -capSpeed) {
-          leftspeed = -capSpeed;
-        }
-        if (rightspeed > -capSpeed) {
-          rightspeed = -capSpeed;
-        }
-        if (leftspeed < capSpeed) {
-          leftspeed = capSpeed;
-        }
-        if (rightspeed < capSpeed) {
-          rightspeed = capSpeed;
-        }
-      }
       leftDriveMaster.set(leftspeed);
       rightDriveMaster.set(-rightspeed);
       break;
