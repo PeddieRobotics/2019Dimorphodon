@@ -22,6 +22,8 @@ public class HatchIntake extends Subsystem {
 
   private Solenoid puncherS;    //punches the hatch off the middle claw grabber
   private boolean punching;
+
+  public boolean hasHatch;
   
   public void initDefaultCommand() {
 
@@ -39,6 +41,8 @@ public class HatchIntake extends Subsystem {
     grabbing = false;
     punching = false;
     pushedOut = true;   //pushes out
+
+    hasHatch = false;
   }
 
   public void hIntake() {
@@ -46,6 +50,8 @@ public class HatchIntake extends Subsystem {
     clamping = false;    //unclamps
     grabbing = false;    //middle grabber ready to grab
     punching = false;    //puncher back
+
+    hasHatch = false;
   }
 
   public void hHold() {
@@ -53,6 +59,8 @@ public class HatchIntake extends Subsystem {
     clamping = true;     //unclamps
     grabbing = false;    //middle grabber ready to grab
     punching = false;    //puncher back
+
+    hasHatch = true;
   }
 
   public void hLock() {
@@ -60,6 +68,8 @@ public class HatchIntake extends Subsystem {
     clamping = false;    //unclamps
     intaking = true;     //puts the panel down
     punching = false;    //puncher back
+
+    hasHatch = true;
   }
 
   public void hEject() {
@@ -67,6 +77,8 @@ public class HatchIntake extends Subsystem {
     intaking = true;     //panel down
     grabbing = false;    //middle grabber open/not holding hatch panel
     punching = true;     //punches
+
+    hasHatch = false;
   }
 
   public void pullBack() {
@@ -75,6 +87,12 @@ public class HatchIntake extends Subsystem {
     grabbing = false;   //not grabbing
     punching = false;   //puncher back
     pushedOut = false;  //pulls the whole thing back
+
+    hasHatch = false;
+  }
+
+  public boolean hasHatch(){
+    return hasHatch;
   }
 
 //  public boolean hasHatch() {
