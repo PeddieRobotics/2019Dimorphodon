@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.Timer;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
 
-public class ShoulderPivot extends Subsystem{
+public class ShoulderPivot extends Subsystem {
     private CANSparkMax shoulderMotor;
     private CANPIDController spid;
     private CANEncoder sEncoder;
@@ -22,13 +22,16 @@ public class ShoulderPivot extends Subsystem{
 
     boolean brakeOn = false;
 
-    private enum Mode_Type {MOVING, BRAKING, DISENGAGING, DISABLED};
+    private enum Mode_Type {
+        MOVING, BRAKING, DISENGAGING, DISABLED
+    };
+
     private Mode_Type mode = Mode_Type.DISABLED;
 
     private double targetPos;
     private double setDistance;
     private double brakeTimestamp;
-    private double conversion; //need to figure out this number
+    private double conversion; // need to figure out this number
 
     public void initDefaultCommand() {
         shoulderMotor = new CANSparkMax(ElectricalLayout.MOTOR_CARGO_SHOULDER, MotorType.kBrushless);
@@ -39,7 +42,7 @@ public class ShoulderPivot extends Subsystem{
 
         brakeSolenoid = new Solenoid(0);
 
-        //initialize PIDs
+        // initialize PIDs
         spid.setP(0.0);
         spid.setI(0.0);
         spid.setD(0.0);
@@ -50,16 +53,20 @@ public class ShoulderPivot extends Subsystem{
     }
 
     public double getPosition() {
-        return sEncoder.getPosition()*conversion; //in rotations
+        return sEncoder.getPosition() * conversion; // in rotations
     }
 
     public void setTargetPosition(double targetPosition) {
-        targetPos = targetPosition/conversion;
-        if(targetPos < 0.0) {
+        targetPos = targetPosition / conversion;
+        if (targetPos < 0.0) {
             targetPos = 0.0;
         }
         brakeTimestamp = Timer.getFPGATimestamp();
         mode = Mode_Type.DISENGAGING;
+    }
+
+    public double getTargetPosition() {
+        return targetPos;
     }
 
     public void kPosition(double position) {
@@ -68,65 +75,64 @@ public class ShoulderPivot extends Subsystem{
     }
 
     public void brake() {
-		mode = Mode_Type.BRAKING;
-	}
-	
-	public double getSpeed() {
-		return sEncoder.getVelocity();
-	}
-    
+        mode = Mode_Type.BRAKING;
+    }
+
+    public double getSpeed() {
+        return sEncoder.getVelocity();
+    }
+
     public boolean atTarget() {
-        return ((Math.abs(sEncoder.getPosition()-targetPos) < 200.0)) 
-        && (Math.abs(sEncoder.getVelocity()) < 1.0);
+        return ((Math.abs(sEncoder.getPosition() - targetPos) < 200.0)) && (Math.abs(sEncoder.getVelocity()) < 1.0);
     }
 
     public double getState() {
-		return mode.ordinal();
+        return mode.ordinal();
     }
-    
+
     public void disable() {
-		mode = Mode_Type.DISABLED;
+        mode = Mode_Type.DISABLED;
     }
-    
+
     public void update() {
-        if(forwardLimitSwitch.isLimitSwitchEnabled()) {
+        if (forwardLimitSwitch.isLimitSwitchEnabled()) {
             spid.setOutputRange(0.0, 0.0);
         } else {
             spid.setOutputRange(0.0, 1.0);
         }
-        if(reverseLimitSwitch.isLimitSwitchEnabled()) {
+        if (reverseLimitSwitch.isLimitSwitchEnabled()) {
             spid.setOutputRange(0.0, 0.0);
         } else {
             spid.setOutputRange(-1.0, 0.0);
         }
-        
-        switch(mode) {
-            case DISENGAGING:
-                brakeOn = false;
-                if(Timer.getFPGATimestamp() - brakeTimestamp > 0.1) {
-                    mode = Mode_Type.MOVING;
-                }
-                break;
-            
-            case MOVING:
-                brakeOn = false;
-                spid.setReference(targetPos, ControlType.kPosition);
 
-                if(atTarget()) {
-                    mode = Mode_Type.BRAKING;
-                }
-                break;
-            
-            case BRAKING:
-                brakeOn = true;
-                spid.setReference(0.0, ControlType.kVelocity);
+        switch (mode) {
+        case DISENGAGING:
+            brakeOn = false;
+            if (Timer.getFPGATimestamp() - brakeTimestamp > 0.1) {
+                mode = Mode_Type.MOVING;
+            }
+            break;
 
-                break;
-            
-            case DISABLED:
-                brakeOn = false;
-                spid.setReference(0.0, ControlType.kVelocity);
-                break;
+        case MOVING:
+            brakeOn = false;
+            spid.setReference(targetPos, ControlType.kPosition);
+
+            if (atTarget()) {
+                mode = Mode_Type.BRAKING;
+            }
+            break;
+
+        case BRAKING:
+            brakeOn = true;
+            spid.setReference(0.0, ControlType.kVelocity);
+
+            break;
+
+        case DISABLED:
+            brakeOn = false;
+            spid.setReference(0.0, ControlType.kVelocity);
+            break;
         }
         brakeSolenoid.set(brakeOn);
     }
