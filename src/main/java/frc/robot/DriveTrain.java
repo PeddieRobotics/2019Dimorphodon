@@ -27,7 +27,7 @@ public class DriveTrain {
   private CANEncoder leftEncoder, rightEncoder;
 
   private enum Mode_Type {
-    TELEOP, AUTO_PATHFINDER
+    TELEOP, AUTO_PATHFINDER, TELEOP_REVERSE, AUTO_PATHFINDER_REVERSE
   };
 
   private Mode_Type mode = Mode_Type.TELEOP;
@@ -128,6 +128,13 @@ public class DriveTrain {
     turning = false;
   }
 
+  public void arcadeDriveReverse(double speed, double turn) {
+    leftspeed = speed - turn;
+    rightspeed = speed + turn;
+    mode = Mode_Type.TELEOP_REVERSE;
+    turning = false;
+  }
+
   /**
    * @return the average velocity in feet per second from the left and right
    *         encoders.
@@ -220,6 +227,28 @@ public class DriveTrain {
       }
       leftDriveMaster.set(-leftspeed);
       rightDriveMaster.set(rightspeed);
+      break;
+
+    case TELEOP_REVERSE:
+      if (turning) {
+        leftspeed = turnPID.getOutput(navX.getAngle());
+        rightspeed = -turnPID.getOutput(navX.getAngle());
+
+        if (leftspeed > -capSpeed) {
+          leftspeed = -capSpeed;
+        }
+        if (rightspeed > -capSpeed) {
+          rightspeed = -capSpeed;
+        }
+        if (leftspeed < capSpeed) {
+          leftspeed = capSpeed;
+        }
+        if (rightspeed < capSpeed) {
+          rightspeed = capSpeed;
+        }
+      }
+      leftDriveMaster.set(leftspeed);
+      rightDriveMaster.set(-rightspeed);
       break;
     }
   }
