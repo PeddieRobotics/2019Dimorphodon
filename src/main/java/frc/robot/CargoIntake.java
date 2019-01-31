@@ -7,7 +7,6 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
@@ -17,7 +16,6 @@ public class CargoIntake extends Subsystem {
     INTAKING, EJECTING, HOLDING, DISABLED
   };
 
-  HatchIntake hatchIntake;
   private ModeType mode = ModeType.DISABLED;
 
   private CANSparkMax wrist;
@@ -47,9 +45,7 @@ public class CargoIntake extends Subsystem {
   }
 
   public void intake() {
-    if( hatchIntake.hasHatch = false ){
-      mode = ModeType.INTAKING; // intakes
-    } else { DriverStation.reportError( "Has hatch already", false ); }
+    mode = ModeType.INTAKING; // intakes
   }
 
   public void ejectFast() {
@@ -85,14 +81,12 @@ public class CargoIntake extends Subsystem {
 
       case INTAKING:
 
-       if( isDown = true) {
-          speed = 1.0;
-          clamping = false;
-          /*
-          * if(hasCargo()) { mode = ModeType.HOLDING; }
-          */
-        } else { DriverStation.reportError( "Claw not down", false ); }
+        speed = 1.0;
+        clamping = false;
 
+        /*
+        * if(hasCargo()) { mode = ModeType.HOLDING; }
+        */
 
       break;
 
