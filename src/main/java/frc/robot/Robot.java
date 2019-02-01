@@ -54,7 +54,13 @@ public class Robot extends TimedRobot {
 
     // left joystick controls - Will control hatch intake, speed
     if (leftJoystick.getRisingEdge(1)) {
-
+      hIntake.pushOut();
+    } else if (leftJoystick.getRisingEdge(2)) {
+      hIntake.hIntake();
+    } else if (leftJoystick.getRisingEdge(3)) {
+      hIntake.hHold();
+    } else if (leftJoystick.getRisingEdge(4)) {
+      hIntake.hLock();
     }
 
     // right joystick controls - Will control cargo intake, turning
