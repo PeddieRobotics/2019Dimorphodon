@@ -15,6 +15,7 @@ public class Robot extends TimedRobot {
   Vision vision;
 
   boolean isDown = false;
+  boolean frontSide = true; // Toggles "front" of robot: true = cargo side, false = hatch side
 
   BetterJoystick leftJoystick, rightJoystick;
 
@@ -50,7 +51,14 @@ public class Robot extends TimedRobot {
   }
 
   public void teleopPeriodic() {
-    drivetrain.arcadeDrive(leftJoystick.getRawAxis(1), -rightJoystick.getRawAxis(0));
+    if (rightJoystick.getRisingEdge(2)) {
+      frontSide = frontSide ? false : true;
+    }
+    if (frontSide) {
+      drivetrain.arcadeDrive(leftJoystick.getRawAxis(1), -rightJoystick.getRawAxis(0));
+    } else {
+      drivetrain.arcadeDrive(-leftJoystick.getRawAxis(-1), rightJoystick.getRawAxis(0));
+    }
 
     // left joystick controls - Will control hatch intake, speed
     if (leftJoystick.getRisingEdge(1)) {
@@ -66,7 +74,7 @@ public class Robot extends TimedRobot {
     // right joystick controls - Will control cargo intake, turning
     if (rightJoystick.getRisingEdge(1)) {
       cIntake.ejectFast();
-    } else if (rightJoystick.getRisingEdge(2)) {
+    } else if (rightJoystick.getRisingEdge(4)) {
       if (shoulder.getTargetPosition() == 0.0) {
         // Move up
       } else {
@@ -74,8 +82,6 @@ public class Robot extends TimedRobot {
       }
     } else if (rightJoystick.getRisingEdge(3)) {
       cIntake.intake();
-    } else if (rightJoystick.getRisingEdge(4)) {
-      cIntake.ejectSlow();
     }
   }
 
