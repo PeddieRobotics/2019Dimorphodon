@@ -7,6 +7,8 @@ import com.revrobotics.ControlType;
 import com.revrobotics.CANDigitalInput.LimitSwitchPolarity;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANDigitalInput;
+
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -19,11 +21,12 @@ public class ShoulderPivot extends Subsystem {
     private CANDigitalInput forwardLimitSwitch, reverseLimitSwitch;
 
     private Solenoid brakeSolenoid;
+    private DigitalInput brakeSensor, limitSwitch;
 
     boolean brakeOn = false;
 
     private enum Mode_Type {
-        MOVING, BRAKING, DISENGAGING, DISABLED
+        MOVING, BRAKING, DISENGAGING, DISABLED, HOMING
     };
 
     private Mode_Type mode = Mode_Type.DISABLED;
@@ -32,14 +35,17 @@ public class ShoulderPivot extends Subsystem {
     private double setDistance;
     private double brakeTimestamp;
     private double conversion; // need to figure out this number
+    private double shoulderSpeed;
 
     public void initDefaultCommand() {
+        limitSwitch = new DigitalInput(8);
         shoulderMotor = new CANSparkMax(ElectricalLayout.MOTOR_CARGO_SHOULDER, MotorType.kBrushless);
         spid = shoulderMotor.getPIDController();
         sEncoder = shoulderMotor.getEncoder();
         forwardLimitSwitch = shoulderMotor.getForwardLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
         reverseLimitSwitch = shoulderMotor.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyClosed);
 
+        brakeSensor = new DigitalInput(1);
         brakeSolenoid = new Solenoid(0);
 
         // initialize PIDs
@@ -50,6 +56,10 @@ public class ShoulderPivot extends Subsystem {
         spid.setOutputRange(-1.0, 1.0);
 
         shoulderMotor.setSmartCurrentLimit(50);
+    }
+
+    public void home() {
+        mode = Mode_Type.HOMING;
     }
 
     public double getPosition() {
@@ -107,13 +117,24 @@ public class ShoulderPivot extends Subsystem {
         }
 
         switch (mode) {
-        case DISENGAGING:
-            brakeOn = false;
-            if (Timer.getFPGATimestamp() - brakeTimestamp > 0.1) {
-                mode = Mode_Type.MOVING;
+        case HOMING:
+            if (limitSwitch.get()) {
+                shoulderSpeed = 0.1;
+                // shoulderMotor.set(0.1);
+            } else {
+                shoulderSpeed = 0;
+                // shoulderMotor.set(0);
             }
             break;
-
+        case DISENGAGING:
+            brakeOn = false;
+            if (brakeSensor.get()) {
+                mode = Mode_Type.MOVING;
+            }
+            /*
+             * if(Timer.getFPGATimestamp() - brakeTimestamp > 0.1) { mode =
+             * Mode_Type.MOVING; } break;
+             */
         case MOVING:
             brakeOn = false;
             spid.setReference(targetPos, ControlType.kPosition);
@@ -135,5 +156,7 @@ public class ShoulderPivot extends Subsystem {
             break;
         }
         brakeSolenoid.set(brakeOn);
+        shoulderMotor.set(shoulderSpeed);
+
     }
 }

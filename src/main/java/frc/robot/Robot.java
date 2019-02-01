@@ -52,7 +52,7 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     drivetrain.arcadeDrive(leftJoystick.getRawAxis(1), -rightJoystick.getRawAxis(0));
 
-    // left joystick controls - Will control hatch intake
+    // left joystick controls - Will control hatch intake, turning
     if (leftJoystick.getRisingEdge(1)) {
     }
 
