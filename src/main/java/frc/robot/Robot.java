@@ -57,7 +57,7 @@ public class Robot extends TimedRobot {
     if (frontSide) {
       drivetrain.arcadeDrive(leftJoystick.getRawAxis(1), -rightJoystick.getRawAxis(0));
     } else {
-      drivetrain.arcadeDrive(-leftJoystick.getRawAxis(-1), rightJoystick.getRawAxis(0));
+      drivetrain.arcadeDrive(-leftJoystick.getRawAxis(1), rightJoystick.getRawAxis(0));
     }
 
     // left joystick controls - Will control hatch intake, speed
