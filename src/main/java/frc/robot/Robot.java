@@ -9,6 +9,7 @@ public class Robot extends TimedRobot {
   DriveTrain drivetrain;
   CargoIntake cIntake;
   HatchIntake hIntake;
+  FloorIntake fIntake;
   ShoulderPivot shoulder;
   Looper loop;
   LimeLight lime;
@@ -64,9 +65,9 @@ public class Robot extends TimedRobot {
     if (leftJoystick.getRisingEdge(1)) {
       hIntake.pushOut();
     } else if (leftJoystick.getRisingEdge(2)) {
-      hIntake.hIntake();
+      fIntake.hIntake();
     } else if (leftJoystick.getRisingEdge(3)) {
-      hIntake.hHold();
+      fIntake.hHold();
     } else if (leftJoystick.getRisingEdge(4)) {
       hIntake.hLock();
     }
