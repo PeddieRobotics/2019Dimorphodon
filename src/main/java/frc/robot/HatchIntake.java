@@ -8,20 +8,12 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 public class HatchIntake extends Subsystem {
 
   private static enum ModeType {
-    INTAKING, HOLDING, LOCKING, PUNCHING, DISABLED, ENABLED
+    LOCKING, PUNCHING, DISABLED, ENABLED
   };
-
   private ModeType mode = ModeType.DISABLED;
 
   private boolean pushedOut;
-
   private Solenoid pushOut; // pushes the entire mechanism out
-
-  private Solenoid intakeS; // brings the intake up/down
-  private boolean intaking;
-
-  private Solenoid clampS; // clamps the hatch to the floor intake
-  private boolean clamping;
 
   private Solenoid grabberS; // controls the middle claw grabber
   private boolean grabbing;
@@ -35,8 +27,6 @@ public class HatchIntake extends Subsystem {
     pushOut = new Solenoid(ElectricalLayout.SOLENOID_HATCH_DEPLOY);
     puncherS = new Solenoid(ElectricalLayout.SOLENOID_HATCH_PUNCHER);
     grabberS = new Solenoid(ElectricalLayout.SOLENOID_HATCH_GRABBER);
-    clampS = new Solenoid(ElectricalLayout.SOLENOID_FLOOR_CLAMP);
-    intakeS = new Solenoid(ElectricalLayout.SOLENOID_FLOOR_PIVOT);
   }
 
   public void initDefaultCommand() {
@@ -44,14 +34,6 @@ public class HatchIntake extends Subsystem {
 
   public void pushOut() {
     mode = ModeType.ENABLED;
-  }
-
-  public void hIntake() {
-    mode = ModeType.INTAKING;
-  }
-
-  public void hHold() {
-    mode = ModeType.HOLDING;
   }
 
   public void hLock() {
@@ -78,33 +60,9 @@ public class HatchIntake extends Subsystem {
 
     switch (mode) {
 
-    case INTAKING: // Picks panel off floor
-
-      intaking = true; // brings the panel down
-      clamping = false; // unclamps
-      grabbing = false; // middle grabber ready to grab
-      punching = false; // puncher back
-
-      hasHatch = false;
-
-      break;
-
-    case HOLDING: // Clamps the panel to the floor intake and lifts to grabber
-
-      intaking = true; // brings the panel up
-      clamping = true; // clamps
-      grabbing = false; // middle grabber ready to grab
-      punching = false; // puncher back
-
-      hasHatch = true;
-
-      break;
-
     case LOCKING: // Holds panel up to grabber
 
       grabbing = true; // middle grabber locks/holding on a hatch panel
-      clamping = false; // unclamps
-      intaking = true; // puts the panel down
       punching = false; // puncher back
 
       hasHatch = true;
@@ -113,8 +71,6 @@ public class HatchIntake extends Subsystem {
 
     case PUNCHING: // Punches panel out
 
-      clamping = false; // unclamping
-      intaking = true; // panel down
       grabbing = false; // middle grabber open/not holding hatch panel
       punching = true; // punches
 
@@ -124,8 +80,6 @@ public class HatchIntake extends Subsystem {
 
     case DISABLED:
 
-      intaking = false;
-      clamping = false;
       grabbing = false;
       punching = false;
       pushedOut = false; // pushes out
@@ -136,8 +90,6 @@ public class HatchIntake extends Subsystem {
 
     case ENABLED:
 
-      intaking = false;
-      clamping = false;
       grabbing = false;
       punching = false;
       pushedOut = true; // pushes out
@@ -150,8 +102,6 @@ public class HatchIntake extends Subsystem {
 
     pushOut.set(pushedOut);
 
-    intakeS.set(intaking);
-    clampS.set(clamping);
     grabberS.set(grabbing);
     puncherS.set(punching);
 
