@@ -1,12 +1,15 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 public class FloorIntake extends Subsystem {
 
+  private double lastTime;
+
   private static enum ModeType {
-    INTAKING, HOLDING, DISABLED, ENABLED
+    INTAKING, HOLDING, EJECTING, DISABLED, ENABLED
   };
 
   private ModeType mode = ModeType.DISABLED;
@@ -33,6 +36,11 @@ public class FloorIntake extends Subsystem {
     mode = ModeType.HOLDING;
   }
 
+  public void hEject() {
+    mode = ModeType.EJECTING;
+    lastTime = Timer.getFPGATimestamp();
+  }
+
   public void update() {
 
     switch (mode) {
@@ -48,6 +56,20 @@ public class FloorIntake extends Subsystem {
 
         intaking = true; // brings the panel up
         clamping = true; // clamps
+
+      break;
+
+      case EJECTING: // Clamps the panel to the floor intake and lifts to grabber
+
+        intaking = true; // panel up
+        clamping = false; // unclamped
+
+        double waitTime = Timer.getFPGATimestamp(); //stamps current time 
+        if (waitTime - lastTime > 0.6) { //compares the time we started waiting to current time
+        	mode = ModeType.INTAKING; //if it has been waiting for 200ms, it begins to intake
+        } else {
+        	mode = ModeType.EJECTING; //if not, it keeps waiting
+        }
 
       break;
 
