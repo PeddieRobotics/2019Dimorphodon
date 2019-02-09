@@ -7,7 +7,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class LimeLight {
 
-    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+    NetworkTable table;
     NetworkTableEntry tx;
     NetworkTableEntry ty;
     NetworkTableEntry tv;
