@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
+import jdk.nashorn.internal.ir.BreakNode;
 
 public class ShoulderPivot extends Subsystem {
     private CANSparkMax shoulderMotor;
@@ -21,7 +22,7 @@ public class ShoulderPivot extends Subsystem {
     private CANDigitalInput forwardLimitSwitch, reverseLimitSwitch;
 
     private Solenoid brakeSolenoid;
-    private DigitalInput brakeSensor, limitSwitch;
+    private DigitalInput brakeSensor, limitSwitchBottom, limitSwitchTop;
 
     boolean brakeOn = false;
 
@@ -38,15 +39,16 @@ public class ShoulderPivot extends Subsystem {
     private double shoulderSpeed;
 
     public void initDefaultCommand() {
-        limitSwitch = new DigitalInput(8);
+        limitSwitchTop = new DigitalInput(ElectricalLayout.SENSOR_ARM_UP);
+        limitSwitchBottom = new DigitalInput(ElectricalLayout.SENSOR_ARM_DOWN);
         shoulderMotor = new CANSparkMax(ElectricalLayout.MOTOR_CARGO_SHOULDER, MotorType.kBrushless);
         spid = shoulderMotor.getPIDController();
         sEncoder = shoulderMotor.getEncoder();
         forwardLimitSwitch = shoulderMotor.getForwardLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
         reverseLimitSwitch = shoulderMotor.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyClosed);
 
-        brakeSensor = new DigitalInput(1);
-        brakeSolenoid = new Solenoid(0);
+        brakeSensor = new DigitalInput(ElectricalLayout.SENSOR_ARM_BREAK);
+        brakeSolenoid = new Solenoid(ElectricalLayout.SOLENOID_SHOULDER_BREAK);
 
         // initialize PIDs
         spid.setP(0.0);
@@ -104,6 +106,18 @@ public class ShoulderPivot extends Subsystem {
         mode = Mode_Type.DISABLED;
     }
 
+    public boolean getLimitSwitchTop() {
+        return limitSwitchTop.get();
+    }
+
+    public boolean getLimitSwitchBottom() {
+        return limitSwitchBottom.get();
+    }
+
+    public boolean getBrake() {
+        return brakeSensor.get();
+    }
+
     public void update() {
         if (forwardLimitSwitch.isLimitSwitchEnabled()) {
             spid.setOutputRange(0.0, 0.0);
@@ -118,7 +132,7 @@ public class ShoulderPivot extends Subsystem {
 
         switch (mode) {
         case HOMING:
-            if (limitSwitch.get()) {
+            if (limitSwitchTop.get()) {
                 shoulderSpeed = 0.1;
                 // shoulderMotor.set(0.1);
             } else {
