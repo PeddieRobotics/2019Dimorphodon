@@ -53,6 +53,8 @@ public class Robot extends TimedRobot {
   }
 
   public void teleopPeriodic() {
+    updateDash();
+
     if (rightJoystick.getRisingEdge(2)) {
       frontSide = frontSide ? false : true;
     }
@@ -95,6 +97,9 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("Arm Up", shoulder.getLimitSwitchTop());
     SmartDashboard.putBoolean("Arm Down", shoulder.getLimitSwitchBottom());
     SmartDashboard.putBoolean("Shoulder Brake", shoulder.getBrake());
-
+    SmartDashboard.putBoolean("Hatch", hIntake.hasHatch());
+    SmartDashboard.putBoolean("Cargo", cIntake.hasCargo());
+    // Output Drive Dist Left
+    // Output Drive Dist Right
   }
 }
