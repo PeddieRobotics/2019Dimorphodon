@@ -2,8 +2,8 @@
 package frc.robot;
 
 public class ElectricalLayout {
- 
-  //motors
+
+  // motors
   public static final int MOTOR_DRIVE_LEFT_MASTER = 1;
   public static final int MOTOR_DRIVE_LEFT_FOLLOWER1 = 2;
   public static final int MOTOR_DRIVE_LEFT_FOLLOWER2 = 3;
@@ -13,20 +13,21 @@ public class ElectricalLayout {
   public static final int MOTOR_CARGO_SHOULDER = 7;
   public static final int MOTOR_CARGO_CLAW = 8;
 
-  //solenoids
-  public static final int SOLENOID_FLOOR_PIVOT = 0;  //brings intake up/down
-  public static final int SOLENOID_FLOOR_CLAMP = 1;   //clamps intake
-  public static final int SOLENOID_HATCH_PUNCHER = 2; //puncher
-  public static final int SOLENOID_HATCH_GRABBER = 3; //middle claw locking mechanism
-  public static final int SOLENOID_HATCH_DEPLOY = 4;  //pushes the whole thing out
+  // solenoids
+  public static final int SOLENOID_FLOOR_PIVOT = 0; // brings intake up/down
+  public static final int SOLENOID_FLOOR_CLAMP = 1; // clamps intake
+  public static final int SOLENOID_HATCH_PUNCHER = 2; // puncher
+  public static final int SOLENOID_HATCH_GRABBER = 3; // middle claw locking mechanism
+  public static final int SOLENOID_HATCH_DEPLOY = 4; // pushes the whole thing out
   public static final int SOLENOID_CARGO_CLAMP = 5;
+  public static final int SOLENOID_SHOULDER_BREAK = 6;
 
-  //digital inputs
+  // digital inputs
   public static final int SENSOR_ARM_UP = 2;
   public static final int SENSOR_ARM_DOWN = 1;
   public static final int SENSOR_ARM_BREAK = 0;
 
-  //analog inputs
+  // analog inputs
   public static final int SENSOR_DRIVE_DISTANCE_LEFT = 0;
   public static final int SENSOR_DRIVE_DISTANCE_RIGHT = 1;
   public static final int SENSOR_HATCH_INTAKE = 2;
