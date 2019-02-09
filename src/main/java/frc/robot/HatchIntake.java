@@ -13,6 +13,7 @@ public class HatchIntake extends Subsystem {
   private static enum ModeType {
     INTAKING, HOLDING, EJECTING, DISABLED, ENABLED
   };
+
   private ModeType mode = ModeType.DISABLED;
 
   private boolean pushedOut;
@@ -65,44 +66,43 @@ public class HatchIntake extends Subsystem {
 
     case INTAKING: // Holds panel up to grabber
 
-      grabbing = false;  // middle grabber open
+      grabbing = false; // middle grabber open
       punching = false; // puncher back
-      
-      double waitTimeIntake = Timer.getFPGATimestamp(); //stamps current time 
-        if (waitTimeIntake - lastTime > 0.6) { //compares the time we started waiting to current time
-          if ( hasHatch = true ) {
-            mode = ModeType.HOLDING; //if it has been waiting for 200ms, it begins to hold
-          } else {
-            mode = ModeType.INTAKING; //continues to intake
-          }
-        } else {
-          mode = ModeType.EJECTING; //if not, it keeps waiting
-          hasHatch = false;
-        }
-        
 
-    break;
+      double waitTimeIntake = Timer.getFPGATimestamp(); // stamps current time
+      if (waitTimeIntake - lastTime > 0.6) { // compares the time we started waiting to current time
+        if (hasHatch = true) {
+          mode = ModeType.HOLDING; // if it has been waiting for 200ms, it begins to hold
+        } else {
+          mode = ModeType.INTAKING; // continues to intake
+        }
+      } else {
+        mode = ModeType.EJECTING; // if not, it keeps waiting
+        hasHatch = false;
+      }
+
+      break;
 
     case HOLDING: // Holds panel up to grabber
 
-      grabbing = true;  // middle grabber locks/holding on a hatch panel
+      grabbing = true; // middle grabber locks/holding on a hatch panel
       punching = false; // puncher back
 
-    break;
+      break;
 
     case EJECTING: // Punches panel out
 
       grabbing = false; // middle grabber open/not holding hatch panel
-      punching = true;  // punches
+      punching = true; // punches
 
-      double waitTimeEject = Timer.getFPGATimestamp(); //stamps current time 
-        if (waitTimeEject - lastTime > 0.6) { //compares the time we started waiting to current time
-        	mode = ModeType.HOLDING; //if it has been waiting for 200ms, it begins to hold
-        } else {
-          mode = ModeType.EJECTING; //if not, it keeps waiting
-        }
+      double waitTimeEject = Timer.getFPGATimestamp(); // stamps current time
+      if (waitTimeEject - lastTime > 0.6) { // compares the time we started waiting to current time
+        mode = ModeType.HOLDING; // if it has been waiting for 200ms, it begins to hold
+      } else {
+        mode = ModeType.EJECTING; // if not, it keeps waiting
+      }
 
-    break;
+      break;
 
     case DISABLED:
 
@@ -110,15 +110,15 @@ public class HatchIntake extends Subsystem {
       punching = false;
       pushedOut = false; // pushes out
 
-    break;
+      break;
 
     case ENABLED:
 
       grabbing = false;
       punching = false;
-      pushedOut = true;   // pushes out
+      pushedOut = true; // pushes out
 
-    break;
+      break;
 
     }
 
