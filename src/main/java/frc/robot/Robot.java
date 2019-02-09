@@ -3,6 +3,7 @@ package frc.robot;
 import frc.robot.framework.Looper;
 import frc.robot.lib.BetterJoystick;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.*;
 
 public class Robot extends TimedRobot {
 
@@ -84,8 +85,16 @@ public class Robot extends TimedRobot {
     } else if (rightJoystick.getRisingEdge(3)) {
       cIntake.intake();
     }
+
   }
 
   public void testPeriodic() {
+  }
+
+  public void updateDash() {
+    SmartDashboard.putBoolean("Arm Up", shoulder.getLimitSwitchTop());
+    SmartDashboard.putBoolean("Arm Down", shoulder.getLimitSwitchBottom());
+    SmartDashboard.putBoolean("Shoulder Brake", shoulder.getBrake());
+
   }
 }
