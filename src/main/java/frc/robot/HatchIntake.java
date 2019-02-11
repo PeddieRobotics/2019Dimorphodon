@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 public class HatchIntake extends Subsystem {
@@ -26,11 +27,13 @@ public class HatchIntake extends Subsystem {
   private boolean punching;
 
   public boolean hasHatch;
+  private AnalogInput hatchSensor;
 
   public HatchIntake() {
     pushOut = new Solenoid(ElectricalLayout.SOLENOID_HATCH_DEPLOY);
     puncherS = new Solenoid(ElectricalLayout.SOLENOID_HATCH_PUNCHER);
     grabberS = new Solenoid(ElectricalLayout.SOLENOID_HATCH_GRABBER);
+    hatchSensor = new AnalogInput(ElectricalLayout.SENSOR_HATCH_INTAKE);
   }
 
   public void initDefaultCommand() {
@@ -53,7 +56,7 @@ public class HatchIntake extends Subsystem {
   }
 
   public boolean hasHatch() {
-    return hasHatch;
+    return (hatchSensor.getValue() > 3700 );
   }
 
   // public boolean hasHatch() {
@@ -71,14 +74,13 @@ public class HatchIntake extends Subsystem {
 
       double waitTimeIntake = Timer.getFPGATimestamp(); // stamps current time
       if (waitTimeIntake - lastTime > 0.6) { // compares the time we started waiting to current time
-        if (hasHatch = true) {
+        if (hasHatch() == true) {
           mode = ModeType.HOLDING; // if it has been waiting for 200ms, it begins to hold
         } else {
           mode = ModeType.INTAKING; // continues to intake
         }
       } else {
         mode = ModeType.EJECTING; // if not, it keeps waiting
-        hasHatch = false;
       }
 
       break;
