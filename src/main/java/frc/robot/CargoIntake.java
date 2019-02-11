@@ -38,7 +38,7 @@ public class CargoIntake extends Subsystem {
     wEncoder = wrist.getEncoder();
     clampS = new Solenoid(ElectricalLayout.SOLENOID_CARGO_CLAMP);
 
-    cargoSensor = new AnalogInput(ElectricalLayout.SENSOR_CARGO_INTAKE)
+    cargoSensor = new AnalogInput(ElectricalLayout.SENSOR_CARGO_INTAKE);
 
     wpid.setP(0.0);
     wpid.setI(0.0);
