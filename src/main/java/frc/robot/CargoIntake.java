@@ -7,6 +7,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
@@ -29,11 +30,15 @@ public class CargoIntake extends Subsystem {
   private Solenoid clampS;
   private boolean clamping;
 
+  private AnalogInput cargoSensor;
+
   public void initDefaultCommand() {
     wrist = new CANSparkMax(1, MotorType.kBrushless);
     wpid = wrist.getPIDController();
     wEncoder = wrist.getEncoder();
     clampS = new Solenoid(ElectricalLayout.SOLENOID_CARGO_CLAMP);
+
+    cargoSensor = new AnalogInput(ElectricalLayout.SENSOR_CARGO_INTAKE);
 
     wpid.setP(0.0);
     wpid.setI(0.0);
@@ -73,7 +78,7 @@ public class CargoIntake extends Subsystem {
   }
 
   public boolean hasCargo() { // Will use if we have a cargo sensor
-    return true;
+    return (cargoSensor.getValue() > 3700 );
   }
 
   /*

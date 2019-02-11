@@ -4,14 +4,16 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class HatchIntake extends Subsystem {
 
   private double lastTime;
 
   private static enum ModeType {
-    INTAKING, HOLDING, EJECTING, DISABLED, ENABLED
+    INTAKING, HOLDING, EJECTING, DISABLED, ENABLED, CALCULATING
   };
 
   private ModeType mode = ModeType.DISABLED;
@@ -29,11 +31,18 @@ public class HatchIntake extends Subsystem {
   private boolean punching;
 
   public boolean hasHatch;
+  private AnalogInput hatchSensor;
+  private double currentRawValue;
+  private double averageRawValue;
+  private double displayRawValue;
+  private int numberOfLoops = 5;// basically the amount of times we want to look at a hatch sensor
+  private int loopsDone = 0;
 
   public HatchIntake() {
     pushOut = new Solenoid(ElectricalLayout.SOLENOID_HATCH_DEPLOY);
     puncherS = new Solenoid(ElectricalLayout.SOLENOID_HATCH_PUNCHER);
     grabberS = new Solenoid(ElectricalLayout.SOLENOID_HATCH_GRABBER);
+    hatchSensor = new AnalogInput(ElectricalLayout.SENSOR_HATCH_INTAKE);
   }
 
   public void initDefaultCommand() {
@@ -60,15 +69,12 @@ public class HatchIntake extends Subsystem {
   }
 
   public boolean hasHatch() {
-    return hasHatch;
+    mode = ModeType.INTAKING;
+    return (hatchSensor.getValue() < 3700);
   }
 
-  // public boolean hasHatch() {
-  // //will use if we have a sensor
-  // }
-
   public void update() {
-
+    updateCalculations();
     switch (mode) {
 
     case INTAKING: // Holds grabber up to panel
@@ -129,6 +135,30 @@ public class HatchIntake extends Subsystem {
 
     grabberS.set(grabbing);
     puncherS.set(punching);
+
+  }
+
+  /**
+   * The point of this is to do an average of the values incase Of some random
+   * spike
+   */
+  public void updateCalculations() {
+    if (loopsDone < numberOfLoops) {
+      currentRawValue = hatchSensor.getValue();
+      averageRawValue += currentRawValue;
+      loopsDone++;
+    } else {
+      averageRawValue = averageRawValue / numberOfLoops;
+      displayRawValue = averageRawValue;
+      loopsDone = 0;
+      if (displayRawValue < 3700) {
+        hasHatch = true;
+      } else {
+        hasHatch = false;
+      }
+    }
+    SmartDashboard.putBoolean("hasHatch", hasHatch);
+    SmartDashboard.putNumber("DisplayRawValue", displayRawValue);
 
   }
 
