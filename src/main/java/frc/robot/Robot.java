@@ -15,15 +15,15 @@ public class Robot extends TimedRobot {
   Looper loop;
   LimeLight lime;
   Vision vision;
-
+  BetterJoystick xbox;
   boolean isDown = false;
   boolean frontSide = true; // Toggles "front" of robot: true = cargo side, false = hatch side
 
   BetterJoystick leftJoystick, rightJoystick;
-
+  double xDeadBand=0.10;
+  double yDeadBand = 0.10;
   public void robotInit() {
-    leftJoystick = new BetterJoystick(0);
-    rightJoystick = new BetterJoystick(1);
+    xbox = new BetterJoystick(0);
     drivetrain = new DriveTrain();
     cIntake = new CargoIntake();
     hIntake = new HatchIntake();
@@ -62,6 +62,9 @@ public class Robot extends TimedRobot {
       drivetrain.arcadeDrive(leftJoystick.getRawAxis(1), -rightJoystick.getRawAxis(0));
     } else {
       drivetrain.arcadeDrive(-leftJoystick.getRawAxis(1), rightJoystick.getRawAxis(0));
+    }
+    if(xbox.getRawAxis(ElectricalLayout.xboxForwardThrottle)>xDeadBand&&xbox.getRawAxis(ElectricalLayout.xboxBackwardThrottle)>yDeadBand){
+      double speed = (xbox.getRawAxis(Electrical))
     }
 
     // left joystick controls - Will control hatch intake, speed
