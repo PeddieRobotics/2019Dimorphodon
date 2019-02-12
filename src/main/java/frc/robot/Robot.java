@@ -10,6 +10,7 @@ public class Robot extends TimedRobot {
   DriveTrain drivetrain;
   CargoIntake cIntake;
   HatchIntake hIntake;
+  FloorIntake fIntake;
   ShoulderPivot shoulder;
   Looper loop;
   LimeLight lime;
@@ -54,38 +55,46 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     updateDash();
 
-    if (rightJoystick.getRisingEdge(2)) {
-      frontSide = frontSide ? false : true;
-    }
-    if (frontSide) {
-      drivetrain.arcadeDrive(leftJoystick.getRawAxis(1), -rightJoystick.getRawAxis(0));
-    } else {
-      drivetrain.arcadeDrive(-leftJoystick.getRawAxis(1), rightJoystick.getRawAxis(0));
-    }
-    if(xbox.getRawAxis(ElectricalLayout.xboxForwardThrottle)>xDeadBand&&xbox.getRawAxis(ElectricalLayout.xboxBackwardThrottle)>yDeadBand){
-      double speed = (xbox.getRawAxis(Electrical))
-    }
+    
+    //add drive train code here 
 
     // left joystick controls - Will control hatch intake, speed
-    if (leftJoystick.getRisingEdge(1)) {
+    if (xbox.getRawButton(ElectricalLayout.xboxLeftBumper)){
       hIntake.pushOut();
-    } else if (leftJoystick.getRisingEdge(2)) {
-      hIntake.intake();
-    } else if (leftJoystick.getRisingEdge(3)) {
-      hIntake.hold();
+    }/* else if (leftJoystick.getRisingEdge(2)) { no floor intake as of now
+      fIntake.hIntake();
+    } 
+    else if (leftJoystick.getRisingEdge(3)) {
+      fIntake.hHold();
+    } */
+    else if (xbox.getRawButton(ElectricalLayout.xboxXButton)) {
+      hIntake.hLock();
+    }else if(xbox.getRawButton(ElectricalLayout.xboxStart)){//switch what state we are in 
+      if(hIntake.pushedOut){
+        hIntake.pullBack();
+      }else{
+        hIntake.pushOut();
+      }
     }
 
     // right joystick controls - Will control cargo intake, turning
-    if (rightJoystick.getRisingEdge(1)) {
+    if (xbox.getRawButton(ElectricalLayout.xboxRightBumper)){
       cIntake.ejectFast();
-    } else if (rightJoystick.getRisingEdge(4)) {
+    } 
+    /*else if (rightJoystick.getRisingEdge(4)) { don't know what this means 
       if (shoulder.getTargetPosition() == 0.0) {
         // Move up
       } else {
         // Move down
       }
-    } else if (rightJoystick.getRisingEdge(3)) {
+    }*/
+     else if (xbox.getRawButton(ElectricalLayout.xboxAButton)) {
       cIntake.intake();
+    }else if(xbox.getRawButton(ElectricalLayout.xboxYButton)){
+      cIntake.hasCargo();
+    }else if(xbox.getRawButton(ElectricalLayout.xboxBButton)){
+
+      cIntake.ejectSlow();
     }
 
   }

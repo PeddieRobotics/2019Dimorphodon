@@ -38,8 +38,8 @@ public class ElectricalLayout {
   public static final int xboxRightTrigger = 6;
   public static final int xboxBack = 7;
   public static final int xboxStart  =8;
-  public static final int xboxLeftTriggerButton = 9; 
-  public static final int xboxRightTriggerButton = 10;
+  public static final int xboxLeftBumper = 9; 
+  public static final int xboxRightBumper = 10;
   //xbox "menu" buttons, 8 states
   public static final int xBoxMenuLeft = 0;
   public static final int xBoxMenuRight =0;
