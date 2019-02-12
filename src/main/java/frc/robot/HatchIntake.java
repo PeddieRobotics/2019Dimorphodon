@@ -18,6 +18,9 @@ public class HatchIntake extends Subsystem {
 
   private ModeType mode = ModeType.DISABLED;
 
+  private boolean intaking; // Used to set lastTime
+  private boolean ejecting; // Used to set lastTime
+
   private boolean pushedOut;
   private Solenoid pushOut; // pushes the entire mechanism out
 
@@ -32,8 +35,9 @@ public class HatchIntake extends Subsystem {
   private double currentRawValue;
   private double averageRawValue;
   private double displayRawValue;
-  private int numberOfLoops = 5;//basically the amount of times we want to look at a hatch sensor 
+  private int numberOfLoops = 5;// basically the amount of times we want to look at a hatch sensor
   private int loopsDone = 0;
+
   public HatchIntake() {
     pushOut = new Solenoid(ElectricalLayout.SOLENOID_HATCH_DEPLOY);
     puncherS = new Solenoid(ElectricalLayout.SOLENOID_HATCH_PUNCHER);
@@ -48,14 +52,17 @@ public class HatchIntake extends Subsystem {
     mode = ModeType.ENABLED;
   }
 
-  public void hLock() {
+  public void hold() {
     mode = ModeType.HOLDING;
   }
 
-  public void hEject() {
+  public void eject() {
     mode = ModeType.EJECTING;
   }
 
+  public void intake() {
+    mode = ModeType.INTAKING;
+  }
 
   public void pullBack() {
     mode = ModeType.DISABLED;
@@ -63,48 +70,45 @@ public class HatchIntake extends Subsystem {
 
   public boolean hasHatch() {
     mode = ModeType.INTAKING;
-    return (hatchSensor.getValue() < 3700 );
+    return (hatchSensor.getValue() < 3700);
   }
-
 
   public void update() {
     updateCalculations();
     switch (mode) {
-    case INTAKING: // Holds panel up to grabber
-     
-      grabbing = false; // middle grabber open
-      punching = false; // puncher back
 
-      double waitTimeIntake = Timer.getFPGATimestamp(); // stamps current time
-      if (waitTimeIntake - lastTime > 0.6) { // compares the time we started waiting to current time
-        if (hasHatch() == true) {
-          mode = ModeType.HOLDING; // if it has been waiting for 200ms, it begins to hold
-        } else {
-          mode = ModeType.INTAKING; // continues to intake
-        }
-      } else {
-        mode = ModeType.EJECTING; // if not, it keeps waiting
+    case INTAKING: // Holds grabber up to panel
+      if (!intaking) {
+        lastTime = Timer.getFPGATimestamp();
       }
+
+      intaking = true;
+      grabbing = false; // middle grabber open
+      punching = false;
+      pushedOut = true;
 
       break;
 
-    case HOLDING: // Holds panel up to grabber
+    case HOLDING: // Holds grabber up to panel
 
       grabbing = true; // middle grabber locks/holding on a hatch panel
       punching = false; // puncher back
-
+      pushedOut = false;
       break;
 
     case EJECTING: // Punches panel out
-
-      grabbing = false; // middle grabber open/not holding hatch panel
-      punching = true; // punches
+      if (!ejecting) {
+        lastTime = Timer.getFPGATimestamp();
+      }
+      ejecting = true;
+      pushedOut = true; // middle grabber open/not holding hatch panel
 
       double waitTimeEject = Timer.getFPGATimestamp(); // stamps current time
-      if (waitTimeEject - lastTime > 0.6) { // compares the time we started waiting to current time
+      if (waitTimeEject - lastTime < 0.3) { // compares the time we started waiting to current time
         mode = ModeType.HOLDING; // if it has been waiting for 200ms, it begins to hold
       } else {
-        mode = ModeType.EJECTING; // if not, it keeps waiting
+        grabbing = false;
+        punching = true; // if not, it keeps waiting
       }
 
       break;
@@ -133,29 +137,29 @@ public class HatchIntake extends Subsystem {
     puncherS.set(punching);
 
   }
+
   /**
-   * The point of this is to do an average of the values incase 
-   * Of some random spike 
+   * The point of this is to do an average of the values incase Of some random
+   * spike
    */
-  public void updateCalculations(){
-    if(loopsDone<numberOfLoops){
-        currentRawValue = hatchSensor.getValue();
-        averageRawValue+=currentRawValue;
-        loopsDone++;
+  public void updateCalculations() {
+    if (loopsDone < numberOfLoops) {
+      currentRawValue = hatchSensor.getValue();
+      averageRawValue += currentRawValue;
+      loopsDone++;
+    } else {
+      averageRawValue = averageRawValue / numberOfLoops;
+      displayRawValue = averageRawValue;
+      loopsDone = 0;
+      if (displayRawValue < 3700) {
+        hasHatch = true;
+      } else {
+        hasHatch = false;
+      }
     }
-    else{
-        averageRawValue = averageRawValue/numberOfLoops;
-        displayRawValue = averageRawValue;
-        loopsDone = 0;
-        if(displayRawValue<3700){
-            hasHatch = true;
-        }else{
-            hasHatch = false;
-        }
-    }
-    SmartDashboard.putBoolean("hasHatch",hasHatch);
-    SmartDashboard.putNumber("DisplayRawValue",displayRawValue);
+    SmartDashboard.putBoolean("hasHatch", hasHatch);
+    SmartDashboard.putNumber("DisplayRawValue", displayRawValue);
 
   }
-  
+
 }

@@ -10,7 +10,6 @@ public class Robot extends TimedRobot {
   DriveTrain drivetrain;
   CargoIntake cIntake;
   HatchIntake hIntake;
-  FloorIntake fIntake;
   ShoulderPivot shoulder;
   Looper loop;
   LimeLight lime;
@@ -71,11 +70,9 @@ public class Robot extends TimedRobot {
     if (leftJoystick.getRisingEdge(1)) {
       hIntake.pushOut();
     } else if (leftJoystick.getRisingEdge(2)) {
-      fIntake.hIntake();
+      hIntake.intake();
     } else if (leftJoystick.getRisingEdge(3)) {
-      fIntake.hHold();
-    } else if (leftJoystick.getRisingEdge(4)) {
-      hIntake.hLock();
+      hIntake.hold();
     }
 
     // right joystick controls - Will control cargo intake, turning
