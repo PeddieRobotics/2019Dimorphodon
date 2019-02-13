@@ -13,8 +13,8 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
-import jdk.nashorn.internal.ir.BreakNode;
 
+// To figure out later: https://github.com/REVrobotics/SPARK-MAX-Examples/blob/master/Java/Smart%20Motion%20Example/src/main/java/frc/robot/Robot.java
 public class ShoulderPivot extends Subsystem {
     private CANSparkMax shoulderMotor;
     private CANPIDController spid;
@@ -56,6 +56,7 @@ public class ShoulderPivot extends Subsystem {
         spid.setD(0.0);
         spid.setFF(0.0);
         spid.setOutputRange(-1.0, 1.0);
+        conversion = 1 / 250;
 
         shoulderMotor.setSmartCurrentLimit(50);
     }
@@ -69,7 +70,8 @@ public class ShoulderPivot extends Subsystem {
     }
 
     public void setTargetPosition(double targetPosition) {
-        targetPos = targetPosition / conversion;
+        // Takes target position in degrees
+        targetPos = (targetPosition / 360) * conversion;
         if (targetPos < 0.0) {
             targetPos = 0.0;
         }
@@ -95,7 +97,8 @@ public class ShoulderPivot extends Subsystem {
     }
 
     public boolean atTarget() {
-        return ((Math.abs(sEncoder.getPosition() - targetPos) < 200.0)) && (Math.abs(sEncoder.getVelocity()) < 1.0);
+        return ((Math.abs(sEncoder.getPosition() * conversion - targetPos) < 200.0))
+                && (Math.abs(sEncoder.getVelocity()) < 1.0);
     }
 
     public double getState() {
@@ -120,14 +123,11 @@ public class ShoulderPivot extends Subsystem {
 
     public void update() {
         if (forwardLimitSwitch.isLimitSwitchEnabled()) {
-            spid.setOutputRange(0.0, 0.0);
-        } else {
             spid.setOutputRange(0.0, 1.0);
-        }
-        if (reverseLimitSwitch.isLimitSwitchEnabled()) {
-            spid.setOutputRange(0.0, 0.0);
-        } else {
+        } else if (reverseLimitSwitch.isLimitSwitchEnabled()) {
             spid.setOutputRange(-1.0, 0.0);
+        } else {
+            spid.setOutputRange(-1.0, 1.0);
         }
 
         switch (mode) {
