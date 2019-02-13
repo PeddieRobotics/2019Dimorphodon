@@ -81,12 +81,15 @@ public class HatchIntake extends Subsystem {
       if (!intaking) {
         lastTime = Timer.getFPGATimestamp();
       }
-
+      double waitTime = Timer.getFPGATimestamp();
       intaking = true;
-      grabbing = false; // middle grabber open
       punching = false;
       pushedOut = true;
-
+      if (waitTime - lastTime > 1 && hasHatch) {
+        grabbing = true;
+      } else {
+        grabbing = false;
+      }
       break;
 
     case HOLDING: // Holds grabber up to panel
