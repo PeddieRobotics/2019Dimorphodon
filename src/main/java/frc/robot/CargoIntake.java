@@ -27,18 +27,20 @@ public class CargoIntake extends Subsystem {
   private double ejectSpeed;
   private double speed;
 
-  private Solenoid clampS;
-  private boolean clamping;
+  // private Solenoid clampS;
+  // private boolean clamping;
 
-  private AnalogInput cargoSensor;
+  private AnalogInput cargoSensorRight;
+  private AnalogInput cargoSensorLeft;
 
   public void initDefaultCommand() {
     wrist = new CANSparkMax(1, MotorType.kBrushless);
     wpid = wrist.getPIDController();
     wEncoder = wrist.getEncoder();
-    clampS = new Solenoid(ElectricalLayout.SOLENOID_CARGO_CLAMP);
+    // clampS = new Solenoid(ElectricalLayout.SOLENOID_CARGO_CLAMP);
 
-    cargoSensor = new AnalogInput(ElectricalLayout.SENSOR_CARGO_INTAKE);
+    cargoSensorRight = new AnalogInput(ElectricalLayout.SENSOR_RIGHT_CLAW_INTAKE);
+    cargoSensorLeft = new AnalogInput(ElectricalLayout.SENSOR_LEFT_CLAW_INTAKE);
 
     wpid.setP(0.0);
     wpid.setI(0.0);
@@ -78,7 +80,10 @@ public class CargoIntake extends Subsystem {
   }
 
   public boolean hasCargo() { // Will use if we have a cargo sensor
-    return (cargoSensor.getValue() > 3700 );
+    if(cargoSensorRight.getVoltage() < 4.5 && cargoSensorLeft.getVoltage() < 4.5){
+      return true;
+    }else return false;
+    // return (cargoSensor.getValue() > 3700 );
   }
 
   /*
@@ -91,35 +96,35 @@ public class CargoIntake extends Subsystem {
     case INTAKING:
 
       speed = 1.0;
-      clamping = false;
+      // clamping = false;
 
-      /*
-       * if(hasCargo()) { mode = ModeType.HOLDING; }
-       */
+      
+      // if(hasCargo()) { mode = ModeType.HOLDING; }
+       
 
       break;
 
     case HOLDING:
 
-      speed = 0.001;
-      clamping = true;
+      speed = 0.1;
+      // clamping = true;
       // DriverStation.reportError("holding", false);
 
       break;
 
     case EJECTING:
       speed = -ejectSpeed;
-      clamping = false;
+      // clamping = false;
       break;
 
     case DISABLED:
       speed = 0;
-      clamping = false;
+      // clamping = false;
       break;
 
     }
 
-    clampS.set(clamping);
+    // clampS.set(clamping);
     wpid.setReference(speed, ControlType.kVelocity);
 
   }
