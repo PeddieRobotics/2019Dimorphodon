@@ -35,7 +35,7 @@ public class ShoulderPivot extends Subsystem {
     private double targetPos;
     private double setDistance;
     private double brakeTimestamp;
-    private double conversion; // need to figure out this number
+    private double conversion;
     private double shoulderSpeed;
 
     public void initDefaultCommand() {
@@ -56,9 +56,9 @@ public class ShoulderPivot extends Subsystem {
         spid.setD(0.0);
         spid.setFF(0.0);
         spid.setOutputRange(-1.0, 1.0);
-        conversion = 1 / 250;
+        conversion = 1 / 250.0;
 
-        shoulderMotor.setSmartCurrentLimit(50);
+        shoulderMotor.setSmartCurrentLimit(10);
     }
 
     public void home() {
@@ -71,7 +71,7 @@ public class ShoulderPivot extends Subsystem {
 
     public void setTargetPosition(double targetPosition) {
         // Takes target position in degrees
-        targetPos = (targetPosition / 360) * conversion;
+        targetPos = (targetPosition / 360.0) * conversion;
         if (targetPos < 0.0) {
             targetPos = 0.0;
         }
@@ -169,8 +169,8 @@ public class ShoulderPivot extends Subsystem {
             spid.setReference(0.0, ControlType.kVelocity);
             break;
         }
-        brakeSolenoid.set(brakeOn);
-        shoulderMotor.set(shoulderSpeed);
+        // brakeSolenoid.set(brakeOn);
+        // shoulderMotor.set(shoulderSpeed);
 
     }
 }
