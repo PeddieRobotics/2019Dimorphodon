@@ -38,7 +38,7 @@ public class ShoulderPivot extends Subsystem {
     private double conversion;
     private double shoulderSpeed;
 
-    public void initDefaultCommand() {
+    public ShoulderPivot() {
         limitSwitchTop = new DigitalInput(ElectricalLayout.SENSOR_ARM_UP);
         limitSwitchBottom = new DigitalInput(ElectricalLayout.SENSOR_ARM_DOWN);
         shoulderMotor = new CANSparkMax(ElectricalLayout.MOTOR_CARGO_SHOULDER, MotorType.kBrushless);
@@ -59,6 +59,9 @@ public class ShoulderPivot extends Subsystem {
         conversion = 1 / 250.0;
 
         shoulderMotor.setSmartCurrentLimit(10);
+    }
+
+    public void initDefaultCommand() {
     }
 
     public void home() {
