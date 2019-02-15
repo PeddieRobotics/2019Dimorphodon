@@ -1,132 +1,84 @@
 
 package frc.robot;
-
-import com.revrobotics.CANEncoder;
-import com.revrobotics.CANPIDController;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.ControlType;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
+/**
+ * Add your docs here.
+ */
 public class CargoIntake extends Subsystem {
-
-  private static enum ModeType {
-    INTAKING, EJECTING, HOLDING, DISABLED
+  
+  private static enum Mode_Type{
+    INTAKING,EJECTING,HOLDING,DISABLED
   };
 
-  private ModeType mode = ModeType.DISABLED;
+  private Mode_Type mode = Mode_Type.DISABLED;
 
-  private CANSparkMax wrist;
-  private CANPIDController wpid;
-  private CANEncoder wEncoder;
+  TalonSRX rightClaw, leftClaw;
+  AnalogInput rightSensor, leftSensor;
 
-  public boolean isDown;
-  private double ejectSpeed;
-  private double speed;
+  double speed;
 
-  // private Solenoid clampS;
-  // private boolean clamping;
+  public CargoIntake(){
+    //initialize things here
+    rightClaw = new TalonSRX(8);
+    leftClaw = new TalonSRX(9);
 
-  private AnalogInput cargoSensorRight;
-  private AnalogInput cargoSensorLeft;
+    rightSensor = new AnalogInput(1);
+    leftSensor = new AnalogInput(2);
 
-  public void initDefaultCommand() {
-    wrist = new CANSparkMax(1, MotorType.kBrushless);
-    wpid = wrist.getPIDController();
-    wEncoder = wrist.getEncoder();
-    // clampS = new Solenoid(ElectricalLayout.SOLENOID_CARGO_CLAMP);
-
-    cargoSensorRight = new AnalogInput(ElectricalLayout.SENSOR_RIGHT_CLAW_INTAKE);
-    cargoSensorLeft = new AnalogInput(ElectricalLayout.SENSOR_LEFT_CLAW_INTAKE);
-
-    wpid.setP(0.0);
-    wpid.setI(0.0);
-    wpid.setD(0.0);
-    wpid.setFF(0.0);
-    wpid.setOutputRange(-1.0, 1, 0);
-
-    wrist.setSmartCurrentLimit(50);
   }
 
-  public void intake() {
-    mode = ModeType.INTAKING; // intakes
+  public boolean hasCargo(){
+    return (rightSensor.getVoltage() > 4.5 && leftSensor.getVoltage() > 4.5);
   }
 
-  public void ejectFast() {
-    ejectSpeed = 1.0;
-    mode = ModeType.EJECTING;
+  public void intake(){
+    mode = Mode_Type.INTAKING;
   }
 
-  public void ejectSlow() {
-    ejectSpeed = 0.5;
-    mode = ModeType.EJECTING;
+  public void hold() {
+    mode = Mode_Type.HOLDING;
   }
 
-  public void disable() {
-    mode = ModeType.DISABLED;
+  public void eject(){
+    mode = Mode_Type.EJECTING;    
   }
 
-  public void clawUp() {
-    isDown = false;
-    mode = ModeType.HOLDING;
+  public void disabled(){
+    mode = Mode_Type.DISABLED;
   }
 
-  public void clawDown() {
-    isDown = true;
-    mode = ModeType.INTAKING;
-  }
-
-  public boolean hasCargo() { // Will use if we have a cargo sensor
-    if(cargoSensorRight.getVoltage() < 4.5 && cargoSensorLeft.getVoltage() < 4.5){
-      return true;
-    }else return false;
-    // return (cargoSensor.getValue() > 3700 );
-  }
-
-  /*
-   * will use if we have a sensor public boolean hasCargo() { }
-   */
   public void update() {
-
     switch (mode) {
 
-    case INTAKING:
-
-      speed = 1.0;
-      // clamping = false;
-
-      
-      // if(hasCargo()) { mode = ModeType.HOLDING; }
-       
-
-      break;
-
-    case HOLDING:
-
-      speed = 0.1;
-      // clamping = true;
-      // DriverStation.reportError("holding", false);
-
-      break;
-
-    case EJECTING:
-      speed = -ejectSpeed;
-      // clamping = false;
-      break;
-
-    case DISABLED:
-      speed = 0;
-      // clamping = false;
-      break;
-
-    }
-
-    // clampS.set(clamping);
-    wpid.setReference(speed, ControlType.kVelocity);
-
+      case INTAKING:
+        speed = 0.5;
+         if(hasCargo()) { 
+           mode = Mode_Type.HOLDING; 
+          }
+        break;
+  
+      case HOLDING:
+        speed = 0.1;
+        break;
+  
+      case EJECTING:
+        speed = -0.5;
+        break;
+  
+      case DISABLED:
+        speed = 0;
+        break;
+      }
+      leftClaw.set(ControlMode.PercentOutput, speed);
+      rightClaw.set(ControlMode.PercentOutput, -speed);
   }
 
+  @Override
+  public void initDefaultCommand() {
+    
+  }
 }

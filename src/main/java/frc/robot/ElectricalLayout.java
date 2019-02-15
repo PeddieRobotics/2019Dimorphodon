@@ -56,8 +56,8 @@ public class ElectricalLayout {
   //sensors 
   public static final int SENSOR_HATCH_INTAKE = 0; 
 
-  public static final int SENSOR_RIGHT_CLAW_INTAKE = 1;
-  public static final int SENSOR_LEFT_CLAW_INTAKE = 2;
+  public static final int SENSOR_RIGHT_CLAW_INTAKE = 2;
+  public static final int SENSOR_LEFT_CLAW_INTAKE = 1;
 
   //check these too
   public static final int SENSOR_ARM_UP = 3;
