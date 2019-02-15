@@ -21,7 +21,7 @@ public class HatchIntake extends Subsystem {
   private boolean intaking; // Used to set lastTime
   private boolean ejecting; // Used to set lastTime
 
-  private boolean pushedOut;
+  public boolean pushedOut;
   private Solenoid pushOut; // pushes the entire mechanism out
 
   private Solenoid grabberS; // controls the middle claw grabber

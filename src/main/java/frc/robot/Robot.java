@@ -68,7 +68,7 @@ public class Robot extends TimedRobot {
       fIntake.hHold();
     } */
     else if (xbox.getRawButton(ElectricalLayout.xboxXButton)) {
-      hIntake.hLock();
+      hIntake.hold();
     }else if(xbox.getRawButton(ElectricalLayout.xboxStart)){//switch what state we are in 
       if(hIntake.pushedOut){
         hIntake.pullBack();
