@@ -80,43 +80,35 @@ public class HatchIntake extends Subsystem {
 //    updateCalculations();
     switch (mode) {
 
-    case INTAKING: // Holds grabber up to panel
-      if (!intaking) {
-        lastTime = Timer.getFPGATimestamp();
-      }
-      double waitTime = Timer.getFPGATimestamp();
-      intaking = true;
-      punching = false;
+      case INTAKING: // Holds panel up to grabber
       pushedOut = true;
-      if (waitTime - lastTime > 1 && hasHatch) {
-        grabbing = true;
-      } else {
-        grabbing = false;
-      }
-      break;
-
-    case HOLDING: // Holds grabber up to panel
-
-      grabbing = true; // middle grabber locks/holding on a hatch panel
+      grabbing = false;  // middle grabber open
       punching = false; // puncher back
-      break;
+          if ( hasHatch() == true ) {
+            mode = ModeType.HOLDING; //if it has been waiting for 200ms, it begins to hold
+          } else {
+            mode = ModeType.INTAKING; //continues to intake
+          }
+    break;
+
+    case HOLDING: // Holds panel up to grabber
+
+      grabbing = true;  // middle grabber locks/holding on a hatch panel
+      punching = false; // puncher back
+
+    break;
 
     case EJECTING: // Punches panel out
-      if (!ejecting) {
-        lastTime = Timer.getFPGATimestamp();
-      }
-      ejecting = true;
-      pushedOut = true; // middle grabber open/not holding hatch panel
 
-      double waitTimeEject = Timer.getFPGATimestamp(); // stamps current time
-      if (waitTimeEject - lastTime < 0.3) { // compares the time we started waiting to current time
-        mode = ModeType.HOLDING; // if it has been waiting for 200ms, it begins to hold
-      } else {
-        grabbing = false;
-        punching = true; // if not, it keeps waiting
-      }
+      grabbing = false; // middle grabber open/not holding hatch panel
+      punching = true;  // punches
 
-      break;
+      double waitTimeEject = Timer.getFPGATimestamp(); //stamps current time 
+        if (waitTimeEject - lastTime > 0.6) { //compares the time we started waiting to current time
+        	mode = ModeType.INTAKING; //if it has been waiting for 200ms, it begins to hold
+        } 
+
+    break;
 
     case DISABLED:
 
