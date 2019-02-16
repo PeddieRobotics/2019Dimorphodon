@@ -13,7 +13,7 @@ public class HatchIntake extends Subsystem {
   private double lastTime;
 
   private static enum ModeType {
-    INTAKING, HOLDING, EJECTING, DISABLED, ENABLED, CALCULATING
+    INTAKING, HOLDING, EJECTING, DISABLED
   };
 
   private ModeType mode = ModeType.DISABLED;
@@ -52,7 +52,7 @@ public class HatchIntake extends Subsystem {
   }
 
   public void pushOut() {
-    mode = ModeType.ENABLED;
+    mode = ModeType.INTAKING;
   }
 
   public void hold() {
@@ -77,7 +77,7 @@ public class HatchIntake extends Subsystem {
   }
 
   public void update() {
-    updateCalculations();
+//    updateCalculations();
     switch (mode) {
 
     case INTAKING: // Holds grabber up to panel
@@ -99,7 +99,6 @@ public class HatchIntake extends Subsystem {
 
       grabbing = true; // middle grabber locks/holding on a hatch panel
       punching = false; // puncher back
-      pushedOut = false;
       break;
 
     case EJECTING: // Punches panel out
@@ -127,18 +126,9 @@ public class HatchIntake extends Subsystem {
 
       break;
 
-    case ENABLED:
-
-      grabbing = false;
-      punching = false;
-      pushedOut = true; // pushes out
-
-      break;
-
     }
 
     pushOut.set(pushedOut);
-
     grabberS.set(grabbing);
     puncherS.set(punching);
 
