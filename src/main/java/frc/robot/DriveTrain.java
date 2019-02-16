@@ -26,7 +26,7 @@ public class DriveTrain {
   private CANEncoder leftEncoder, rightEncoder;
 
   private enum Mode_Type {
-    AUTO_PATHFINDER, AUTO_PATHFINDER_REVERSE, DRIVE_STRAIGHT, TURNING, TELEOP, TELEOP_REVERSE
+    DRIVE_STRAIGHT, TURNING, TELEOP
   };
 
   private Mode_Type mode = Mode_Type.TELEOP;
@@ -37,12 +37,8 @@ public class DriveTrain {
   private static final double DRIVE_KI = 0.000001;
   private static final double capSpeed = 0.5;
 
-  private PathfinderGenerator pathMaster;
-  private PathfinderFollower p_straight;
-  private PathfinderFollower p_in_use;
 
   // tracking
-  private double posX, posY; // feet
   private double lastDistance = 0d; // distance traveled the last time update() was called
 
   public DriveTrain() {
@@ -71,22 +67,7 @@ public class DriveTrain {
     turnPID = new PID(TURN_P, TURN_I, 0, 6);
     drivePID = new PID(DRIVE_KP, DRIVE_KI, 0, 6);
 
-    // initialize pathfinder
-    pathMaster = new PathfinderGenerator(false);
-
-    try {
-      DriverStation.reportError("Start generating paths with pathfinder", false);
-      // kp ki kd kv ka kturn
-      p_straight = new PathfinderFollower(pathMaster.Straight(), 0.1, 0, 0, 1.0 / 13.75, 1.0 / 75.0, -0.009);
-    } catch (Exception e) {
-      DriverStation.reportError("Pathfinder: error generate paths", false);
-    }
-  }
-
-  public void auto_straight() {
-    p_in_use = p_straight;
-    p_in_use.reset();
-    mode = Mode_Type.AUTO_PATHFINDER;
+ 
   }
 
   /**
@@ -114,7 +95,6 @@ public class DriveTrain {
   public void arcadeDriveReverse(double speed, double turn) {
     leftspeed = speed - turn;
     rightspeed = speed + turn;
-    mode = Mode_Type.TELEOP_REVERSE;
   }
 
   /**
@@ -146,23 +126,7 @@ public class DriveTrain {
     return (leftEncoder.getPosition()+rightEncoder.getPosition())/2.0;
   }
 
-  /**
-   * gets the x position of the drivetrain
-   * 
-   * @return the x position of the drivetrain in feet
-   */
-  public double getXPosition() {
-    return posX;
-  }
-
-  /**
-   * gets the y position of the drivetrain
-   * 
-   * @return the y position of the drivetrain in feet
-   */
-  public double getYPosition() {
-    return posY;
-  }
+ 
 
   /**
    * stop turnPID when robot is at correct angle
@@ -185,29 +149,11 @@ public class DriveTrain {
   public void update() {
     double distance = getAvgDistanceTraveled() - lastDistance;
 
-    posX += distance * Math.cos(Math.toRadians(getAngle()));
-    posY += distance * Math.sin(Math.toRadians(getAngle()));
-
     distance = getAvgDistanceTraveled();
 
     switch (mode) {
 
-    case AUTO_PATHFINDER:
-      double[] p = p_in_use.getOutput(rightEncoder.getPosition(), leftEncoder.getPosition(),
-          getAngle() * Math.PI / 180);
-
-      leftDriveMaster.set(p[1]);
-      rightDriveMaster.set(-p[0]);
-      break;
-
-    case AUTO_PATHFINDER_REVERSE:
-      double[] p_rev = p_in_use.getOutput(rightEncoder.getPosition(), leftEncoder.getPosition(),
-        getAngle() * Math.PI / 180);
-        
-      leftDriveMaster.set(-p_rev[1]);
-      rightDriveMaster.set(p_rev[0]);
-      break;
-
+    
     case DRIVE_STRAIGHT:
       leftspeed = drivePID.getOutput(leftEncoder.getPosition());
       rightspeed = drivePID.getOutput(rightEncoder.getPosition());
@@ -249,10 +195,6 @@ public class DriveTrain {
       rightDriveMaster.set(rightspeed);
       break;
 
-    case TELEOP_REVERSE:
-      leftDriveMaster.set(leftspeed);
-      rightDriveMaster.set(-rightspeed);
-      break;
     }
   }
 }
