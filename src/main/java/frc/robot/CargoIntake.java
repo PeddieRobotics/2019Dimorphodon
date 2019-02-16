@@ -48,9 +48,8 @@ public class CargoIntake extends Subsystem {
     mode = Mode_Type.HOLDING;
   }
 
-  public void eject( double eSpeed){
-    mode = Mode_Type.EJECTING;   
-    ejectSpeed = eSpeed; 
+  public void eject(){
+    mode = Mode_Type.EJECTING;
   }
 
   public void disabled(){
