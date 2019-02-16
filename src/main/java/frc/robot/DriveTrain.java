@@ -31,7 +31,7 @@ public class DriveTrain {
 
   private Mode_Type mode = Mode_Type.TELEOP;
 
-  public static final double TURN_P = 0.02549;
+  public static final double TURN_P = 0.00558;
   public static final double TURN_I = 0.0;
   private static final double DRIVE_KP = 0.081;
   private static final double DRIVE_KI = 0.000001;
