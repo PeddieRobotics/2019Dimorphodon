@@ -1,6 +1,7 @@
 
 package frc.robot;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.command.Subsystem;
@@ -20,6 +21,7 @@ public class CargoIntake extends Subsystem {
   AnalogInput rightSensor, leftSensor;
 
   double speed;
+  double ejectSpeed;
 
   public CargoIntake(){
     //initialize things here
@@ -43,8 +45,9 @@ public class CargoIntake extends Subsystem {
     mode = Mode_Type.HOLDING;
   }
 
-  public void eject(){
-    mode = Mode_Type.EJECTING;    
+  public void eject( double eSpeed){
+    mode = Mode_Type.EJECTING;   
+    ejectSpeed = eSpeed; 
   }
 
   public void disabled(){
@@ -66,7 +69,7 @@ public class CargoIntake extends Subsystem {
         break;
   
       case EJECTING:
-        speed = -0.5;
+        speed = ejectSpeed;
         break;
   
       case DISABLED:

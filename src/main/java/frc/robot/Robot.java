@@ -79,7 +79,7 @@ public class Robot extends TimedRobot {
 
     // right joystick controls - Will control cargo intake, turning
     if (xbox.getRawButton(ElectricalLayout.xboxRightBumper)){
-      cIntake.ejectFast();
+      cIntake.eject( -1.0 );
     } 
     /*else if (rightJoystick.getRisingEdge(4)) { don't know what this means 
       if (shoulder.getTargetPosition() == 0.0) {
@@ -94,7 +94,7 @@ public class Robot extends TimedRobot {
       cIntake.hasCargo();
     }else if(xbox.getRawButton(ElectricalLayout.xboxBButton)){
 
-      cIntake.ejectSlow();
+      cIntake.eject( -0.5 );
     }
 
   }
