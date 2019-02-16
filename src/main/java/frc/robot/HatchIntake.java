@@ -31,7 +31,8 @@ public class HatchIntake extends Subsystem {
   private boolean punching;
 
   public boolean hasHatch;
-  private AnalogInput hatchSensor;
+  private AnalogInput leftSensor;
+  private AnalogInput rightSensor;
   private double currentRawValue;
   private double averageRawValue;
   private double displayRawValue;
@@ -42,7 +43,9 @@ public class HatchIntake extends Subsystem {
     pushOut = new Solenoid(ElectricalLayout.SOLENOID_HATCH_DEPLOY);
     puncherS = new Solenoid(ElectricalLayout.SOLENOID_HATCH_PUNCHER);
     grabberS = new Solenoid(ElectricalLayout.SOLENOID_HATCH_GRABBER);
-    hatchSensor = new AnalogInput(ElectricalLayout.SENSOR_HATCH_INTAKE);
+    leftSensor = new AnalogInput(ElectricalLayout.SENSOR_LEFT_HATCH_INTAKE);
+    rightSensor = new AnalogInput(ElectricalLayout.SENSOR_RIGHT_HATCH_INTAKE);
+
   }
 
   public void initDefaultCommand() {
@@ -70,7 +73,7 @@ public class HatchIntake extends Subsystem {
 
   public boolean hasHatch() {
     mode = ModeType.INTAKING;
-    return (hatchSensor.getValue() < 3700);
+    return (leftSensor.getValue() < 3700 && rightSensor.getValue() < 3700);
   }
 
   public void update() {
@@ -145,9 +148,10 @@ public class HatchIntake extends Subsystem {
    * The point of this is to do an average of the values incase Of some random
    * spike
    */
+  //to delete
   public void updateCalculations() {
     if (loopsDone < numberOfLoops) {
-      currentRawValue = hatchSensor.getValue();
+      currentRawValue = leftSensor.getValue();
       averageRawValue += currentRawValue;
       loopsDone++;
     } else {
