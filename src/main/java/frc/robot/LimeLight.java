@@ -13,7 +13,7 @@ public class LimeLight {
     NetworkTableEntry tv;
     final double mountAngle = 0.0;
     final double targetHeight = 28.75;
-    final double mountHeight = 7.25;
+    final double mountHeight = 4.5;
     double yAngle = 0;
     double xAngle = 0;
 

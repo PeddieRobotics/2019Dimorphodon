@@ -84,6 +84,8 @@ public class DriveTrain {
   }
 
   public void auto_straight() {
+    leftDriveMaster.setRampRate(0.0);
+    rightDriveMaster.setRampRate(0.0);
     p_in_use = p_straight;
     p_in_use.reset();
     mode = Mode_Type.AUTO_PATHFINDER;
@@ -97,6 +99,8 @@ public class DriveTrain {
   }
 
   public void turnTo(double angle) {
+    leftDriveMaster.setRampRate(0.0);
+    rightDriveMaster.setRampRate(0.0);
     turnPID.set(angle);
     mode = Mode_Type.TURNING;
   }
@@ -106,12 +110,16 @@ public class DriveTrain {
   }
 
   public void arcadeDrive(double speed, double turn) {
+    leftDriveMaster.setRampRate(0.25);
+    rightDriveMaster.setRampRate(0.25);
     leftspeed = speed - turn;
     rightspeed = speed + turn;
     mode = Mode_Type.TELEOP;
   }
 
   public void arcadeDriveReverse(double speed, double turn) {
+    leftDriveMaster.setRampRate(0.25);
+    rightDriveMaster.setRampRate(0.25);
     leftspeed = speed - turn;
     rightspeed = speed + turn;
     mode = Mode_Type.TELEOP_REVERSE;
@@ -143,7 +151,7 @@ public class DriveTrain {
    * @return the average distance traveled in feet from left and right encoders
    */
   public double getAvgDistanceTraveled() {
-    return (leftEncoder.getPosition()+rightEncoder.getPosition())/2.0;
+    return (leftEncoder.getPosition() + rightEncoder.getPosition()) / 2.0;
   }
 
   /**
@@ -179,7 +187,7 @@ public class DriveTrain {
    * @return whether PID is at correct distance
    */
   public boolean atDistance() {
-    return (Math.abs(drivePID.getSetpoint() - getAvgDistanceTraveled()) <=2);
+    return (Math.abs(drivePID.getSetpoint() - getAvgDistanceTraveled()) <= 2);
   }
 
   public void update() {
@@ -202,8 +210,8 @@ public class DriveTrain {
 
     case AUTO_PATHFINDER_REVERSE:
       double[] p_rev = p_in_use.getOutput(rightEncoder.getPosition(), leftEncoder.getPosition(),
-        getAngle() * Math.PI / 180);
-        
+          getAngle() * Math.PI / 180);
+
       leftDriveMaster.set(-p_rev[1]);
       rightDriveMaster.set(p_rev[0]);
       break;
