@@ -98,32 +98,32 @@ public class Robot extends TimedRobot {
         cIntake.eject();
       } else if (xbox.getRisingEdge(ElectricalLayout.xboxLeftBumper)) {
         cIntake.disabled(); 
-      }
-    }
-    if (xbox.getRisingEdge(ElectricalLayout.xboxStart)) {
+      } else if (xbox.getRisingEdge(ElectricalLayout.xboxStart)) {
       shoulder.setShoulder(0);
-    }
-    
-    else if (xbox.getRisingEdge(ElectricalLayout.xboxXButton)) { //X
+      }
+      
+      else if (xbox.getRisingEdge(ElectricalLayout.xboxXButton)) { //X
       shoulder.setShoulder(25);
       cIntake.ejectSpeed = -1.0;
-    } 
-    
-    else if (xbox.getRisingEdge(ElectricalLayout.xboxYButton)) { //Y
+      } 
+      
+      else if (xbox.getRisingEdge(ElectricalLayout.xboxYButton)) { //Y
       shoulder.setShoulder(-20);
       cIntake.ejectSpeed = -0.5;
-    } 
+      } 
     
-    else if (xbox.getRisingEdge(ElectricalLayout.xboxBButton)) { //B
+      else if (xbox.getRisingEdge(ElectricalLayout.xboxBButton)) { //B
       shoulder.setShoulder(70);
       cIntake.ejectSpeed = -0.5;
-    } 
-    
-    else if (xbox.getRisingEdge(ElectricalLayout.xboxAButton)) { //A
+      } 
+      
+      else if (xbox.getRisingEdge(ElectricalLayout.xboxAButton)) { //A
       shoulder.setShoulder(105);
       cIntake.ejectSpeed = -0.5;
-    } 
-    /*else if (rightJoystick.getRisingEdge(4)) { don't know what this means 
+      } 
+    }
+    
+      /*else if (rightJoystick.getRisingEdge(4)) { don't know what this means 
       if (shoulder.getTargetPosition() == 0.0) {
         // Move up
       } else {
