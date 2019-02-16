@@ -2,6 +2,8 @@ package frc.robot;
 
 import frc.robot.framework.Looper;
 import frc.robot.lib.BetterJoystick;
+import frc.robot.lib.BetterXbox;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 
@@ -11,23 +13,26 @@ public class Robot extends TimedRobot {
   CargoIntake cIntake;
   HatchIntake hIntake;
   FloorIntake fIntake;
-  ShoulderPivot shoulder;
+  ShoulderPivot shoulderP;
+  Shoulder shoulder;
   Looper loop;
   LimeLight lime;
   Vision vision;
-  BetterJoystick xbox;
+  BetterXbox xbox;
+  //BetterJoystick leftJoystick, rightJoystick;
+
   boolean isDown = false;
   boolean frontSide = true; // Toggles "front" of robot: true = cargo side, false = hatch side
 
-  BetterJoystick leftJoystick, rightJoystick;
-  double xDeadBand=0.10;
-  double yDeadBand = 0.10;
+  double speedDeadBand=0.05;
+  double turnDeadBand = 0.05;
+
   public void robotInit() {
-    xbox = new BetterJoystick(0);
+    xbox = new BetterXbox(0);
     drivetrain = new DriveTrain();
     cIntake = new CargoIntake();
     hIntake = new HatchIntake();
-    shoulder = new ShoulderPivot();
+    shoulderP = new ShoulderPivot();
     lime = new LimeLight();
     vision = new Vision();
 
@@ -35,6 +40,7 @@ public class Robot extends TimedRobot {
     loop.add(drivetrain::update);
     loop.add(cIntake::update);
     loop.add(hIntake::update);
+    loop.add(shoulderP::update);
     loop.add(shoulder::update);
     loop.add(lime::update);
     loop.start();
@@ -55,31 +61,67 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     updateDash();
 
-    
-    //add drive train code here 
+    // double speed = Math.pow(leftJoystick.getRawAxis(1), 3);
+    // double turn = Math.pow(rightJoystick.getRawAxis(0), 3);
+    // double speed = leftJoystick.getRawAxis(1);
+    // double turn = rightJoystick.getRawAxis(0);
 
-    // left joystick controls - Will control hatch intake, speed
-    if (xbox.getRawButton(ElectricalLayout.xboxLeftBumper)){
-      hIntake.pushOut();
-    }/* else if (leftJoystick.getRisingEdge(2)) { no floor intake as of now
-      fIntake.hIntake();
-    } 
-    else if (leftJoystick.getRisingEdge(3)) {
-      fIntake.hHold();
-    } */
-    else if (xbox.getRawButton(ElectricalLayout.xboxXButton)) {
-      hIntake.hold();
-    }else if(xbox.getRawButton(ElectricalLayout.xboxStart)){//switch what state we are in 
-      if(hIntake.pushedOut){
-        hIntake.pullBack();
-      }else{
+    double fspeed = xbox.getRawAxis(2)-xbox.getRawAxis(3);
+    double fturn = xbox.getRawAxis(0);
+
+    if(Math.abs(fspeed) < speedDeadBand){
+      fspeed=0;
+    }
+    if(Math.abs(fturn) < turnDeadBand){
+      fturn=0;
+    }
+    drivetrain.arcadeDrive(fspeed,fturn);//cap speed in driveTrain
+
+    // if(leftJoystick.getRisingEdge(2)) {
+    //   hatchSide = !hatchSide;
+    // }
+
+    if (!frontSide) {
+      if (xbox.getRisingEdge(ElectricalLayout.xboxLeftTrigger)) {
+        hIntake.eject();
+      } else if (xbox.getRisingEdge(ElectricalLayout.xboxRightTrigger)) {
+         hIntake.hold();
+      } else if (xbox.getRisingEdge(ElectricalLayout.xboxStart)) {
         hIntake.pushOut();
+      } else if (xbox.getRisingEdge(ElectricalLayout.xboxBack)) {
+        hIntake.pullBack();
+      }
+    } else {
+      if (xbox.getRisingEdge(ElectricalLayout.xboxLeftTrigger)) {
+        cIntake.intake();
+      } else if(xbox.getRisingEdge(ElectricalLayout.xboxRightTrigger))  { 
+        cIntake.eject();
+      } else if (xbox.getRisingEdge(ElectricalLayout.xboxLeftBumper)) {
+        cIntake.disabled(); 
       }
     }
-
-    // right joystick controls - Will control cargo intake, turning
-    if (xbox.getRawButton(ElectricalLayout.xboxRightBumper)){
-      cIntake.ejectFast();
+    if (xbox.getRisingEdge(ElectricalLayout.xboxStart)) {
+      shoulder.setShoulder(0);
+    }
+    
+    else if (xbox.getRisingEdge(ElectricalLayout.xboxXButton)) { //X
+      shoulder.setShoulder(25);
+      cIntake.ejectSpeed = -1.0;
+    } 
+    
+    else if (xbox.getRisingEdge(ElectricalLayout.xboxYButton)) { //Y
+      shoulder.setShoulder(-20);
+      cIntake.ejectSpeed = -0.5;
+    } 
+    
+    else if (xbox.getRisingEdge(ElectricalLayout.xboxBButton)) { //B
+      shoulder.setShoulder(70);
+      cIntake.ejectSpeed = -0.5;
+    } 
+    
+    else if (xbox.getRisingEdge(ElectricalLayout.xboxAButton)) { //A
+      shoulder.setShoulder(105);
+      cIntake.ejectSpeed = -0.5;
     } 
     /*else if (rightJoystick.getRisingEdge(4)) { don't know what this means 
       if (shoulder.getTargetPosition() == 0.0) {
@@ -88,14 +130,6 @@ public class Robot extends TimedRobot {
         // Move down
       }
     }*/
-     else if (xbox.getRawButton(ElectricalLayout.xboxAButton)) {
-      cIntake.intake();
-    }else if(xbox.getRawButton(ElectricalLayout.xboxYButton)){
-      cIntake.hasCargo();
-    }else if(xbox.getRawButton(ElectricalLayout.xboxBButton)){
-
-      cIntake.ejectSlow();
-    }
 
   }
 
@@ -103,9 +137,9 @@ public class Robot extends TimedRobot {
   }
 
   public void updateDash() {
-    SmartDashboard.putBoolean("Arm Up", shoulder.getLimitSwitchTop());
-    SmartDashboard.putBoolean("Arm Down", shoulder.getLimitSwitchBottom());
-    SmartDashboard.putBoolean("Shoulder Brake", shoulder.getBrake());
+    SmartDashboard.putBoolean("Arm Up", shoulderP.getLimitSwitchTop());
+    SmartDashboard.putBoolean("Arm Down", shoulderP.getLimitSwitchBottom());
+    SmartDashboard.putBoolean("Shoulder Brake", shoulderP.getBrake());
     SmartDashboard.putBoolean("Hatch", hIntake.hasHatch());
     SmartDashboard.putBoolean("Cargo", cIntake.hasCargo());
     // Output Drive Dist Left

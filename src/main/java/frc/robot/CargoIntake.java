@@ -1,14 +1,18 @@
 
 package frc.robot;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 /**
  * Add your docs here.
  */
 public class CargoIntake extends Subsystem {
+
+  private double lastTime;
   
   private static enum Mode_Type{
     INTAKING,EJECTING,HOLDING,DISABLED
@@ -20,6 +24,7 @@ public class CargoIntake extends Subsystem {
   AnalogInput rightSensor, leftSensor;
 
   double speed;
+  double ejectSpeed;
 
   public CargoIntake(){
     //initialize things here
@@ -32,7 +37,7 @@ public class CargoIntake extends Subsystem {
   }
 
   public boolean hasCargo(){
-    return (rightSensor.getVoltage() > 4.5 && leftSensor.getVoltage() > 4.5);
+    return (rightSensor.getVoltage() < 4.5 && leftSensor.getVoltage() < 4.5);
   }
 
   public void intake(){
@@ -44,7 +49,7 @@ public class CargoIntake extends Subsystem {
   }
 
   public void eject(){
-    mode = Mode_Type.EJECTING;    
+    mode = Mode_Type.EJECTING;
   }
 
   public void disabled(){
@@ -66,7 +71,12 @@ public class CargoIntake extends Subsystem {
         break;
   
       case EJECTING:
-        speed = -0.5;
+        speed = ejectSpeed;
+
+        double waitTimeEject = Timer.getFPGATimestamp();
+        if (waitTimeEject - lastTime > 0.6) { 
+        	mode = Mode_Type.INTAKING;
+        } 
         break;
   
       case DISABLED:
