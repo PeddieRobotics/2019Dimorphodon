@@ -76,8 +76,8 @@ public class DriveTrain {
   }
 
   public void turnTo(double angle) {
-    leftDriveMaster.setRampRate(0.0);
-    rightDriveMaster.setRampRate(0.0);
+    leftDriveMaster.setOpenLoopRampRate(0.0);
+    rightDriveMaster.setOpenLoopRampRate(0.0);
     turnPID.set(angle);
     mode = Mode_Type.TURNING;
   }
@@ -87,18 +87,11 @@ public class DriveTrain {
   }
 
   public void arcadeDrive(double speed, double turn) {
-    leftDriveMaster.setRampRate(0.25);
-    rightDriveMaster.setRampRate(0.25);
+    leftDriveMaster.setOpenLoopRampRate(0.25);
+    rightDriveMaster.setOpenLoopRampRate(0.25);
     leftspeed = speed - turn;
     rightspeed = speed + turn;
     mode = Mode_Type.TELEOP;
-  }
-
-  public void arcadeDriveReverse(double speed, double turn) {
-    leftDriveMaster.setRampRate(0.25);
-    rightDriveMaster.setRampRate(0.25);
-    leftspeed = speed - turn;
-    rightspeed = speed + turn;
   }
 
   /**
