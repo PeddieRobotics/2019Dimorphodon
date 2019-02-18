@@ -43,7 +43,7 @@ public class Blinkin {
     blinkinCargo.set(-0.05);
   }
 
-  public void fireLarge() {  //lime rn
+  public void fireLarge() { 
     blinkinHatch.set(-0.57);
     blinkinCargo.set(-0.57);
   }
