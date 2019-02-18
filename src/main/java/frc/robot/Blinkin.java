@@ -14,8 +14,8 @@ public class Blinkin {
     blinkinHatch = new Spark(0);
     blinkinCargo = new Spark(1);
 
-    hatchIntake = new HatchIntake();
-    cargoIntake = new CargoIntake();
+//    hatchIntake = new HatchIntake();
+//    cargoIntake = new CargoIntake();
   }
   
   /**

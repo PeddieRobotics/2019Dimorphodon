@@ -8,6 +8,8 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 public class Shoulder extends Subsystem {
@@ -15,6 +17,15 @@ public class Shoulder extends Subsystem {
   private CANSparkMax spark;
   private CANPIDController pidController;
   private CANEncoder encoder;
+  private Solenoid brake;
+
+  private enum Mode_Type {
+    MOVING, BRAKING, DISENGAGING, DISABLED
+  };
+  private Mode_Type mode = Mode_Type.DISABLED;
+
+  private boolean brakeOn;
+  private double moveTime;
 
   private double kP = 0.02;
   private double kI = 0.0;
@@ -33,7 +44,7 @@ public class Shoulder extends Subsystem {
   private double distancePerPulse = 0.715;
 
   public Shoulder() {
-    spark = new CANSparkMax(7, MotorType.kBrushless);
+    spark = new CANSparkMax(ElectricalLayout.MOTOR_CARGO_SHOULDER, MotorType.kBrushless);
     spark.restoreFactoryDefaults();
     pidController = spark.getPIDController();
     encoder = spark.getEncoder();
@@ -51,6 +62,8 @@ public class Shoulder extends Subsystem {
 
     spark.setIdleMode(IdleMode.kCoast);
 
+    brake = new Solenoid(ElectricalLayout.SOLENOID_SHOULDER_BRAKE);
+
     // int smartMotionSlot = 0;
     // pidController.setSmartMotionMaxVelocity(maxVel, smartMotionSlot);
     // pidController.setSmartMotionMinOutputVelocity(minVel, smartMotionSlot);
@@ -61,13 +74,41 @@ public class Shoulder extends Subsystem {
 
   public void setShoulder(double setpoint) {
     setPoint = setpoint * distancePerPulse;
+    moveTime = Timer.getFPGATimestamp();
+    mode = Mode_Type.DISENGAGING;
+  }
+
+  public boolean atTarget() {
+    return ((encoder.getPosition() - setPoint < 2.0) && (encoder.getVelocity() < 2.0));
   }
 
   public void update() {
-    pidController.setReference(setPoint, ControlType.kPosition);
+    switch (mode) {
+      case MOVING:
+      brakeOn = false;
+      pidController.setReference(setPoint, ControlType.kPosition);
+      if(atTarget()) {
+        mode = Mode_Type.BRAKING;
+      }
+      break;
+      case DISENGAGING:
+      brakeOn = false;
+      if(Timer.getFPGATimestamp() - moveTime > 0.1) {
+        mode = Mode_Type.MOVING;
+      }
+      break;
+      case BRAKING:
+      brakeOn = true;
+      spark.set(0);
+      break;
+      case DISABLED:
+      brakeOn = false;
+      spark.set(0);
+      break;
+    }
 
-    DriverStation.reportError(" " + encoder.getPosition() / distancePerPulse, false);
-    DriverStation.reportError(" " + setPoint, false);
+//    DriverStation.reportError(" " + encoder.getPosition() / distancePerPulse, false);
+//    DriverStation.reportError(" " + setPoint, false);
   }
 
   public void initDefaultCommand() {

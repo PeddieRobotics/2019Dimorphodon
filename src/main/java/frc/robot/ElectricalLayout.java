@@ -11,16 +11,14 @@ public class ElectricalLayout {
   public static final int MOTOR_DRIVE_RIGHT_FOLLOWER1 = 5;
   public static final int MOTOR_DRIVE_RIGHT_FOLLOWER2 = 6;
   public static final int MOTOR_CARGO_SHOULDER = 7;
-  public static final int MOTOR_CARGO_CLAW = 8;
+  public static final int MOTOR_CARGO_LEFT_CLAW = 8;
+  public static final int MOTOR_CARGO_RIGHT_CLAW = 9;
 
   //solenoids
-  public static final int SOLENOID_FLOOR_PIVOT = 0;  //brings intake up/down
-  public static final int SOLENOID_FLOOR_CLAMP = 1;   //clamps intake
-  public static final int SOLENOID_HATCH_PUNCHER = 2; //puncher
-  public static final int SOLENOID_HATCH_GRABBER = 3; //middle claw locking mechanism
-  public static final int SOLENOID_HATCH_DEPLOY = 4;  //pushes the whole thing out
-  public static final int SOLENOID_CARGO_CLAMP = 5;
-  public static final int SOLENOID_SHOULDER_BREAK = 6; //check what port this actually is
+  public static final int SOLENOID_HATCH_PUNCHER = 1; //puncher
+  public static final int SOLENOID_HATCH_GRABBER = 2; //middle claw locking mechanism
+  public static final int SOLENOID_HATCH_DEPLOY = 3;  //pushes the whole thing out
+  public static final int SOLENOID_SHOULDER_BRAKE = 0; //check what port this actually is
 
   
   //xbox "axes", anything that has a value that can change 
@@ -53,16 +51,16 @@ public class ElectricalLayout {
   public static final int xBoxMenuRightUp = 0;
 
 
-  //sensors 
-  public static final int SENSOR_RIGHT_HATCH_INTAKE = 0; 
-  public static final int SENSOR_LEFT_HATCH_INTAKE = 1;
+  //analog sensors 
+  public static final int SENSOR_RIGHT_HATCH_INTAKE = 2; 
+  public static final int SENSOR_LEFT_HATCH_INTAKE = 3;
 
-  public static final int SENSOR_RIGHT_CLAW_INTAKE = 2;
-  public static final int SENSOR_LEFT_CLAW_INTAKE = 3;
+  public static final int SENSOR_RIGHT_CLAW_INTAKE = 1;
+  public static final int SENSOR_LEFT_CLAW_INTAKE = 0;
 
   //check these too
   public static final int SENSOR_ARM_UP = 3;
   public static final int SENSOR_ARM_DOWN = 4;
-  public static final int SENSOR_ARM_BREAK = 5;
+  public static final int SENSOR_ARM_BRAKE = 5;
 
 }

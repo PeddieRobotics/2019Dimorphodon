@@ -28,11 +28,11 @@ public class CargoIntake extends Subsystem {
 
   public CargoIntake(){
     //initialize things here
-    rightClaw = new TalonSRX(8);
-    leftClaw = new TalonSRX(9);
+    rightClaw = new TalonSRX(ElectricalLayout.MOTOR_CARGO_LEFT_CLAW);
+    leftClaw = new TalonSRX(ElectricalLayout.MOTOR_CARGO_RIGHT_CLAW);
 
-    rightSensor = new AnalogInput(1);
-    leftSensor = new AnalogInput(2);
+    rightSensor = new AnalogInput(ElectricalLayout.SENSOR_LEFT_CLAW_INTAKE);
+    leftSensor = new AnalogInput(ElectricalLayout.SENSOR_RIGHT_CLAW_INTAKE);
 
   }
 

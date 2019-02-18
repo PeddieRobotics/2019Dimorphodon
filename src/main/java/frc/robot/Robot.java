@@ -12,8 +12,6 @@ public class Robot extends TimedRobot {
   DriveTrain drivetrain;
   CargoIntake cIntake;
   HatchIntake hIntake;
-  FloorIntake fIntake;
-  ShoulderPivot shoulderP;
   Shoulder shoulder;
   Looper loop;
   LimeLight lime;
@@ -32,7 +30,6 @@ public class Robot extends TimedRobot {
     drivetrain = new DriveTrain();
     cIntake = new CargoIntake();
     hIntake = new HatchIntake();
-    shoulderP = new ShoulderPivot();
     lime = new LimeLight();
     vision = new Vision();
 
@@ -40,7 +37,6 @@ public class Robot extends TimedRobot {
     loop.add(drivetrain::update);
     loop.add(cIntake::update);
     loop.add(hIntake::update);
-    loop.add(shoulderP::update);
     loop.add(shoulder::update);
     loop.add(lime::update);
     loop.start();
@@ -59,7 +55,6 @@ public class Robot extends TimedRobot {
   }
 
   public void teleopPeriodic() {
-    updateDash();
 
     // double speed = Math.pow(leftJoystick.getRawAxis(1), 3);
     // double turn = Math.pow(rightJoystick.getRawAxis(0), 3);
@@ -137,9 +132,6 @@ public class Robot extends TimedRobot {
   }
 
   public void updateDash() {
-    SmartDashboard.putBoolean("Arm Up", shoulderP.getLimitSwitchTop());
-    SmartDashboard.putBoolean("Arm Down", shoulderP.getLimitSwitchBottom());
-    SmartDashboard.putBoolean("Shoulder Brake", shoulderP.getBrake());
     SmartDashboard.putBoolean("Hatch", hIntake.hasHatch());
     SmartDashboard.putBoolean("Cargo", cIntake.hasCargo());
     // Output Drive Dist Left
