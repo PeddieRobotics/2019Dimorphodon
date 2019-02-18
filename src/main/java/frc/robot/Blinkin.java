@@ -19,13 +19,49 @@ public class Blinkin {
   }
   
   /**
-   * Hatch front, has hatch: "Rainbow twinkles"
-   * Hatch front, does not have hatch: Solid gold
-   * Cargo front, has cargo: "Fire, Large"           <--  listen i really just want to know what this does im curious
-   * Cargo front, does not have cargo: Solid red
+   * STROBE BLUE:-0.08
+   *      strobe is good, it blinks
+   * FIRE, LARGE: -0.57
+   *      flashes rainbow colors. Didn't set the robot on fire as hoped,
+   *      but functioned objectively well
+   *      "Rainbow with Glitter" does the exact same thing, but with a less
+   *       exciting name
+   * BPM, LAVA PALETTE: -0.63
+   *      Make sure no one has epilepsy before turning on tho???
    * 
-   * Back of the robot will always be solid white.
+   * 
+   * 
+   * BAD ONES:
+   *  CHASE - does absolutely nothing, besides un-saturating the color
+   *  SPARKLE - no discernable effect
+   *  LARSON SCANNER - just stupid
+   * 
   */
+
+  public void strobeBlue() {
+    blinkinHatch.set(-0.05);
+    blinkinCargo.set(-0.05);
+  }
+
+  public void fireLarge() {  //lime rn
+    blinkinHatch.set(-0.57);
+    blinkinCargo.set(-0.57);
+  }
+
+  public void seizure() {
+    blinkinHatch.set(-0.63);
+    blinkinCargo.set(-0.63);
+  }
+  
+  public void blueSeizure() {
+    blinkinHatch.set(-0.65);
+    blinkinCargo.set(-0.65);
+  }
+
+  public void calmRainbow() {
+    blinkinHatch.set(-0.55);
+    blinkinCargo.set(-0.55);
+  }
 		
 	public void hatchFront() {
     if( hatchIntake.hasHatch() == true ) {
