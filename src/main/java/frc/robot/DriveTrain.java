@@ -93,6 +93,37 @@ public class DriveTrain {
     rightspeed = speed + turn;
     mode = Mode_Type.TELEOP;
   }
+  
+    public void betterCurvatureDrive(double xSpeed, double zRotation, boolean canTurn){
+                
+            if(canTurn == true){
+                
+                rightSpeed = (xSpeed + zRotation);
+                leftSpeed = -(xSpeed - zRotation);
+            }
+            else{
+                rightSpeed = (xSpeed);
+                leftSpeed = (-xSpeed);
+            }
+
+        /*if(canTurn == true){
+            rightSpeed = 0.5*(xSpeed + zRotation);
+            leftSpeed = -0.5*(xSpeed - zRotation);
+        }
+        else{
+            rightSpeed = (xSpeed);
+            leftSpeed = -(xSpeed);
+        }*/
+        leftDriveMaster.set(ControlMode.PercentOutput, leftSpeed);
+		    rightDriveMaster.set(ControlMode.PercentOutput, rightSpeed);
+		    leftDriveFollower1.set(ControlMode.PercentOutput, leftSpeed);
+		    rightDriveFollower1.set(ControlMode.PercentOutput, rightSpeed);
+		    leftDriveFollower2.set(ControlMode.PercentOutput, leftSpeed);
+		    rightDriveFollower2.set(ControlMode.PercentOutput, rightSpeed);
+        DriverStation.reportError("Right Speed: " + rightSpeed, false);
+        DriverStation.reportError("Left Speed: " + leftSpeed, false);
+    }
+
 
   /**
    * @return the average velocity in feet per second from the left and right
