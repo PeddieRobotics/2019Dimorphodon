@@ -12,8 +12,6 @@ public class Robot extends TimedRobot {
   DriveTrain drivetrain;
   CargoIntake cIntake;
   HatchIntake hIntake;
-  FloorIntake fIntake;
-  ShoulderPivot shoulderP;
   Shoulder shoulder;
   Looper loop;
   LimeLight lime;
@@ -32,7 +30,6 @@ public class Robot extends TimedRobot {
     drivetrain = new DriveTrain();
     cIntake = new CargoIntake();
     hIntake = new HatchIntake();
-    shoulderP = new ShoulderPivot();
     lime = new LimeLight();
     vision = new Vision();
     shoulder = new Shoulder();
@@ -41,7 +38,6 @@ public class Robot extends TimedRobot {
     loop.add(drivetrain::update);
     loop.add(cIntake::update);
     loop.add(hIntake::update);
-    loop.add(shoulderP::update);
     loop.add(shoulder::update);
     loop.add(lime::update);
     loop.start();
@@ -60,7 +56,6 @@ public class Robot extends TimedRobot {
   }
 
   public void teleopPeriodic() {
-    updateDash();
 
     // double speed = Math.pow(leftJoystick.getRawAxis(1), 3);
     // double turn = Math.pow(rightJoystick.getRawAxis(0), 3);
@@ -99,32 +94,32 @@ public class Robot extends TimedRobot {
         cIntake.eject();
       } else if (xbox.getRisingEdge(ElectricalLayout.xboxLeftBumper)) {
         cIntake.disabled(); 
-      }
-    }
-    if (xbox.getRisingEdge(ElectricalLayout.xboxStart)) {
+      } else if (xbox.getRisingEdge(ElectricalLayout.xboxStart)) {
       shoulder.setShoulder(0);
-    }
-    
-    else if (xbox.getRisingEdge(ElectricalLayout.xboxXButton)) { //X
+      }
+      
+      else if (xbox.getRisingEdge(ElectricalLayout.xboxXButton)) { //X
       shoulder.setShoulder(25);
       cIntake.ejectSpeed = -1.0;
-    } 
-    
-    else if (xbox.getRisingEdge(ElectricalLayout.xboxYButton)) { //Y
+      } 
+      
+      else if (xbox.getRisingEdge(ElectricalLayout.xboxYButton)) { //Y
       shoulder.setShoulder(-20);
       cIntake.ejectSpeed = -0.5;
-    } 
+      } 
     
-    else if (xbox.getRisingEdge(ElectricalLayout.xboxBButton)) { //B
+      else if (xbox.getRisingEdge(ElectricalLayout.xboxBButton)) { //B
       shoulder.setShoulder(70);
       cIntake.ejectSpeed = -0.5;
-    } 
-    
-    else if (xbox.getRisingEdge(ElectricalLayout.xboxAButton)) { //A
+      } 
+      
+      else if (xbox.getRisingEdge(ElectricalLayout.xboxAButton)) { //A
       shoulder.setShoulder(105);
       cIntake.ejectSpeed = -0.5;
-    } 
-    /*else if (rightJoystick.getRisingEdge(4)) { don't know what this means 
+      } 
+    }
+    
+      /*else if (rightJoystick.getRisingEdge(4)) { don't know what this means 
       if (shoulder.getTargetPosition() == 0.0) {
         // Move up
       } else {
@@ -138,9 +133,6 @@ public class Robot extends TimedRobot {
   }
 
   public void updateDash() {
-    SmartDashboard.putBoolean("Arm Up", shoulderP.getLimitSwitchTop());
-    SmartDashboard.putBoolean("Arm Down", shoulderP.getLimitSwitchBottom());
-    SmartDashboard.putBoolean("Shoulder Brake", shoulderP.getBrake());
     SmartDashboard.putBoolean("Hatch", hIntake.hasHatch());
     SmartDashboard.putBoolean("Cargo", cIntake.hasCargo());
     // Output Drive Dist Left

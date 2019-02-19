@@ -13,7 +13,7 @@ public class HatchIntake extends Subsystem {
   private double lastTime;
 
   private static enum ModeType {
-    INTAKING, HOLDING, EJECTING, DISABLED, ENABLED, CALCULATING
+    INTAKING, HOLDING, EJECTING, DISABLED
   };
 
   private ModeType mode = ModeType.DISABLED;
@@ -31,7 +31,8 @@ public class HatchIntake extends Subsystem {
   private boolean punching;
 
   public boolean hasHatch;
-  private AnalogInput hatchSensor;
+  private AnalogInput leftSensor;
+  private AnalogInput rightSensor;
   private double currentRawValue;
   private double averageRawValue;
   private double displayRawValue;
@@ -42,14 +43,16 @@ public class HatchIntake extends Subsystem {
     pushOut = new Solenoid(ElectricalLayout.SOLENOID_HATCH_DEPLOY);
     puncherS = new Solenoid(ElectricalLayout.SOLENOID_HATCH_PUNCHER);
     grabberS = new Solenoid(ElectricalLayout.SOLENOID_HATCH_GRABBER);
-    hatchSensor = new AnalogInput(ElectricalLayout.SENSOR_HATCH_INTAKE);
+    leftSensor = new AnalogInput(ElectricalLayout.SENSOR_LEFT_HATCH_INTAKE);
+    rightSensor = new AnalogInput(ElectricalLayout.SENSOR_RIGHT_HATCH_INTAKE);
+
   }
 
   public void initDefaultCommand() {
   }
 
   public void pushOut() {
-    mode = ModeType.ENABLED;
+    mode = ModeType.INTAKING;
   }
 
   public void hold() {
@@ -70,51 +73,42 @@ public class HatchIntake extends Subsystem {
 
   public boolean hasHatch() {
     mode = ModeType.INTAKING;
-    return (hatchSensor.getValue() < 3700);
+    return (leftSensor.getValue() < 3700 && rightSensor.getValue() < 3700);
   }
 
   public void update() {
-    updateCalculations();
+//    updateCalculations();
     switch (mode) {
 
-    case INTAKING: // Holds grabber up to panel
-      if (!intaking) {
-        lastTime = Timer.getFPGATimestamp();
-      }
-      double waitTime = Timer.getFPGATimestamp();
-      intaking = true;
-      punching = false;
+      case INTAKING: // Holds panel up to grabber
       pushedOut = true;
-      if (waitTime - lastTime > 1 && hasHatch) {
-        grabbing = true;
-      } else {
-        grabbing = false;
-      }
-      break;
-
-    case HOLDING: // Holds grabber up to panel
-
-      grabbing = true; // middle grabber locks/holding on a hatch panel
+      grabbing = false;  // middle grabber open
       punching = false; // puncher back
-      pushedOut = false;
-      break;
+          if ( hasHatch() == true ) {
+            mode = ModeType.HOLDING; //if it has been waiting for 200ms, it begins to hold
+          } else {
+            mode = ModeType.INTAKING; //continues to intake
+          }
+    break;
+
+    case HOLDING: // Holds panel up to grabber
+
+      grabbing = true;  // middle grabber locks/holding on a hatch panel
+      punching = false; // puncher back
+
+    break;
 
     case EJECTING: // Punches panel out
-      if (!ejecting) {
-        lastTime = Timer.getFPGATimestamp();
-      }
-      ejecting = true;
-      pushedOut = true; // middle grabber open/not holding hatch panel
 
-      double waitTimeEject = Timer.getFPGATimestamp(); // stamps current time
-      if (waitTimeEject - lastTime < 0.3) { // compares the time we started waiting to current time
-        mode = ModeType.HOLDING; // if it has been waiting for 200ms, it begins to hold
-      } else {
-        grabbing = false;
-        punching = true; // if not, it keeps waiting
-      }
+      grabbing = false; // middle grabber open/not holding hatch panel
+      punching = true;  // punches
 
-      break;
+      double waitTimeEject = Timer.getFPGATimestamp(); //stamps current time 
+        if (waitTimeEject - lastTime > 0.6) { //compares the time we started waiting to current time
+        	mode = ModeType.INTAKING; //if it has been waiting for 200ms, it begins to hold
+        } 
+
+    break;
 
     case DISABLED:
 
@@ -124,18 +118,9 @@ public class HatchIntake extends Subsystem {
 
       break;
 
-    case ENABLED:
-
-      grabbing = false;
-      punching = false;
-      pushedOut = true; // pushes out
-
-      break;
-
     }
 
     pushOut.set(pushedOut);
-
     grabberS.set(grabbing);
     puncherS.set(punching);
 
@@ -145,9 +130,10 @@ public class HatchIntake extends Subsystem {
    * The point of this is to do an average of the values incase Of some random
    * spike
    */
+  //to delete
   public void updateCalculations() {
     if (loopsDone < numberOfLoops) {
-      currentRawValue = hatchSensor.getValue();
+      currentRawValue = leftSensor.getValue();
       averageRawValue += currentRawValue;
       loopsDone++;
     } else {

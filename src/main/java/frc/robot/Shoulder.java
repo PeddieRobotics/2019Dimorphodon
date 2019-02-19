@@ -8,67 +8,109 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 public class Shoulder extends Subsystem {
 
- private CANSparkMax spark;
- private CANPIDController pidController;
- private CANEncoder encoder;
+  private CANSparkMax spark;
+  private CANPIDController pidController;
+  private CANEncoder encoder;
+  private Solenoid brake;
 
- private double kP = 0.02;
- private double kI = 0.0;
- private double kD = 0.0;
- private double kIz = 0.0;
- private double kFF = 0.0;
- private double kMaxOutput = 1.0;
- private double kMinOutput = -1.0;
- private double maxRPM = 20.0;
- private double maxVel = 2000.0;
- private double minVel = 0.0;
- private double maxAcc = 1500.0;
- private double allowedErr = 0.0;
+  private enum Mode_Type {
+    MOVING, BRAKING, DISENGAGING, DISABLED
+  };
+  private Mode_Type mode = Mode_Type.DISABLED;
 
- private double setPoint = 0;
- private double distancePerPulse = 0.715;
+  private boolean brakeOn;
+  private double moveTime;
 
- public Shoulder() {
-   spark = new CANSparkMax(7, MotorType.kBrushless);
-   spark.restoreFactoryDefaults();
-   pidController = spark.getPIDController();
-   encoder = spark.getEncoder();
+  private double kP = 0.02;
+  private double kI = 0.0;
+  private double kD = 0.0;
+  private double kIz = 0.0;
+  private double kFF = 0.0;
+  private double kMaxOutput = 1.0;
+  private double kMinOutput = -1.0;
+  private double maxRPM = 20.0;
+  private double maxVel = 2000.0;
+  private double minVel = 0.0;
+  private double maxAcc = 1500.0;
+  private double allowedErr = 0.0;
+
+  private double setPoint = 0;
+  private double distancePerPulse = 0.715;
+
+  public Shoulder() {
+    spark = new CANSparkMax(ElectricalLayout.MOTOR_CARGO_SHOULDER, MotorType.kBrushless);
+    spark.restoreFactoryDefaults();
+    pidController = spark.getPIDController();
+    encoder = spark.getEncoder();
 
     encoder.setPositionConversionFactor(1.0);
     encoder.setVelocityConversionFactor(1.0);
-   encoder.setPosition(0);
+    encoder.setPosition(0);
 
-   pidController.setP(kP);
-   pidController.setI(kI);
-   pidController.setD(kD);
-   pidController.setIZone(kIz);
-   pidController.setFF(kFF);
-   pidController.setOutputRange(kMinOutput, kMaxOutput);
+    pidController.setP(kP);
+    pidController.setI(kI);
+    pidController.setD(kD);
+    pidController.setIZone(kIz);
+    pidController.setFF(kFF);
+    pidController.setOutputRange(kMinOutput, kMaxOutput);
 
-   spark.setIdleMode(IdleMode.kCoast);
+    spark.setIdleMode(IdleMode.kCoast);
 
-//    int smartMotionSlot = 0;
-//    pidController.setSmartMotionMaxVelocity(maxVel, smartMotionSlot);
-//    pidController.setSmartMotionMinOutputVelocity(minVel, smartMotionSlot);
-//    pidController.setSmartMotionMaxAccel(maxAcc, smartMotionSlot);
-//    pidController.setSmartMotionAllowedClosedLoopError(allowedErr, smartMotionSlot);
- }
+    brake = new Solenoid(ElectricalLayout.SOLENOID_SHOULDER_BRAKE);
 
- public void setShoulder(double setpoint){
-   setPoint = setpoint*distancePerPulse;
- }
+    // int smartMotionSlot = 0;
+    // pidController.setSmartMotionMaxVelocity(maxVel, smartMotionSlot);
+    // pidController.setSmartMotionMinOutputVelocity(minVel, smartMotionSlot);
+    // pidController.setSmartMotionMaxAccel(maxAcc, smartMotionSlot);
+    // pidController.setSmartMotionAllowedClosedLoopError(allowedErr,
+    // smartMotionSlot);
+  }
 
- public void update() {
-     pidController.setReference(setPoint, ControlType.kPosition);
+  public void setShoulder(double setpoint) {
+    setPoint = setpoint * distancePerPulse;
+    moveTime = Timer.getFPGATimestamp();
+    mode = Mode_Type.DISENGAGING;
+  }
 
-     DriverStation.reportError(" " + encoder.getPosition() / distancePerPulse, false);
-     DriverStation.reportError(" " + setPoint, false);
- }
+  public boolean atTarget() {
+    return ((encoder.getPosition() - setPoint < 2.0) && (encoder.getVelocity() < 2.0));
+  }
 
- public void initDefaultCommand() {
- }
+  public void update() {
+    switch (mode) {
+      case MOVING:
+      brakeOn = false;
+      pidController.setReference(setPoint, ControlType.kPosition);
+      if(atTarget()) {
+        mode = Mode_Type.BRAKING;
+      }
+      break;
+      case DISENGAGING:
+      brakeOn = false;
+      if(Timer.getFPGATimestamp() - moveTime > 0.1) {
+        mode = Mode_Type.MOVING;
+      }
+      break;
+      case BRAKING:
+      brakeOn = true;
+      spark.set(0);
+      break;
+      case DISABLED:
+      brakeOn = false;
+      spark.set(0);
+      break;
+    }
+
+//    DriverStation.reportError(" " + encoder.getPosition() / distancePerPulse, false);
+//    DriverStation.reportError(" " + setPoint, false);
+  }
+
+  public void initDefaultCommand() {
+  }
 }

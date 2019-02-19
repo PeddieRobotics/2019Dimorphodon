@@ -34,7 +34,6 @@ public class DriveTrain {
   private static final double DRIVE_KI = 0.000001;
   private static final double capSpeed = 0.5;
 
-
   // tracking
   private double lastDistance = 0d; // distance traveled the last time update() was called
 
@@ -64,7 +63,6 @@ public class DriveTrain {
     turnPID = new PID(TURN_P, TURN_I, 0, 6);
     drivePID = new PID(DRIVE_KP, DRIVE_KI, 0, 6);
 
- 
   }
 
   /**
@@ -75,6 +73,8 @@ public class DriveTrain {
   }
 
   public void turnTo(double angle) {
+    leftDriveMaster.setOpenLoopRampRate(0.0);
+    rightDriveMaster.setOpenLoopRampRate(0.0);
     turnPID.set(angle);
     mode = Mode_Type.TURNING;
   }
@@ -84,15 +84,13 @@ public class DriveTrain {
   }
 
   public void arcadeDrive(double speed, double turn) {
+    leftDriveMaster.setOpenLoopRampRate(0.25);
+    rightDriveMaster.setOpenLoopRampRate(0.25);
     leftspeed = speed - turn;
     rightspeed = speed + turn;
     mode = Mode_Type.TELEOP;
   }
-
-  public void arcadeDriveReverse(double speed, double turn) {
-    leftspeed = speed - turn;
-    rightspeed = speed + turn;
-  }
+ 
 
   /**
    * @return the average velocity in feet per second from the left and right
@@ -120,10 +118,8 @@ public class DriveTrain {
    * @return the average distance traveled in feet from left and right encoders
    */
   public double getAvgDistanceTraveled() {
-    return (leftEncoder.getPosition()+rightEncoder.getPosition())/2.0;
+    return (leftEncoder.getPosition() + rightEncoder.getPosition()) / 2.0;
   }
-
- 
 
   /**
    * stop turnPID when robot is at correct angle
@@ -140,7 +136,7 @@ public class DriveTrain {
    * @return whether PID is at correct distance
    */
   public boolean atDistance() {
-    return (Math.abs(drivePID.getSetpoint() - getAvgDistanceTraveled()) <=2);
+    return (Math.abs(drivePID.getSetpoint() - getAvgDistanceTraveled()) <= 2);
   }
 
   public void update() {
@@ -150,7 +146,6 @@ public class DriveTrain {
 
     switch (mode) {
 
-    
     case DRIVE_STRAIGHT:
       leftspeed = drivePID.getOutput(leftEncoder.getPosition());
       rightspeed = drivePID.getOutput(rightEncoder.getPosition());
