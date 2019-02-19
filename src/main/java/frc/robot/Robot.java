@@ -35,6 +35,7 @@ public class Robot extends TimedRobot {
     shoulderP = new ShoulderPivot();
     lime = new LimeLight();
     vision = new Vision();
+    shoulder = new Shoulder();
 
     loop = new Looper(10);
     loop.add(drivetrain::update);

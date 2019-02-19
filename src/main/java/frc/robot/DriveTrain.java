@@ -6,9 +6,6 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import frc.robot.lib.NavX;
 import frc.robot.lib.PID;
 
-import frc.robot.lib.pathfinder.*;
-import frc.robot.lib.PathfinderFollower;
-
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
