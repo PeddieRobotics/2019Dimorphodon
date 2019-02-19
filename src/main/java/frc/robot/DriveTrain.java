@@ -165,8 +165,8 @@ public class DriveTrain {
       break;
 
     case TURNING:
-      leftspeed = -turnPID.getOutput(navX.getAngle());
-      rightspeed = turnPID.getOutput(navX.getAngle());
+      leftspeed = turnPID.getOutput(navX.getAngle());
+      rightspeed = -turnPID.getOutput(navX.getAngle());
 
       if (leftspeed > capSpeed) {
         leftspeed = capSpeed;
