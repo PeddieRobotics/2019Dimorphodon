@@ -84,10 +84,10 @@ public class DriveTrain {
   }
 
   public void arcadeDrive(double speed, double turn) {
-    leftDriveMaster.setOpenLoopRampRate(0.25);
-    rightDriveMaster.setOpenLoopRampRate(0.25);
-    leftspeed = speed - turn;
-    rightspeed = speed + turn;
+    leftDriveMaster.setOpenLoopRampRate(0.5);
+    rightDriveMaster.setOpenLoopRampRate(0.5);
+    leftspeed = speed + turn;
+    rightspeed = speed - turn;
     mode = Mode_Type.TELEOP;
   }
  

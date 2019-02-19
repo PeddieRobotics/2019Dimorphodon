@@ -22,7 +22,7 @@ public class Shoulder extends Subsystem {
   private enum Mode_Type {
     MOVING, BRAKING, DISENGAGING, DISABLED
   };
-  private Mode_Type mode = Mode_Type.DISABLED;
+  private Mode_Type mode = Mode_Type.BRAKING;
 
   private boolean brakeOn;
   private double moveTime;
