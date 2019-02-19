@@ -79,12 +79,13 @@ public class Shoulder extends Subsystem {
   }
 
   public boolean atTarget() {
-    return ((encoder.getPosition() - setPoint < 2.0) && (encoder.getVelocity() < 2.0));
+    return (Math.abs((encoder.getPosition() - setPoint)) < 1.0) && (Math.abs(encoder.getVelocity()) < 1.0);
   }
 
   public void update() {
     switch (mode) {
       case MOVING:
+      DriverStation.reportError("moving", false);
       brakeOn = false;
       pidController.setReference(setPoint, ControlType.kPosition);
       if(atTarget()) {
@@ -92,12 +93,14 @@ public class Shoulder extends Subsystem {
       }
       break;
       case DISENGAGING:
+      DriverStation.reportError("disengaging", false);
       brakeOn = false;
       if(Timer.getFPGATimestamp() - moveTime > 0.1) {
         mode = Mode_Type.MOVING;
       }
       break;
       case BRAKING:
+      DriverStation.reportError("braking", false);
       brakeOn = true;
       spark.set(0);
       break;
@@ -106,7 +109,7 @@ public class Shoulder extends Subsystem {
       spark.set(0);
       break;
     }
-
+    brake.set(!brakeOn);
 //    DriverStation.reportError(" " + encoder.getPosition() / distancePerPulse, false);
 //    DriverStation.reportError(" " + setPoint, false);
   }
