@@ -38,6 +38,7 @@ public class HatchIntake extends Subsystem {
   private double displayRawValue;
   private int numberOfLoops = 5;// basically the amount of times we want to look at a hatch sensor
   private int loopsDone = 0;
+  private double ejectTime = 0;
 
   public HatchIntake() {
     pushOut = new Solenoid(ElectricalLayout.SOLENOID_HATCH_DEPLOY);
@@ -61,6 +62,7 @@ public class HatchIntake extends Subsystem {
 
   public void eject() {
     mode = ModeType.EJECTING;
+    ejectTime = Timer.getFPGATimestamp();
   }
 
   public void intake() {
@@ -103,8 +105,7 @@ public class HatchIntake extends Subsystem {
       grabbing = false; // middle grabber open/not holding hatch panel
       punching = true;  // punches
 
-      double waitTimeEject = Timer.getFPGATimestamp(); //stamps current time 
-        if (waitTimeEject - lastTime > 0.6) { //compares the time we started waiting to current time
+        if (Timer.getFPGATimestamp() - ejectTime > 0.6) { //compares the time we started waiting to current time
         	mode = ModeType.INTAKING; //if it has been waiting for 200ms, it begins to hold
         } 
 
