@@ -16,7 +16,8 @@ public class Robot extends TimedRobot {
   Looper loop;
   LimeLight lime;
   Vision vision;
-  BetterXbox xbox;
+  BetterJoystick leftJoystick;
+  BetterJoystick rightJoystick;
   //BetterJoystick leftJoystick, rightJoystick;
 
   boolean isDown = false;
@@ -26,7 +27,8 @@ public class Robot extends TimedRobot {
   double turnDeadBand = 0.05;
 
   public void robotInit() {
-    xbox = new BetterXbox(0);
+    leftJoystick = new BetterJoystick(0);
+    rightJoystick = new BetterJoystick(1);
     drivetrain = new DriveTrain();
     cIntake = new CargoIntake();
     hIntake = new HatchIntake();
@@ -59,64 +61,59 @@ public class Robot extends TimedRobot {
 
     // double speed = Math.pow(leftJoystick.getRawAxis(1), 3);
     // double turn = Math.pow(rightJoystick.getRawAxis(0), 3);
-    // double speed = leftJoystick.getRawAxis(1);
-    // double turn = rightJoystick.getRawAxis(0);
+    double speed = leftJoystick.getRawAxis(1);
+    double turn = rightJoystick.getRawAxis(0);
 
-    double fspeed = xbox.getRawAxis(2)-xbox.getRawAxis(3);
-    double fturn = xbox.getRawAxis(0);
+    //double fspeed = xbox.getRawAxis(2)-xbox.getRawAxis(3);
+    //double fturn = xbox.getRawAxis(0);
 
-    if(Math.abs(fspeed) < speedDeadBand){
-      fspeed=0;
+    drivetrain.arcadeDrive(speed,turn);//cap speed in driveTrain
+
+     if(rightJoystick.getRisingEdge(2)) {
+       frontSide = !frontSide;
     }
-    if(Math.abs(fturn) < turnDeadBand){
-      fturn=0;
-    }
-    drivetrain.arcadeDrive(fspeed,fturn);//cap speed in driveTrain
-
-    // if(leftJoystick.getRisingEdge(2)) {
-    //   hatchSide = !hatchSide;
-    // }
 
     if (!frontSide) {
-      if (xbox.getRisingEdge(ElectricalLayout.xboxLeftTrigger)) {
+      if (rightJoystick.getRisingEdge(1)) {
         hIntake.eject();
-      } else if (xbox.getRisingEdge(ElectricalLayout.xboxRightTrigger)) {
+      } else if (leftJoystick.getRisingEdge(2)) {
          hIntake.hold();
-      } else if (xbox.getRisingEdge(ElectricalLayout.xboxStart)) {
+      } else if (leftJoystick.getRisingEdge(3)) {
         hIntake.pushOut();
-      } else if (xbox.getRisingEdge(ElectricalLayout.xboxBack)) {
+      } else if (leftJoystick.getRisingEdge(4)) {
         hIntake.pullBack();
       }
     } else {
-      if (xbox.getRisingEdge(ElectricalLayout.xboxLeftTrigger)) {
-        cIntake.intake();
-      } else if(xbox.getRisingEdge(ElectricalLayout.xboxRightTrigger))  { 
+      if(rightJoystick.getRisingEdge(1))  { 
         cIntake.eject();
-      } else if (xbox.getRisingEdge(ElectricalLayout.xboxLeftBumper)) {
-        cIntake.disabled(); 
-      } else if (xbox.getRisingEdge(ElectricalLayout.xboxStart)) {
-      shoulder.setShoulder(0);
+      } 
+      else if (rightJoystick.getRisingEdge(3)) {
+        shoulder.setShoulder(0);
       }
       
-      else if (xbox.getRisingEdge(ElectricalLayout.xboxXButton)) { //X
-      shoulder.setShoulder(25);
+      else if (leftJoystick.getRisingEdge(4)) { //X
+      shoulder.setShoulder(20);
       cIntake.ejectSpeed = -1.0;
       } 
       
-      else if (xbox.getRisingEdge(ElectricalLayout.xboxYButton)) { //Y
+      else if (leftJoystick.getRisingEdge(3)) { //Y
       shoulder.setShoulder(-20);
       cIntake.ejectSpeed = -0.5;
       } 
     
-      else if (xbox.getRisingEdge(ElectricalLayout.xboxBButton)) { //B
-      shoulder.setShoulder(70);
+      else if (leftJoystick.getRisingEdge(2)) { //B
+      shoulder.setShoulder(65);
       cIntake.ejectSpeed = -0.5;
       } 
       
-      else if (xbox.getRisingEdge(ElectricalLayout.xboxAButton)) { //A
-      shoulder.setShoulder(105);
-      cIntake.ejectSpeed = -0.5;
+      else if (leftJoystick.getRisingEdge(1)) { //A
+      shoulder.setShoulder(115);
+      cIntake.intake();
       } 
+      else if(rightJoystick.getRisingEdge(2)){
+        shoulder.setShoulder(15);
+        cIntake.ejectSpeed = -1.0;
+      }
     }
     
       /*else if (rightJoystick.getRisingEdge(4)) { don't know what this means 
