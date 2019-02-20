@@ -14,12 +14,14 @@ public class Vision extends Subsystem {
   public Vision() {
     // There are unresolved exposure problems with camera 1.
     camera1 = CameraServer.getInstance().startAutomaticCapture(0);
-    camera1.setFPS(24);
-    camera1.setExposureAuto();
-    
+    camera1.setResolution(640, 360);
+    camera1.setExposureManual(0);
+    camera1.setBrightness(50);
+
     camera2 = CameraServer.getInstance().startAutomaticCapture(1);
-    camera2.setFPS(24);
+    camera2.setResolution(640, 360);
     camera2.setExposureAuto();
+    // camera2.setExposureManual(0);
   }
 
   public void initDefaultCommand() {
