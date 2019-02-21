@@ -81,9 +81,9 @@ public class Robot extends TimedRobot {
       blinkin.solidBlue();
       if (rightJoystick.getRisingEdge(1)) {
         hIntake.eject();
-      } else if (leftJoystick.getRisingEdge(3)) {
-        hIntake.hold();
       } else if (leftJoystick.getRisingEdge(2)) {
+        hIntake.hold();
+      } else if (leftJoystick.getRisingEdge(3)) {
         hIntake.pushOut();
       } else if (leftJoystick.getRisingEdge(4)) {
         hIntake.pullBack();
@@ -117,7 +117,7 @@ public class Robot extends TimedRobot {
       shoulder.setShoulder(115);
       cIntake.intake();
       } 
-      else if(rightJoystick.getRisingEdge(2)){
+      else if(rightJoystick.getRisingEdge(4)){
         shoulder.setShoulder(15);
         cIntake.ejectSpeed = -1.0;
       }
