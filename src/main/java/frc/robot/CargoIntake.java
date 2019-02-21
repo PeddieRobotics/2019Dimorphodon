@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  */
 public class CargoIntake extends Subsystem {
 
+  Blinkin blinkin;
+
   private double lastTime;
   
   private static enum Mode_Type{
@@ -33,6 +35,8 @@ public class CargoIntake extends Subsystem {
 
     rightSensor = new AnalogInput(ElectricalLayout.SENSOR_LEFT_CLAW_INTAKE);
     leftSensor = new AnalogInput(ElectricalLayout.SENSOR_RIGHT_CLAW_INTAKE);
+
+    blinkin = new Blinkin();
 
   }
 
@@ -62,6 +66,7 @@ public class CargoIntake extends Subsystem {
       case INTAKING:
         speed = 0.5;
          if(hasCargo()) { 
+           blinkin.strobeWhite();
            mode = Mode_Type.HOLDING; 
           }
         break;

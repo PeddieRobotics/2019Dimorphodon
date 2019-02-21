@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class HatchIntake extends Subsystem {
 
+  Blinkin blinkin;
+
   private double lastTime;
 
   private static enum ModeType {
@@ -46,6 +48,7 @@ public class HatchIntake extends Subsystem {
     leftSensor = new AnalogInput(ElectricalLayout.SENSOR_LEFT_HATCH_INTAKE);
     rightSensor = new AnalogInput(ElectricalLayout.SENSOR_RIGHT_HATCH_INTAKE);
 
+    blinkin = new Blinkin();
   }
 
   public void initDefaultCommand() {
@@ -85,6 +88,7 @@ public class HatchIntake extends Subsystem {
       grabbing = false;  // middle grabber open
       punching = false; // puncher back
           if ( hasHatch() == true ) {
+            blinkin.strobeBlue();
             mode = ModeType.HOLDING; //if it has been waiting for 200ms, it begins to hold
           } else {
             mode = ModeType.INTAKING; //continues to intake
@@ -115,6 +119,8 @@ public class HatchIntake extends Subsystem {
       grabbing = false;
       punching = false;
       pushedOut = false; // pushes out
+
+      blinkin.fireLarge();
 
       break;
 

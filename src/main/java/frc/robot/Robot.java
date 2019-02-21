@@ -18,6 +18,7 @@ public class Robot extends TimedRobot {
   Vision vision;
   BetterJoystick leftJoystick;
   BetterJoystick rightJoystick;
+  Blinkin blinkin;
   //BetterJoystick leftJoystick, rightJoystick;
 
   boolean isDown = false;
@@ -35,6 +36,7 @@ public class Robot extends TimedRobot {
     lime = new LimeLight();
     vision = new Vision();
     shoulder = new Shoulder();
+    blinkin = new Blinkin();
 
     loop = new Looper(10);
     loop.add(drivetrain::update);
@@ -74,6 +76,7 @@ public class Robot extends TimedRobot {
     }
 
     if (!frontSide) {
+      blinkin.solidBlue();
       if (rightJoystick.getRisingEdge(1)) {
         hIntake.eject();
       } else if (leftJoystick.getRisingEdge(2)) {
@@ -84,6 +87,7 @@ public class Robot extends TimedRobot {
         hIntake.pullBack();
       }
     } else {
+      blinkin.solidWhite();
       if(rightJoystick.getRisingEdge(1))  { 
         cIntake.eject();
       } 

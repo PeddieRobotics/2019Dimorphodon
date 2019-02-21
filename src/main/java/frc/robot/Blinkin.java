@@ -7,12 +7,10 @@ public class Blinkin {
   HatchIntake hatchIntake;
   CargoIntake cargoIntake;
 	
-  Spark blinkinHatch;
-  Spark blinkinCargo;
+  Spark blinkin;
 
 	public Blinkin() {
-    blinkinHatch = new Spark(0);
-    blinkinCargo = new Spark(1);
+    blinkin = new Spark(0);
 
 //    hatchIntake = new HatchIntake();
 //    cargoIntake = new CargoIntake();
@@ -39,45 +37,35 @@ public class Blinkin {
   */
 
   public void strobeBlue() {
-    blinkinHatch.set(-0.05);
-    blinkinCargo.set(-0.05);
+    blinkin.set(-0.05);
+  }
+
+  public void strobeWhite() {
+    blinkin.set(-0.05);
   }
 
   public void fireLarge() { 
-    blinkinHatch.set(-0.57);
-    blinkinCargo.set(-0.57);
+    blinkin.set(-0.57);
   }
 
   public void seizure() {
-    blinkinHatch.set(-0.63);
-    blinkinCargo.set(-0.63);
+    blinkin.set(-0.63);
   }
   
   public void blueSeizure() {
-    blinkinHatch.set(-0.65);
-    blinkinCargo.set(-0.65);
+    blinkin.set(-0.65);
   }
 
   public void calmRainbow() {
-    blinkinHatch.set(-0.55);
-    blinkinCargo.set(-0.55);
+    blinkin.set(-0.55);
   }
-		
-	public void hatchFront() {
-    if( hatchIntake.hasHatch() == true ) {
-      blinkinHatch.set(-0.55);
-    } else {
-      blinkinHatch.set(0.67);
-    }
-    blinkinCargo.set(0.93);
+
+  public void solidBlue() {
+    blinkin.set(0.87);
   }
-  
-  public void cargoFront() {  
-    if( cargoIntake.hasCargo() == true ) {
-      blinkinCargo.set(-0.57);
-    } else {
-      blinkinCargo.set(0.61);
-    }
-    blinkinHatch.set(0.93);
+
+  public void solidWhite() {
+    blinkin.set(0.93);
   }
+
 }
