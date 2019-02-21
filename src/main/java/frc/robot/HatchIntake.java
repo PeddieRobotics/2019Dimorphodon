@@ -15,7 +15,7 @@ public class HatchIntake extends Subsystem {
   private double lastTime;
 
   private static enum ModeType {
-    INTAKING, HOLDING, EJECTING, DISABLED
+    INTAKING, HOLDING, EJECTING, DISABLED, DISENGAGING
   };
 
   private ModeType mode = ModeType.DISABLED;
@@ -40,6 +40,7 @@ public class HatchIntake extends Subsystem {
   private double displayRawValue;
   private int numberOfLoops = 5;// basically the amount of times we want to look at a hatch sensor
   private int loopsDone = 0;
+  private double ejectTime = 0;
 
   public HatchIntake() {
     pushOut = new Solenoid(ElectricalLayout.SOLENOID_HATCH_DEPLOY);
@@ -63,6 +64,7 @@ public class HatchIntake extends Subsystem {
   }
 
   public void eject() {
+    ejectTime = Timer.getFPGATimestamp();
     mode = ModeType.EJECTING;
   }
 
@@ -89,12 +91,15 @@ public class HatchIntake extends Subsystem {
       punching = false; // puncher back
           if ( hasHatch() == true ) {
             blinkin.strobeBlue();
-            mode = ModeType.HOLDING; //if it has been waiting for 200ms, it begins to hold
+       //     mode = ModeType.HOLDING; //if it has been waiting for 200ms, it begins to hold
           } else {
             mode = ModeType.INTAKING; //continues to intake
           }
     break;
 
+    case DISENGAGING:
+
+    break;
     case HOLDING: // Holds panel up to grabber
 
       grabbing = true;  // middle grabber locks/holding on a hatch panel
@@ -107,8 +112,7 @@ public class HatchIntake extends Subsystem {
       grabbing = false; // middle grabber open/not holding hatch panel
       punching = true;  // punches
 
-      double waitTimeEject = Timer.getFPGATimestamp(); //stamps current time 
-        if (waitTimeEject - lastTime > 0.6) { //compares the time we started waiting to current time
+        if (Timer.getFPGATimestamp() - ejectTime > 0.6) { //compares the time we started waiting to current time
         	mode = ModeType.INTAKING; //if it has been waiting for 200ms, it begins to hold
         } 
 

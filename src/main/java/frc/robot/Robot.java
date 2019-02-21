@@ -4,6 +4,7 @@ import frc.robot.framework.Looper;
 import frc.robot.lib.BetterJoystick;
 import frc.robot.lib.BetterXbox;
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 
@@ -24,8 +25,8 @@ public class Robot extends TimedRobot {
   boolean isDown = false;
   boolean frontSide = true; // Toggles "front" of robot: true = cargo side, false = hatch side
 
-  double speedDeadBand=0.05;
-  double turnDeadBand = 0.05;
+  double speedDeadBand=0.07;
+  double turnDeadBand = 0.07;
 
   public void robotInit() {
     leftJoystick = new BetterJoystick(0);
@@ -63,30 +64,32 @@ public class Robot extends TimedRobot {
 
     // double speed = Math.pow(leftJoystick.getRawAxis(1), 3);
     // double turn = Math.pow(rightJoystick.getRawAxis(0), 3);
-    double speed = leftJoystick.getRawAxis(1);
-    double turn = rightJoystick.getRawAxis(0);
+    double speed = deadband(leftJoystick.getRawAxis(1), speedDeadBand);
+    double turn = deadband(rightJoystick.getRawAxis(0), turnDeadBand);
 
     //double fspeed = xbox.getRawAxis(2)-xbox.getRawAxis(3);
     //double fturn = xbox.getRawAxis(0);
 
-    drivetrain.arcadeDrive(speed,turn);//cap speed in driveTrain
+   //cap speed in driveTrain
 
      if(rightJoystick.getRisingEdge(2)) {
        frontSide = !frontSide;
     }
 
     if (!frontSide) {
+      drivetrain.arcadeDrive(-speed, turn);
       blinkin.solidBlue();
       if (rightJoystick.getRisingEdge(1)) {
         hIntake.eject();
-      } else if (leftJoystick.getRisingEdge(2)) {
-         hIntake.hold();
       } else if (leftJoystick.getRisingEdge(3)) {
+        hIntake.hold();
+      } else if (leftJoystick.getRisingEdge(2)) {
         hIntake.pushOut();
       } else if (leftJoystick.getRisingEdge(4)) {
         hIntake.pullBack();
       }
     } else {
+      drivetrain.arcadeDrive(speed, turn);
       blinkin.solidWhite();
       if(rightJoystick.getRisingEdge(1))  { 
         cIntake.eject();
@@ -138,5 +141,16 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("Cargo", cIntake.hasCargo());
     // Output Drive Dist Left
     // Output Drive Dist Right
+  }
+
+  public double deadband(double JoystickValue, double DeadbandCutoff) {
+    double deadbandreturn;
+    if (JoystickValue<DeadbandCutoff&&JoystickValue>(DeadbandCutoff*(-1))) {
+      deadbandreturn = 0;
+    }
+    else {
+      deadbandreturn= (JoystickValue-(Math.abs(JoystickValue)/JoystickValue*DeadbandCutoff))/(1-DeadbandCutoff);
+    }
+    return deadbandreturn;
   }
 }
