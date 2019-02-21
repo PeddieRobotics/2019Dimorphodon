@@ -91,7 +91,7 @@ public class HatchIntake extends Subsystem {
       punching = false; // puncher back
           if ( hasHatch() == true ) {
             blinkin.strobeBlue();
-       //     mode = ModeType.HOLDING; //if it has been waiting for 200ms, it begins to hold
+            mode = ModeType.HOLDING; //if it has been waiting for 200ms, it begins to hold
           } else {
             mode = ModeType.INTAKING; //continues to intake
           }
