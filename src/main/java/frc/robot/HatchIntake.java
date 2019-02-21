@@ -98,7 +98,12 @@ public class HatchIntake extends Subsystem {
     break;
 
     case DISENGAGING:
+    grabbing = false; // middle grabber open/not holding hatch panel
+    punching = false; // punches
 
+      if (Timer.getFPGATimestamp() - ejectTime > 1.2) { //compares the time we started waiting to current time
+        mode = ModeType.INTAKING; //if it has been waiting for 200ms, it begins to hold
+      }
     break;
     case HOLDING: // Holds panel up to grabber
 
@@ -113,7 +118,7 @@ public class HatchIntake extends Subsystem {
       punching = true;  // punches
 
         if (Timer.getFPGATimestamp() - ejectTime > 0.6) { //compares the time we started waiting to current time
-        	mode = ModeType.INTAKING; //if it has been waiting for 200ms, it begins to hold
+        	mode = ModeType.DISENGAGING; //if it has been waiting for 200ms, it begins to hold
         } 
 
     break;
