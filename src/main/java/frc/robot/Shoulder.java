@@ -20,12 +20,13 @@ public class Shoulder extends Subsystem {
   private Solenoid brake;
 
   private enum Mode_Type {
-    MOVING, BRAKING, DISENGAGING, DISABLED
+    MOVING, BRAKING, DISENGAGING, DISABLED, ENGAGING
   };
   private Mode_Type mode = Mode_Type.BRAKING;
 
   private boolean brakeOn;
   private double moveTime;
+  private double brakeTime;
 
   private double kP = 0.02;
   private double kI = 0.0;
@@ -79,7 +80,7 @@ public class Shoulder extends Subsystem {
   }
 
   public boolean atTarget() {
-    return (Math.abs((encoder.getPosition() - setPoint)) < 1.0) && (Math.abs(encoder.getVelocity()) < 1.0);
+    return (Math.abs((encoder.getPosition() - setPoint)) < 1.0) && (Math.abs(encoder.getVelocity()) < 13.0);
   }
 
   public void update() {
@@ -89,6 +90,14 @@ public class Shoulder extends Subsystem {
       brakeOn = false;
       pidController.setReference(setPoint, ControlType.kPosition);
       if(atTarget()) {
+        brakeTime = Timer.getFPGATimestamp();
+        mode = Mode_Type.ENGAGING;
+      }
+      break;
+      case ENGAGING:
+      brakeOn = true;
+      pidController.setReference(setPoint,ControlType.kPosition);
+      if(Timer.getFPGATimestamp() - brakeTime > 0.1) {
         mode = Mode_Type.BRAKING;
       }
       break;

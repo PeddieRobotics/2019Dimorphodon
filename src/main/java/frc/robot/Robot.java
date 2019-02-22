@@ -19,7 +19,7 @@ public class Robot extends TimedRobot {
   Vision vision;
   BetterJoystick leftJoystick;
   BetterJoystick rightJoystick;
-  Blinkin blinkin;
+//  Blinkin blinkin;
   //BetterJoystick leftJoystick, rightJoystick;
 
   boolean isDown = false;
@@ -37,7 +37,7 @@ public class Robot extends TimedRobot {
     lime = new LimeLight();
     vision = new Vision();
     shoulder = new Shoulder();
-    blinkin = new Blinkin();
+//    blinkin = new Blinkin();
 
     loop = new Looper(10);
     loop.add(drivetrain::update);
@@ -78,7 +78,7 @@ public class Robot extends TimedRobot {
 
     if (!frontSide) {
       drivetrain.arcadeDrive(-speed, turn);
-      blinkin.solidBlue();
+//      blinkin.solidBlue();
       if (rightJoystick.getRisingEdge(1)) {
         hIntake.eject();
       } else if (leftJoystick.getRisingEdge(2)) {
@@ -90,47 +90,39 @@ public class Robot extends TimedRobot {
       }
     } else {
       drivetrain.arcadeDrive(speed, turn);
-      blinkin.solidWhite();
+//      blinkin.solidWhite();
       if(rightJoystick.getRisingEdge(1))  { 
         cIntake.eject();
       } 
       else if (rightJoystick.getRisingEdge(3)) {
         shoulder.setShoulder(0);
+        cIntake.setEjectSpeed(0.0);
       }
       
       else if (leftJoystick.getRisingEdge(4)) { //X
       shoulder.setShoulder(20);
-      cIntake.ejectSpeed = -1.0;
+      cIntake.setEjectSpeed(-0.7);
       } 
       
       else if (leftJoystick.getRisingEdge(3)) { //Y
       shoulder.setShoulder(-20);
-      cIntake.ejectSpeed = -0.5;
+      cIntake.setEjectSpeed(-0.5);
       } 
     
       else if (leftJoystick.getRisingEdge(2)) { //B
       shoulder.setShoulder(65);
-      cIntake.ejectSpeed = -0.5;
+      cIntake.setEjectSpeed(-0.5);
       } 
       
       else if (leftJoystick.getRisingEdge(1)) { //A
-      shoulder.setShoulder(115);
+      shoulder.setShoulder(110);
       cIntake.intake();
       } 
       else if(rightJoystick.getRisingEdge(4)){
         shoulder.setShoulder(15);
-        cIntake.ejectSpeed = -1.0;
+        cIntake.setEjectSpeed(-1.0);
       }
     }
-    
-      /*else if (rightJoystick.getRisingEdge(4)) { don't know what this means 
-      if (shoulder.getTargetPosition() == 0.0) {
-        // Move up
-      } else {
-        // Move down
-      }
-    }*/
-
   }
 
   public void testPeriodic() {
