@@ -15,7 +15,7 @@ public class CargoIntake extends Subsystem {
 
 //  Blinkin blinkin;
 
-//  private double lastTime;
+ private double ejectTime;
   
   private static enum Mode_Type{
     INTAKING,EJECTING,HOLDING,DISABLED
@@ -54,6 +54,7 @@ public class CargoIntake extends Subsystem {
   }
 
   public void eject(){
+    ejectTime = Timer.getFPGATimestamp;
     mode = Mode_Type.EJECTING;
   }
 
@@ -86,11 +87,10 @@ public class CargoIntake extends Subsystem {
   
       case EJECTING:
         speed = ejectSpeed;
-
-        // double waitTimeEject = Timer.getFPGATimestamp();
-        // if (waitTimeEject - lastTime > 5.0) { 
-        // 	mode = Mode_Type.INTAKING;
-        // } 
+       
+        if (Timer.getFPGATimestamp - ejectTime > 5.0) { 
+        	mode = Mode_Type.INTAKING;
+        } 
         break;
   
       case DISABLED:

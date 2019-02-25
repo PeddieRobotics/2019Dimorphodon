@@ -20,7 +20,7 @@ public class Shoulder extends Subsystem {
   private Solenoid brake;
 
   private enum Mode_Type {
-    MOVING, BRAKING, DISENGAGING, DISABLED, ENGAGING
+    MOVING, BRAKING, DISENGAGING, DISABLED, ENGAGING, NO_BRAKE_DISENGAGING, NO_BRAKE_MOVING
   };
   private Mode_Type mode = Mode_Type.BRAKING;
 
@@ -79,6 +79,12 @@ public class Shoulder extends Subsystem {
     mode = Mode_Type.DISENGAGING;
   }
 
+  public void setNoBrake( double setpoint ) {
+    setPoint = setpoint * distancePerPulse;
+    moveTime = Timer.getFPGATimestamp();
+    mode = Mode_Type.NO_BRAKE_DISENGAGING;
+  }
+
   public boolean atTarget() {
     return (Math.abs((encoder.getPosition() - setPoint)) < 1.0) && (Math.abs(encoder.getVelocity()) < 13.0);
   }
@@ -86,37 +92,56 @@ public class Shoulder extends Subsystem {
   public void update() {
     switch (mode) {
       case MOVING:
-      DriverStation.reportError("moving", false);
-      brakeOn = false;
-      pidController.setReference(setPoint, ControlType.kPosition);
-      if(atTarget()) {
-        brakeTime = Timer.getFPGATimestamp();
-        mode = Mode_Type.ENGAGING;
-      }
+        DriverStation.reportError("moving", false);
+        brakeOn = false;
+        pidController.setReference(setPoint, ControlType.kPosition);
+        if(atTarget()) {
+          brakeTime = Timer.getFPGATimestamp();
+          mode = Mode_Type.ENGAGING;
+        }
       break;
+
+      case NO_BRAKE_MOVING:
+        DriverStation.reportError("moving", false);
+        brakeOn = false;
+        pidController.setReference(setPoint, ControlType.kPosition);
+      break;
+
       case ENGAGING:
-      brakeOn = true;
-      pidController.setReference(setPoint,ControlType.kPosition);
-      if(Timer.getFPGATimestamp() - brakeTime > 0.1) {
-        mode = Mode_Type.BRAKING;
-      }
+        brakeOn = true;
+        pidController.setReference(setPoint,ControlType.kPosition);
+        if(Timer.getFPGATimestamp() - brakeTime > 0.1) {
+          mode = Mode_Type.BRAKING;
+        }
       break;
+
+      case NO_BRAKE_DISENGAGING:
+        DriverStation.reportError("disengaging", false);
+        brakeOn = false;
+        if(Timer.getFPGATimestamp() - moveTime > 0.1) {
+          mode = Mode_Type.MOVING;
+        }
+      break;
+
       case DISENGAGING:
-      DriverStation.reportError("disengaging", false);
-      brakeOn = false;
-      if(Timer.getFPGATimestamp() - moveTime > 0.1) {
-        mode = Mode_Type.MOVING;
-      }
+        DriverStation.reportError("disengaging", false);
+        brakeOn = false;
+        if(Timer.getFPGATimestamp() - moveTime > 0.1) {
+          mode = Mode_Type.MOVING;
+        }
       break;
+
       case BRAKING:
-      DriverStation.reportError("braking", false);
-      brakeOn = true;
-      spark.set(0);
+        DriverStation.reportError("braking", false);
+        brakeOn = true;
+        spark.set(0);
       break;
+
       case DISABLED:
-      brakeOn = false;
-      spark.set(0);
+        brakeOn = false;
+        spark.set(0);
       break;
+
     }
     brake.set(!brakeOn);
 //    DriverStation.reportError(" " + encoder.getPosition() / distancePerPulse, false);
