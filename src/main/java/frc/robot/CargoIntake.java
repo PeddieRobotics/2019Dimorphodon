@@ -54,7 +54,7 @@ public class CargoIntake extends Subsystem {
   }
 
   public void eject(){
-    ejectTime = Timer.getFPGATimestamp;
+    ejectTime = Timer.getFPGATimestamp();
     mode = Mode_Type.EJECTING;
   }
 
