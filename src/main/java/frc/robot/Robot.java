@@ -74,11 +74,9 @@ public class Robot extends TimedRobot {
 
      if(leftJoystick.getRisingEdge(2)) {
        frontSide = !frontSide;
-
     }
 
     if (!frontSide) {
-      shoulder.setShoulder(0);
       drivetrain.arcadeDrive(-speed, turn);
 //      blinkin.solidBlue();
       if (rightJoystick.getRisingEdge(2)) {
@@ -92,7 +90,6 @@ public class Robot extends TimedRobot {
         cIntake.eject();
       } 
     } else {
-      hIntake.pullBack();
       drivetrain.arcadeDrive(speed, turn);
 //      blinkin.solidWhite();
       if(rightJoystick.getRisingEdge(1))  { 
