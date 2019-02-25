@@ -86,7 +86,7 @@ public class Shoulder extends Subsystem {
   }
 
   public boolean atTarget() {
-    return (Math.abs((encoder.getPosition() - setPoint)) < 1.0) && (Math.abs(encoder.getVelocity()) < 13.0);
+    return (Math.abs((encoder.getPosition() - setPoint)) < 1.5) && (Math.abs(encoder.getVelocity()) < 20.0);
   }
 
   public void update() {
