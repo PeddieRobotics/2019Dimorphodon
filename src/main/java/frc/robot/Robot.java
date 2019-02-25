@@ -10,21 +10,25 @@ import edu.wpi.first.wpilibj.smartdashboard.*;
 
 public class Robot extends TimedRobot {
 
+  public static enum Mode_Type {
+    HATCH, CARGO, CLIMB
+  };
+  private Mode_Type mode;
+
   DriveTrain drivetrain;
   CargoIntake cIntake;
   HatchIntake hIntake;
   Shoulder shoulder;
   Looper loop;
+  Lights hatch;
   LimeLight lime;
   Vision vision;
   BetterJoystick leftJoystick;
   BetterJoystick rightJoystick;
-  Lights hatch = new Lights(7);
 //  Blinkin blinkin;
   //BetterJoystick leftJoystick, rightJoystick;
 
   boolean isDown = false;
-  boolean frontSide = true; // Toggles "front" of robot: true = cargo side, false = hatch side
 
   double speedDeadBand=0.07;
   double turnDeadBand = 0.07;
@@ -38,7 +42,10 @@ public class Robot extends TimedRobot {
     lime = new LimeLight();
     vision = new Vision();
     shoulder = new Shoulder();
+    
+    hatch = new Lights(7);
 //    blinkin = new Blinkin();
+
     loop = new Looper(10);
     loop.add(drivetrain::update);
     loop.add(cIntake::update);
@@ -46,6 +53,8 @@ public class Robot extends TimedRobot {
     loop.add(shoulder::update);
     loop.add(lime::update);
     loop.start();
+
+    mode = Mode_Type.HATCH;
 
   }
 
@@ -72,51 +81,68 @@ public class Robot extends TimedRobot {
 
    //cap speed in driveTrain
 
-     if(leftJoystick.getRisingEdge(2)) {
-       frontSide = !frontSide;
+    if(leftJoystick.getRisingEdge(2)) {
+      if( mode == Mode_Type.CARGO ) {
+        mode = Mode_Type.HATCH;
+      } else if ( mode == Mode_Type.HATCH ) {
+        mode = Mode_Type.CARGO;
+      }
     }
 
-    if (!frontSide) {
-      shoulder.setShoulder(0);
-      drivetrain.arcadeDrive(-speed, turn);
-//      blinkin.solidBlue();
-      if (rightJoystick.getRisingEdge(2)) {
-        hIntake.hold();
-      } else if (rightJoystick.getRisingEdge(3)) {
-        hIntake.pullBack();
-      } else if (rightJoystick.getRisingEdge(4)) {
-        hIntake.pushOut();
-      }
-      else if(rightJoystick.getRisingEdge(1))  { 
-        hIntake.eject();
-      } 
-    } else {
-      hIntake.pullBack();
-      drivetrain.arcadeDrive(speed, turn);
-//      blinkin.solidWhite();
-      if(rightJoystick.getRisingEdge(1))  { 
-        cIntake.eject();
-      } else if (leftJoystick.getRisingEdge(3)) {
-        shoulder.setShoulder(0);
-        cIntake.setEjectSpeed(0.0);
-      } else if (rightJoystick.getRisingEdge(4)) { //X
-      shoulder.setShoulder(-20);
-      cIntake.setEjectSpeed(-0.5);
-      } else if (rightJoystick.getRisingEdge(2)) { //B
-        shoulder.setShoulder(20);
-        cIntake.setEjectSpeed(-0.7);
-      } else if (rightJoystick.getRisingEdge(3)) { //B
-      shoulder.setShoulder(65);
-      cIntake.setEjectSpeed(-0.5);
-      } else if (leftJoystick.getRisingEdge(4)) { //A
-        shoulder.setShoulder(15);
-         cIntake.setEjectSpeed(-1.0);
-      } else if(leftJoystick.getRisingEdge(1)){
-      shoulder.setShoulder(110); //108 is good tho
-      cIntake.intake();
-      }
+    switch (mode) {
+
+      case HATCH:
+
+        drivetrain.arcadeDrive(-speed, turn);
+        if (rightJoystick.getRisingEdge(2)) {
+          hIntake.hold();
+        } else if (leftJoystick.getRisingEdge(3)) {
+          hIntake.pullBack();
+        } else if (leftJoystick.getRisingEdge(4)) {
+          hIntake.pushOut();
+        }
+        else if(rightJoystick.getRisingEdge(1))  { 
+          cIntake.eject();
+        } 
+
+      break;
+
+      case CARGO:
+
+        drivetrain.arcadeDrive(speed, turn);
+        if(rightJoystick.getRisingEdge(1))  { 
+          cIntake.eject();
+        } 
+        else if (leftJoystick.getRisingEdge(3)) {
+          shoulder.setShoulder(0);
+          cIntake.setEjectSpeed(0.0);
+        }
+        else if (rightJoystick.getRisingEdge(4)) { //X
+          shoulder.setShoulder(-20);
+          cIntake.setEjectSpeed(-0.5);
+        } 
+        else if (rightJoystick.getRisingEdge(2)) { //B
+          shoulder.setShoulder(20);
+          cIntake.setEjectSpeed(-0.7);
+        } 
+        else if (rightJoystick.getRisingEdge(3)) { //B
+          shoulder.setShoulder(65);
+          cIntake.setEjectSpeed(-0.5);
+        }
+        else if (leftJoystick.getRisingEdge(4)) { //A
+          shoulder.setShoulder(15);
+          cIntake.setEjectSpeed(-1.0);
+        } 
+        else if(leftJoystick.getRisingEdge(1)){
+          shoulder.setShoulder(110);
+          cIntake.intake();
+        }
+
+      break;
+
+      case CLIMB:
+      break;
     }
-    hatch.update(hIntake.hasHatch(),frontSide);
   }
 
   public void testPeriodic() {
