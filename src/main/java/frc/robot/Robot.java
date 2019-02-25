@@ -125,7 +125,7 @@ public class Robot extends TimedRobot {
          cIntake.setEjectSpeed(-1.0);
       } 
       else if(rightJoystick.getRisingEdge(3)){
-        shoulder.setShoulder(105);
+        shoulder.setShoulder(110);
       cIntake.intake();
       
       }
