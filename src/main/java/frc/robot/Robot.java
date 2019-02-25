@@ -19,6 +19,7 @@ public class Robot extends TimedRobot {
   Vision vision;
   BetterJoystick leftJoystick;
   BetterJoystick rightJoystick;
+  Lights hatch = new Lights(7);
 //  Blinkin blinkin;
   //BetterJoystick leftJoystick, rightJoystick;
 
@@ -38,7 +39,6 @@ public class Robot extends TimedRobot {
     vision = new Vision();
     shoulder = new Shoulder();
 //    blinkin = new Blinkin();
-
     loop = new Looper(10);
     loop.add(drivetrain::update);
     loop.add(cIntake::update);
@@ -123,6 +123,7 @@ public class Robot extends TimedRobot {
         cIntake.setEjectSpeed(-1.0);
       }
     }
+    hatch.update(hIntake.hasHatch(),frontSide);
   }
 
   public void testPeriodic() {
