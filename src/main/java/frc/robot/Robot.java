@@ -72,7 +72,7 @@ public class Robot extends TimedRobot {
 
    //cap speed in driveTrain
 
-     if(rightJoystick.getRisingEdge(2)) {
+     if(leftJoystick.getRisingEdge(2)) {
        frontSide = !frontSide;
     }
 
@@ -81,13 +81,14 @@ public class Robot extends TimedRobot {
 //      blinkin.solidBlue();
       if (rightJoystick.getRisingEdge(2)) {
         hIntake.hold();
-      } else if (leftJoystick.getRisingEdge(2)) {
-        frontSide = !frontSide;
       } else if (leftJoystick.getRisingEdge(3)) {
         hIntake.pullBack();
       } else if (leftJoystick.getRisingEdge(4)) {
         hIntake.pushOut();
       }
+      else if(rightJoystick.getRisingEdge(1))  { 
+        cIntake.eject();
+      } 
     } else {
       drivetrain.arcadeDrive(speed, turn);
 //      blinkin.solidWhite();
@@ -105,18 +106,13 @@ public class Robot extends TimedRobot {
       cIntake.setEjectSpeed(-0.5);
       } 
       
-      else if (leftJoystick.getRisingEdge(3)) { //Y
-      shoulder.setShoulder(-20);
-      cIntake.setEjectSpeed(-0.5);
-      } 
     
       else if (rightJoystick.getRisingEdge(2)) { //B
         shoulder.setShoulder(20);
         cIntake.setEjectSpeed(-0.7);
       } 
-      else if (leftJoystick.getRisingEdge(1)) { //B
-        
-       shoulder.setShoulder(65);
+      else if (rightJoystick.getRisingEdge(3)) { //B
+      shoulder.setShoulder(65);
       cIntake.setEjectSpeed(-0.5);
       } 
       
@@ -124,10 +120,9 @@ public class Robot extends TimedRobot {
         shoulder.setShoulder(15);
          cIntake.setEjectSpeed(-1.0);
       } 
-      else if(rightJoystick.getRisingEdge(3)){
-        shoulder.setShoulder(110);
+      else if(leftJoystick.getRisingEdge(1)){
+      shoulder.setShoulder(110);
       cIntake.intake();
-      
       }
     }
   }
