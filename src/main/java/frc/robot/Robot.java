@@ -2,9 +2,6 @@ package frc.robot;
 
 import frc.robot.framework.Looper;
 import frc.robot.lib.BetterJoystick;
-import frc.robot.lib.BetterXbox;
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 
@@ -25,6 +22,7 @@ public class Robot extends TimedRobot {
   Vision vision;
   BetterJoystick leftJoystick;
   BetterJoystick rightJoystick;
+  BetterJoystick opJoystick;
 //  Blinkin blinkin;
   //BetterJoystick leftJoystick, rightJoystick;
 
@@ -42,7 +40,7 @@ public class Robot extends TimedRobot {
     lime = new LimeLight();
     vision = new Vision();
     shoulder = new Shoulder();
-    
+
     hatch = new Lights(7);
 //    blinkin = new Blinkin();
 
@@ -87,6 +85,9 @@ public class Robot extends TimedRobot {
       } else if ( mode == Mode_Type.HATCH ) {
         mode = Mode_Type.CARGO;
       }
+    }
+    if( opJoystick.getRisingEdge(1) ) {
+      mode = Mode_Type.CLIMB;
     }
 
     switch (mode) {
