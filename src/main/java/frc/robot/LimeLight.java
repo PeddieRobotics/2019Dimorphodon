@@ -48,4 +48,11 @@ public class LimeLight {
         return xAngle;
     }
 
+    public void blink() {
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(2);
+    }
+
+    public void solid() {
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(3);
+    }
 }

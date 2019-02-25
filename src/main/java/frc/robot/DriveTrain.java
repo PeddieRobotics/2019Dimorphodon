@@ -90,7 +90,6 @@ public class DriveTrain {
     rightspeed = speed - turn;
     mode = Mode_Type.TELEOP;
   }
- 
 
   /**
    * @return the average velocity in feet per second from the left and right

@@ -72,55 +72,48 @@ public class Robot extends TimedRobot {
 
    //cap speed in driveTrain
 
-     if(rightJoystick.getRisingEdge(2)) {
+     if(leftJoystick.getRisingEdge(2)) {
        frontSide = !frontSide;
     }
 
     if (!frontSide) {
+      shoulder.setShoulder(0);
       drivetrain.arcadeDrive(-speed, turn);
 //      blinkin.solidBlue();
-      if (rightJoystick.getRisingEdge(1)) {
-        hIntake.eject();
-      } else if (leftJoystick.getRisingEdge(2)) {
+      if (rightJoystick.getRisingEdge(2)) {
         hIntake.hold();
-      } else if (leftJoystick.getRisingEdge(3)) {
-        hIntake.pushOut();
-      } else if (leftJoystick.getRisingEdge(4)) {
+      } else if (rightJoystick.getRisingEdge(3)) {
         hIntake.pullBack();
+      } else if (rightJoystick.getRisingEdge(4)) {
+        hIntake.pushOut();
       }
+      else if(rightJoystick.getRisingEdge(1))  { 
+        hIntake.eject();
+      } 
     } else {
+      hIntake.pullBack();
       drivetrain.arcadeDrive(speed, turn);
 //      blinkin.solidWhite();
       if(rightJoystick.getRisingEdge(1))  { 
         cIntake.eject();
-      } 
-      else if (rightJoystick.getRisingEdge(3)) {
+      } else if (leftJoystick.getRisingEdge(3)) {
         shoulder.setShoulder(0);
-        cIntake.setEjectSpeed(-1.0);
-      }
-      
-      else if (leftJoystick.getRisingEdge(4)) { //X
-      shoulder.setShoulder(20);
-      cIntake.setEjectSpeed(-0.7);
-      } 
-      
-      else if (leftJoystick.getRisingEdge(3)) { //Y
+        cIntake.setEjectSpeed(0.0);
+      } else if (rightJoystick.getRisingEdge(4)) { //X
       shoulder.setShoulder(-20);
       cIntake.setEjectSpeed(-0.5);
-      } 
-    
-      else if (leftJoystick.getRisingEdge(2)) { //B
+      } else if (rightJoystick.getRisingEdge(2)) { //B
+        shoulder.setShoulder(20);
+        cIntake.setEjectSpeed(-0.7);
+      } else if (rightJoystick.getRisingEdge(3)) { //B
       shoulder.setShoulder(65);
       cIntake.setEjectSpeed(-0.5);
-      } 
-      
-      else if (leftJoystick.getRisingEdge(1)) { //A
-      shoulder.setShoulder(110);
-      cIntake.intake();
-      } 
-      else if(rightJoystick.getRisingEdge(4)){
+      } else if (leftJoystick.getRisingEdge(4)) { //A
         shoulder.setShoulder(15);
-        cIntake.setEjectSpeed(-1.0);
+         cIntake.setEjectSpeed(-1.0);
+      } else if(leftJoystick.getRisingEdge(1)){
+      shoulder.setShoulder(110); //108 is good tho
+      cIntake.intake();
       }
     }
     hatch.update(hIntake.hasHatch(),frontSide);
