@@ -77,51 +77,42 @@ public class Robot extends TimedRobot {
     }
 
     if (!frontSide) {
+      shoulder.setShoulder(0);
       drivetrain.arcadeDrive(-speed, turn);
 //      blinkin.solidBlue();
       if (rightJoystick.getRisingEdge(2)) {
         hIntake.hold();
-      } else if (leftJoystick.getRisingEdge(3)) {
+      } else if (rightJoystick.getRisingEdge(3)) {
         hIntake.pullBack();
-      } else if (leftJoystick.getRisingEdge(4)) {
+      } else if (rightJoystick.getRisingEdge(4)) {
         hIntake.pushOut();
       }
       else if(rightJoystick.getRisingEdge(1))  { 
-        cIntake.eject();
+        hIntake.eject();
       } 
     } else {
+      hIntake.pullBack();
       drivetrain.arcadeDrive(speed, turn);
 //      blinkin.solidWhite();
       if(rightJoystick.getRisingEdge(1))  { 
         cIntake.eject();
-      } 
-      else if (leftJoystick.getRisingEdge(3)) {
+      } else if (leftJoystick.getRisingEdge(3)) {
         shoulder.setShoulder(0);
         cIntake.setEjectSpeed(0.0);
-      }
-      
-      else if (rightJoystick.getRisingEdge(4)) { //X
-     
+      } else if (rightJoystick.getRisingEdge(4)) { //X
       shoulder.setShoulder(-20);
       cIntake.setEjectSpeed(-0.5);
-      } 
-      
-    
-      else if (rightJoystick.getRisingEdge(2)) { //B
+      } else if (rightJoystick.getRisingEdge(2)) { //B
         shoulder.setShoulder(20);
         cIntake.setEjectSpeed(-0.7);
-      } 
-      else if (rightJoystick.getRisingEdge(3)) { //B
+      } else if (rightJoystick.getRisingEdge(3)) { //B
       shoulder.setShoulder(65);
       cIntake.setEjectSpeed(-0.5);
-      } 
-      
-      else if (leftJoystick.getRisingEdge(4)) { //A
+      } else if (leftJoystick.getRisingEdge(4)) { //A
         shoulder.setShoulder(15);
          cIntake.setEjectSpeed(-1.0);
-      } 
-      else if(leftJoystick.getRisingEdge(1)){
-      shoulder.setShoulder(110);
+      } else if(leftJoystick.getRisingEdge(1)){
+      shoulder.setShoulder(110); //108 is good tho
       cIntake.intake();
       }
     }

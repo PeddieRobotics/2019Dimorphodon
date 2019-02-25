@@ -79,14 +79,14 @@ public class Shoulder extends Subsystem {
     mode = Mode_Type.DISENGAGING;
   }
 
-  public void setNoBrake( double setpoint ) {
+  public void setNoBrake(double setpoint) {
     setPoint = setpoint * distancePerPulse;
     moveTime = Timer.getFPGATimestamp();
     mode = Mode_Type.NO_BRAKE_DISENGAGING;
   }
 
   public boolean atTarget() {
-    return (Math.abs((encoder.getPosition() - setPoint)) < 1.5) && (Math.abs(encoder.getVelocity()) < 20.0);
+    return (Math.abs((encoder.getPosition() - setPoint)) < 1.5) && (Math.abs(encoder.getVelocity()) < 20.5);
   }
 
   public void update() {
@@ -119,7 +119,7 @@ public class Shoulder extends Subsystem {
         DriverStation.reportError("disengaging", false);
         brakeOn = false;
         if(Timer.getFPGATimestamp() - moveTime > 0.1) {
-          mode = Mode_Type.MOVING;
+          mode = Mode_Type.NO_BRAKE_MOVING;
         }
       break;
 
