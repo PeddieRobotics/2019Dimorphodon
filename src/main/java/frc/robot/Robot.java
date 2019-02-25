@@ -19,13 +19,13 @@ public class Robot extends TimedRobot {
   Vision vision;
   BetterJoystick leftJoystick;
   BetterJoystick rightJoystick;
-//  Blinkin blinkin;
-  //BetterJoystick leftJoystick, rightJoystick;
+  // Blinkin blinkin;
+  // BetterJoystick leftJoystick, rightJoystick;
 
   boolean isDown = false;
   boolean frontSide = true; // Toggles "front" of robot: true = cargo side, false = hatch side
 
-  double speedDeadBand=0.07;
+  double speedDeadBand = 0.07;
   double turnDeadBand = 0.07;
 
   public void robotInit() {
@@ -37,7 +37,7 @@ public class Robot extends TimedRobot {
     lime = new LimeLight();
     vision = new Vision();
     shoulder = new Shoulder();
-//    blinkin = new Blinkin();
+    // blinkin = new Blinkin();
 
     loop = new Looper(10);
     loop.add(drivetrain::update);
@@ -67,18 +67,19 @@ public class Robot extends TimedRobot {
     double speed = deadband(leftJoystick.getRawAxis(1), speedDeadBand);
     double turn = deadband(rightJoystick.getRawAxis(0), turnDeadBand);
 
-    //double fspeed = xbox.getRawAxis(2)-xbox.getRawAxis(3);
-    //double fturn = xbox.getRawAxis(0);
+    // double fspeed = xbox.getRawAxis(2)-xbox.getRawAxis(3);
+    // double fturn = xbox.getRawAxis(0);
 
-   //cap speed in driveTrain
+    // cap speed in driveTrain
 
-     if(rightJoystick.getRisingEdge(2)) {
-       frontSide = !frontSide;
+    if (rightJoystick.getRisingEdge(2)) {
+      frontSide = !frontSide;
     }
 
     if (!frontSide) {
+      lime.solid();
       drivetrain.arcadeDrive(-speed, turn);
-//      blinkin.solidBlue();
+      // blinkin.solidBlue();
       if (rightJoystick.getRisingEdge(1)) {
         hIntake.eject();
       } else if (leftJoystick.getRisingEdge(2)) {
@@ -90,35 +91,38 @@ public class Robot extends TimedRobot {
       }
     } else {
       drivetrain.arcadeDrive(speed, turn);
-//      blinkin.solidWhite();
-      if(rightJoystick.getRisingEdge(1))  { 
+      if (cIntake.hasCargo()) {
+        lime.solid();
+      } else {
+        lime.blink();
+      }
+      // blinkin.solidWhite();
+      if (rightJoystick.getRisingEdge(1)) {
         cIntake.eject();
-      } 
-      else if (rightJoystick.getRisingEdge(3)) {
+      } else if (rightJoystick.getRisingEdge(3)) {
         shoulder.setShoulder(0);
         cIntake.setEjectSpeed(0.0);
       }
-      
-      else if (leftJoystick.getRisingEdge(4)) { //X
-      shoulder.setShoulder(20);
-      cIntake.setEjectSpeed(-0.7);
-      } 
-      
-      else if (leftJoystick.getRisingEdge(3)) { //Y
-      shoulder.setShoulder(-20);
-      cIntake.setEjectSpeed(-0.5);
-      } 
-    
-      else if (leftJoystick.getRisingEdge(2)) { //B
-      shoulder.setShoulder(65);
-      cIntake.setEjectSpeed(-0.5);
-      } 
-      
-      else if (leftJoystick.getRisingEdge(1)) { //A
-      shoulder.setShoulder(110);
-      cIntake.intake();
-      } 
-      else if(rightJoystick.getRisingEdge(4)){
+
+      else if (leftJoystick.getRisingEdge(4)) { // X
+        shoulder.setShoulder(20);
+        cIntake.setEjectSpeed(-0.7);
+      }
+
+      else if (leftJoystick.getRisingEdge(3)) { // Y
+        shoulder.setShoulder(-20);
+        cIntake.setEjectSpeed(-0.5);
+      }
+
+      else if (leftJoystick.getRisingEdge(2)) { // B
+        shoulder.setShoulder(65);
+        cIntake.setEjectSpeed(-0.5);
+      }
+
+      else if (leftJoystick.getRisingEdge(1)) { // A
+        shoulder.setShoulder(110);
+        cIntake.intake();
+      } else if (rightJoystick.getRisingEdge(4)) {
         shoulder.setShoulder(15);
         cIntake.setEjectSpeed(-1.0);
       }
@@ -137,11 +141,11 @@ public class Robot extends TimedRobot {
 
   public double deadband(double JoystickValue, double DeadbandCutoff) {
     double deadbandreturn;
-    if (JoystickValue<DeadbandCutoff&&JoystickValue>(DeadbandCutoff*(-1))) {
+    if (JoystickValue < DeadbandCutoff && JoystickValue > (DeadbandCutoff * (-1))) {
       deadbandreturn = 0;
-    }
-    else {
-      deadbandreturn= (JoystickValue-(Math.abs(JoystickValue)/JoystickValue*DeadbandCutoff))/(1-DeadbandCutoff);
+    } else {
+      deadbandreturn = (JoystickValue - (Math.abs(JoystickValue) / JoystickValue * DeadbandCutoff))
+          / (1 - DeadbandCutoff);
     }
     return deadbandreturn;
   }
