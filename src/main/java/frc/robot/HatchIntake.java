@@ -10,8 +10,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class HatchIntake extends Subsystem {
 
-//  Blinkin blinkin;
-
   private double lastTime;
 
   private static enum ModeType {
@@ -32,6 +30,8 @@ public class HatchIntake extends Subsystem {
   private Solenoid puncherS; // punches the hatch off the middle claw grabber
   private boolean punching;
 
+  private boolean sensorsEnabled;
+
   public boolean hasHatch;
   private AnalogInput leftSensor;
   private AnalogInput rightSensor;
@@ -49,7 +49,7 @@ public class HatchIntake extends Subsystem {
     leftSensor = new AnalogInput(ElectricalLayout.SENSOR_LEFT_HATCH_INTAKE);
     rightSensor = new AnalogInput(ElectricalLayout.SENSOR_RIGHT_HATCH_INTAKE);
 
-//    blinkin = new Blinkin();
+    sensorsEnabled = true;
   }
 
   public void initDefaultCommand() {
@@ -81,55 +81,68 @@ public class HatchIntake extends Subsystem {
     return (leftSensor.getValue() < 3700 && rightSensor.getValue() < 3700);
   }
 
+  public void setSensors( boolean sensors ) {
+    sensorsEnabled = sensors;
+  }
+
+
   public void update() {
 //    updateCalculations();
     switch (mode) {
 
       case INTAKING: // Holds panel up to grabber
-      pushedOut = true;
-      grabbing = false;  // middle grabber open
-      punching = false; // puncher back
+
+        if ( sensorsEnabled == true ) {
+          pushedOut = true;
+          grabbing = false;  // middle grabber open
+          punching = false; // puncher back
           if ( hasHatch() == true ) {
-//            blinkin.strobeBlue();
             mode = ModeType.HOLDING; //if it has been waiting for 200ms, it begins to hold
           } else {
             mode = ModeType.INTAKING; //continues to intake
           }
-    break;
+        } else {
+          pushedOut = true;
+          grabbing = false;  // middle grabber open
+          punching = false; // puncher back
+        }
 
-    case DISENGAGING:
-    grabbing = false; // middle grabber open/not holding hatch panel
-    punching = false; // punches
+      break;
 
-      if (Timer.getFPGATimestamp() - ejectTime > 1.2) { //compares the time we started waiting to current time
-        mode = ModeType.INTAKING; //if it has been waiting for 200ms, it begins to hold
-      }
-    break;
-    case HOLDING: // Holds panel up to grabber
+      case DISENGAGING:
 
-      grabbing = true;  // middle grabber locks/holding on a hatch panel
-      punching = false; // puncher back
+        grabbing = false; // middle grabber open/not holding hatch panel
+        punching = false; // punches
 
-    break;
+        if (Timer.getFPGATimestamp() - ejectTime > 1.2) { //compares the time we started waiting to current time
+          mode = ModeType.INTAKING; //if it has been waiting for 200ms, it begins to hold
+        }
 
-    case EJECTING: // Punches panel out
+      break;
 
-      grabbing = false; // middle grabber open/not holding hatch panel
-      punching = true;  // punches
+      case HOLDING: // Holds panel up to grabber
+
+        grabbing = true;  // middle grabber locks/holding on a hatch panel
+        punching = false; // puncher back
+
+      break;
+
+      case EJECTING: // Punches panel out
+
+        grabbing = false; // middle grabber open/not holding hatch panel
+        punching = true;  // punches
 
         if (Timer.getFPGATimestamp() - ejectTime > 0.6) { //compares the time we started waiting to current time
         	mode = ModeType.DISENGAGING; //if it has been waiting for 200ms, it begins to hold
         } 
 
-    break;
+      break;
 
-    case DISABLED:
+      case DISABLED:
 
-      grabbing = false;
-      punching = false;
-      pushedOut = false; // pushes out
-
-//      blinkin.fireLarge();
+        grabbing = false;
+        punching = false;
+        pushedOut = false; // pushes out
 
       break;
 

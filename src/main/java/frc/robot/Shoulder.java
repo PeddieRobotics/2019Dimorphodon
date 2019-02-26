@@ -27,6 +27,7 @@ public class Shoulder extends Subsystem {
   private boolean brakeOn;
   private double moveTime;
   private double brakeTime;
+  private boolean brakesActive;
 
   private double kP = 0.02;
   private double kI = 0.0;
@@ -65,6 +66,8 @@ public class Shoulder extends Subsystem {
 
     brake = new Solenoid(ElectricalLayout.SOLENOID_SHOULDER_BRAKE);
 
+    brakesActive = true;
+
     // int smartMotionSlot = 0;
     // pidController.setSmartMotionMaxVelocity(maxVel, smartMotionSlot);
     // pidController.setSmartMotionMinOutputVelocity(minVel, smartMotionSlot);
@@ -74,15 +77,20 @@ public class Shoulder extends Subsystem {
   }
 
   public void setShoulder(double setpoint) {
-    setPoint = setpoint * distancePerPulse;
-    moveTime = Timer.getFPGATimestamp();
-    mode = Mode_Type.DISENGAGING;
+    if ( brakesActive == true ) {
+      setPoint = setpoint * distancePerPulse;
+      moveTime = Timer.getFPGATimestamp();
+      mode = Mode_Type.DISENGAGING;
+    } else {
+      setPoint = setpoint * distancePerPulse;
+      moveTime = Timer.getFPGATimestamp();
+      mode = Mode_Type.NO_BRAKE_DISENGAGING;
+    }
   }
 
-  public void setNoBrake(double setpoint) {
-    setPoint = setpoint * distancePerPulse;
-    moveTime = Timer.getFPGATimestamp();
-    mode = Mode_Type.NO_BRAKE_DISENGAGING;
+
+  public void setBrakes( boolean brakes ) {
+    brakesActive = brakes;
   }
 
   public boolean atTarget() {

@@ -2,6 +2,7 @@ package frc.robot;
 
 import frc.robot.framework.Looper;
 import frc.robot.lib.BetterJoystick;
+// import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 
@@ -23,12 +24,14 @@ public class Robot extends TimedRobot {
   BetterJoystick leftJoystick;
   BetterJoystick rightJoystick;
   BetterJoystick opJoystick;
-//  Blinkin blinkin;
   //BetterJoystick leftJoystick, rightJoystick;
 
   boolean isDown = false;
 
-  double speedDeadBand=0.07;
+  boolean sensorState;
+  boolean brakeState;
+
+  double speedDeadBand = 0.07;
   double turnDeadBand = 0.07;
 
   public void robotInit() {
@@ -42,7 +45,6 @@ public class Robot extends TimedRobot {
     shoulder = new Shoulder();
 
     hatch = new Lights(7);
-//    blinkin = new Blinkin();
 
     loop = new Looper(10);
     loop.add(drivetrain::update);
@@ -53,6 +55,12 @@ public class Robot extends TimedRobot {
     loop.start();
 
     mode = Mode_Type.HATCH;
+
+    shoulder.setBrakes( true );
+    hIntake.setSensors( true );
+
+    sensorState = true; //are using brakes and sensors
+    brakeState = true;
 
   }
 
@@ -86,8 +94,23 @@ public class Robot extends TimedRobot {
         mode = Mode_Type.CARGO;
       }
     }
-    if( opJoystick.getRisingEdge(1) ) {
+    if ( opJoystick.getRisingEdge(1) ) {
       mode = Mode_Type.CLIMB;
+    } else if ( opJoystick.getRisingEdge(2) ) {
+      cIntake.setIntakeSpeed(0.25);
+      cIntake.intake();
+    } else if ( opJoystick.getRisingEdge(3) ) {
+      mode = Mode_Type.HATCH;
+    } else if ( opJoystick.getRisingEdge(4) ) {
+      mode = Mode_Type.CARGO;
+    } else if ( opJoystick.getRisingEdge(5) ) {
+      sensorState = !sensorState;
+      hIntake.setSensors( sensorState );
+      // DriverStation.reportError( "sensorState: " + sensorState, false );
+    } else if ( opJoystick.getRisingEdge(6) ) {
+      brakeState = !brakeState;
+      shoulder.setBrakes( brakeState ); 
+      // sDriverStation.reportError( "brakeState: " + brakeState, false );
     }
 
     switch (mode) {
@@ -109,6 +132,12 @@ public class Robot extends TimedRobot {
       break;
 
       case CARGO:
+
+      /**
+       * Now, instead of using a setNoBrake method to set the shoulder,
+       * simply change the angle but then set setBrakes to false. It
+       * changes to NO_BRAKE_DISENGAGING and etc automatically.
+       */
 
         drivetrain.arcadeDrive(speed, turn);
         if(rightJoystick.getRisingEdge(1))  { 
@@ -136,6 +165,7 @@ public class Robot extends TimedRobot {
         } 
         else if(leftJoystick.getRisingEdge(1)){
           shoulder.setShoulder(110);
+          cIntake.setIntakeSpeed(0.5);
           cIntake.intake();
         }
 

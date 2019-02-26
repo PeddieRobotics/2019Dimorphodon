@@ -28,6 +28,7 @@ public class CargoIntake extends Subsystem {
 
   private double speed;
   private double ejectSpeed;
+  private double intakeSpeed;
 
   public CargoIntake(){
     //initialize things here
@@ -62,15 +63,19 @@ public class CargoIntake extends Subsystem {
     mode = Mode_Type.DISABLED;
   }
 
-  public void setEjectSpeed(double eject) {
+  public void setEjectSpeed( double eject ) {
     ejectSpeed = eject;
+  }
+
+  public void setIntakeSpeed( double intake ) {
+    intakeSpeed = intake;
   }
 
   public void update() {
     switch (mode) {
 
       case INTAKING:
-        speed = 0.5;
+        speed = intakeSpeed;
          if(hasCargo()) { 
 //           blinkin.strobeWhite();
            mode = Mode_Type.HOLDING; 
