@@ -19,11 +19,12 @@ public class DriveTrain {
 
   private PID turnPID;
   private PID drivePID;
-
+  private PID txPID;
+  private PID yDistPID;
   private CANEncoder leftEncoder, rightEncoder;
 
   private enum Mode_Type {
-    DRIVE_STRAIGHT, TURNING, TELEOP
+    DRIVE_STRAIGHT, TURNING, TELEOP, AUTO
   };
 
   private Mode_Type mode = Mode_Type.TELEOP;
@@ -33,10 +34,16 @@ public class DriveTrain {
   private static final double DRIVE_KP = 0.081;
   private static final double DRIVE_KI = 0.000001;
   private static final double capSpeed = 0.5;
-
+  private static final double TX_I = 0.000;//will have to tune these
+  private static final double TX_P=0.0;
+  private static final double YDIST_I=0.0;
+  private static final double YDIST_P=0.0; 
   // tracking
   private double lastDistance = 0d; // distance traveled the last time update() was called
-
+  LimeLight lime;
+  LookupTable verticalTable;
+  private static final double yDistSetPoint =0;
+  private static final double txSetPoint = 0;
   public DriveTrain() {
 
     // initialize drive motors
@@ -60,9 +67,18 @@ public class DriveTrain {
     navX = new NavX();
 
     // initialize PID
+    txPID = new PID(TX_P, TX_I,0,6);
+    yDistPID = new PID(YDIST_P, YDIST_I, 0,6);
     turnPID = new PID(TURN_P, TURN_I, 0, 6);
     drivePID = new PID(DRIVE_KP, DRIVE_KI, 0, 6);
-
+    lime = new LimeLight();
+    double[] vertPixelDist  = {79,55,24,18,29,36,48,72,25,16,20,58,93,53,42};
+    double[] vertDist = {21.5,30.5,73.5,98,60,48,36,24,72,108,84,30,18,32,40};
+    try{
+      verticalTable = new LookupTable(vertDist, vertPixelDist);
+    }catch(Exception e){
+      e.printStackTrace();
+    }
   }
 
   /**
@@ -71,7 +87,11 @@ public class DriveTrain {
   public void resetNavX() {
     navX.reset();
   }
-
+  public void startAuto(){
+    txPID.set(txSetPoint);
+    yDistPID.set(yDistSetPoint);
+    mode = Mode_Type.AUTO;
+  }
   public void turnTo(double angle) {
     leftDriveMaster.setOpenLoopRampRate(0.0);
     rightDriveMaster.setOpenLoopRampRate(0.0);
@@ -185,7 +205,10 @@ public class DriveTrain {
       leftDriveMaster.set(-leftspeed);
       rightDriveMaster.set(rightspeed);
       break;
-
+    case AUTO:
+      double turn = turnPID.getOutput(lime.tx());
+      leftspeed = -yDistPID.getOutput(verticalTable.get(lime.currentTvert))+turn;
+      rightspeed = yDistPID.getOutput(verticalTable.get(lime.currentTvert)) + turn;
     }
   }
 }
