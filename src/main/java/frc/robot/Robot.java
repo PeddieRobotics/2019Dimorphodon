@@ -99,15 +99,15 @@ public class Robot extends TimedRobot {
     } else if ( opJoystick.getRisingEdge(2) ) {
       cIntake.setIntakeSpeed(0.25);
       cIntake.intake();
-    } else if ( opJoystick.getRisingEdge(3) ) {
-      mode = Mode_Type.HATCH;
-    } else if ( opJoystick.getRisingEdge(4) ) {
-      mode = Mode_Type.CARGO;
     } else if ( opJoystick.getRisingEdge(5) ) {
+      mode = Mode_Type.HATCH;
+    } else if ( opJoystick.getRisingEdge(6) ) {
+      mode = Mode_Type.CARGO;
+    } else if ( opJoystick.getRisingEdge(3) ) {
       sensorState = !sensorState;
       hIntake.setSensors( sensorState );
       // DriverStation.reportError( "sensorState: " + sensorState, false );
-    } else if ( opJoystick.getRisingEdge(6) ) {
+    } else if ( opJoystick.getRisingEdge(4) ) {
       brakeState = !brakeState;
       shoulder.setBrakes( brakeState ); 
       // sDriverStation.reportError( "brakeState: " + brakeState, false );
