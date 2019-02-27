@@ -13,8 +13,6 @@ import edu.wpi.first.wpilibj.DriverStation;
  */
 public class CargoIntake extends Subsystem {
 
-//  Blinkin blinkin;
-
  private double ejectTime;
   
   private static enum Mode_Type{
@@ -37,9 +35,6 @@ public class CargoIntake extends Subsystem {
 
     rightSensor = new AnalogInput(ElectricalLayout.SENSOR_RIGHT_CLAW_INTAKE);
     //leftSensor = new AnalogInput(ElectricalLayout.SENSOR_LEFT_CLAW_INTAKE);
-
-//    blinkin = new Blinkin();
-
   }
 
   public boolean hasCargo(){
@@ -76,11 +71,10 @@ public class CargoIntake extends Subsystem {
 
       case INTAKING:
         speed = intakeSpeed;
-         if(hasCargo()) { 
-//           blinkin.strobeWhite();
-           mode = Mode_Type.HOLDING; 
-          }
-        break;
+        if(hasCargo()) { 
+          mode = Mode_Type.HOLDING; 
+        }
+      break;
   
       case HOLDING:
         speed = 0.1;
@@ -88,7 +82,7 @@ public class CargoIntake extends Subsystem {
         if(!hasCargo()) {
           mode = Mode_Type.INTAKING;
         }
-        break;
+      break;
   
       case EJECTING:
         speed = ejectSpeed;
@@ -96,12 +90,13 @@ public class CargoIntake extends Subsystem {
         if (Timer.getFPGATimestamp() - ejectTime > 5.0) { 
         	mode = Mode_Type.INTAKING;
         } 
-        break;
+      break;
   
       case DISABLED:
         speed = 0;
         break;
       }
+
       leftClaw.set(ControlMode.PercentOutput, -speed);
       rightClaw.set(ControlMode.PercentOutput, speed);
       DriverStation.reportError("" + rightSensor.getValue(), false);
