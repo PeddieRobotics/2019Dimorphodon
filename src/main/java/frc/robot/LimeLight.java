@@ -14,7 +14,8 @@ public class LimeLight {
     NetworkTableEntry tx;
     NetworkTableEntry ty;
     NetworkTableEntry tv;
-    NetworkTableEntry tvert; 
+    NetworkTableEntry tvert;
+    NetworkTableEntry lightState; 
     final double mountAngle = 0.0;
     final double targetHeight = 29;
     final double mountHeight = 32.75;
@@ -28,6 +29,7 @@ public class LimeLight {
         tx = table.getEntry("tx");
         ty = table.getEntry("ty");
         tv = table.getEntry("tv");
+        lightState = table.getEntry("ledMode");
         
         tvert = table.getEntry("tvert");
     }
@@ -85,5 +87,11 @@ public class LimeLight {
             }
         }
         return average/averageTVert.size();
+    }
+    public void blink(){
+       lightState.setValue(2);
+    }
+    public void off(){
+        lightState.setValue(1);
     }
 }

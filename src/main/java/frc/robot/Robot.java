@@ -4,6 +4,7 @@ import frc.robot.framework.Looper;
 import frc.robot.lib.BetterJoystick;
 // import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Counter.Mode;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 
 public class Robot extends TimedRobot {
@@ -119,7 +120,7 @@ public class Robot extends TimedRobot {
     switch (mode) {
 
       case HATCH:
-
+        updateLights();
         drivetrain.arcadeDrive(-speed, turn);
         if (rightJoystick.getRisingEdge(2)) {
           hatch.hold();
@@ -141,7 +142,7 @@ public class Robot extends TimedRobot {
        * simply change the angle but then set setBrakes to false. It
        * changes to NO_BRAKE_DISENGAGING and etc automatically.
        */
-
+        updateLights();
         drivetrain.arcadeDrive(speed, turn);
         if(rightJoystick.getRisingEdge(1))  { 
           cargo.eject();
@@ -175,8 +176,12 @@ public class Robot extends TimedRobot {
       break;
 
       case CLIMB:
+        lime.off();//turn the lights off if we are climbing 
+        hatchLights.set(false);
         if (rightJoystick.getRisingEdge(1)) 
         {
+          shoulder.setShoulder(-20);
+          hatch.pushOut();
           climber.fireFront();
         }
         else if (rightJoystick.getRisingEdge(2))
@@ -185,6 +190,8 @@ public class Robot extends TimedRobot {
         }
         else if (leftJoystick.getRisingEdge(1))
         {
+          shoulder.setShoulder(110);
+          hatch.pullBack();
           climber.fireBack();
         }
         else if (leftJoystick.getRisingEdge(2))
@@ -197,6 +204,7 @@ public class Robot extends TimedRobot {
   }
 
   public void testPeriodic() {
+    
   }
 
   public void updateDash() {
@@ -205,7 +213,20 @@ public class Robot extends TimedRobot {
     // Output Drive Dist Left
     // Output Drive Dist Right
   }
-
+  public void updateLights(){
+    boolean isHatch = (mode == Mode_Type.HATCH);
+    hatchLights.update(hatch.hasHatch(),isHatch);//if we have a hatch it will blink, otherwise will be equal to is hatch
+    if(!isHatch){
+      if(cargo.hasCargo()){
+        lime.blink();
+      }else{
+        lime.solid();
+      }
+    }else{//so if we aren't in cargo mode we want to be in hatch mode
+      lime.defaultValue();
+    }
+    
+  }
   public double deadband(double JoystickValue, double DeadbandCutoff) {
     double deadbandreturn;
     if (JoystickValue<DeadbandCutoff&&JoystickValue>(DeadbandCutoff*(-1))) {
