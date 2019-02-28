@@ -88,10 +88,19 @@ public class LimeLight {
         }
         return average/averageTVert.size();
     }
+
     public void blink(){
        lightState.setValue(2);
     }
     public void off(){
         lightState.setValue(1);
     }
+    public void solid(){
+        lightState.setValue(3);
+    }
+    public void defaultValue(){
+        lightState.setValue(4);
+    }
+	
+	
 }

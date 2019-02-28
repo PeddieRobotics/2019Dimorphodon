@@ -14,22 +14,17 @@ public class Climber {
     private boolean startedTwo = false;
     //CargoIntake cIntake = new CargoIntake();
     //HatchIntake hIntake = new HatchIntake();
-    //Shoulder shoulder = new Shoulder();
-    public Climber(CargoIntake cIntake, HatchIntake hIntake, Shoulder shoulder){
-        //this.cIntake = cIntake;
-        //this.hIntake = hIntake;
-        //this.shoulder = shoulder;
+    Shoulder shoulder = new Shoulder();
+    public Climber(){
     }
     public void fireFront(){
         startedOne = true;
-        //shoulder.setShoulder(-20);
-        //hIntake.pushOut();
+        
         startTime1 = Timer.getFPGATimestamp();
         
     }
     public void fireBack(){
-        //shoulder.setShoulder(110);
-        //hIntake.pullBack();
+        
         startedTwo = true;
         startTime2 = Timer.getFPGATimestamp();
     }
