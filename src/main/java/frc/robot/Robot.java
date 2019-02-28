@@ -14,12 +14,12 @@ public class Robot extends TimedRobot {
   private Mode_Type mode;
 
   DriveTrain drivetrain;
-  CargoIntake cIntake;
+  CargoIntake cargo;
   Climber climber;
-  HatchIntake hIntake;
+  HatchIntake hatch;
   Shoulder shoulder;
   Looper loop;
-  Lights hatch;
+  Lights hatchLights;
   LimeLight lime;
   Vision vision;
   BetterJoystick leftJoystick;
@@ -39,19 +39,19 @@ public class Robot extends TimedRobot {
     leftJoystick = new BetterJoystick(0);
     rightJoystick = new BetterJoystick(1);
     drivetrain = new DriveTrain();
-    cIntake = new CargoIntake();
-    hIntake = new HatchIntake();
+    cargo = new CargoIntake();
+    hatch = new HatchIntake();
     lime = new LimeLight();
     vision = new Vision();
     shoulder = new Shoulder();
-    climber = new Climber(cIntake, hIntake, shoulder);
+    climber = new Climber(cargo, hatch, shoulder);
 
-    hatch = new Lights(7);
+    hatchLights = new Lights(7);
 
     loop = new Looper(10);
     loop.add(drivetrain::update);
-    loop.add(cIntake::update);
-    loop.add(hIntake::update);
+    loop.add(cargo::update);
+    loop.add(hatch::update);
     loop.add(shoulder::update);
     loop.add(lime::update);
     loop.add(climber::update);
@@ -100,8 +100,8 @@ public class Robot extends TimedRobot {
     if ( opJoystick.getRisingEdge(1) ) {
       mode = Mode_Type.CLIMB;
     } else if ( opJoystick.getRisingEdge(2) ) {
-      cIntake.setIntakeSpeed(0.25);
-      cIntake.intake();
+      cargo.setIntakeSpeed(0.25);
+      cargo.intake();
     } else if ( opJoystick.getRisingEdge(5) ) {
       mode = Mode_Type.HATCH;
     } else if ( opJoystick.getRisingEdge(6) ) {
@@ -122,14 +122,14 @@ public class Robot extends TimedRobot {
 
         drivetrain.arcadeDrive(-speed, turn);
         if (rightJoystick.getRisingEdge(2)) {
-          hIntake.hold();
+          hatch.hold();
         } else if (leftJoystick.getRisingEdge(3)) {
-          hIntake.pullBack();
+          hatch.pullBack();
         } else if (leftJoystick.getRisingEdge(4)) {
-          hIntake.pushOut();
+          hatch.pushOut();
         }
         else if(rightJoystick.getRisingEdge(1))  { 
-          cIntake.eject();
+          cargo.eject();
         } 
 
       break;
@@ -144,32 +144,32 @@ public class Robot extends TimedRobot {
 
         drivetrain.arcadeDrive(speed, turn);
         if(rightJoystick.getRisingEdge(1))  { 
-          cIntake.eject();
+          cargo.eject();
         } 
         else if (leftJoystick.getRisingEdge(3)) {
           shoulder.setShoulder(0);
-          cIntake.setEjectSpeed(0.0);
+          cargo.setEjectSpeed(0.0);
         }
         else if (rightJoystick.getRisingEdge(4)) { //X
           shoulder.setShoulder(-20);
-          cIntake.setEjectSpeed(-0.5);
+          cargo.setEjectSpeed(-0.5);
         } 
         else if (rightJoystick.getRisingEdge(2)) { //B
           shoulder.setShoulder(20);
-          cIntake.setEjectSpeed(-0.7);
+          cargo.setEjectSpeed(-0.7);
         } 
         else if (rightJoystick.getRisingEdge(3)) { //B
           shoulder.setShoulder(65);
-          cIntake.setEjectSpeed(-0.5);
+          cargo.setEjectSpeed(-0.5);
         }
         else if (leftJoystick.getRisingEdge(4)) { //A
           shoulder.setShoulder(15);
-          cIntake.setEjectSpeed(-1.0);
+          cargo.setEjectSpeed(-1.0);
         } 
         else if(leftJoystick.getRisingEdge(1)){
           shoulder.setShoulder(110);
-          cIntake.setIntakeSpeed(0.5);
-          cIntake.intake();
+          cargo.setIntakeSpeed(0.5);
+          cargo.intake();
         }
 
       break;
@@ -200,8 +200,8 @@ public class Robot extends TimedRobot {
   }
 
   public void updateDash() {
-    SmartDashboard.putBoolean("Hatch", hIntake.hasHatch());
-    SmartDashboard.putBoolean("Cargo", cIntake.hasCargo());
+    SmartDashboard.putBoolean("Hatch", hatch.hasHatch());
+    SmartDashboard.putBoolean("Cargo", cargo.hasCargo());
     // Output Drive Dist Left
     // Output Drive Dist Right
   }
