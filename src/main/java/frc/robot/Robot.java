@@ -15,6 +15,7 @@ public class Robot extends TimedRobot {
 
   DriveTrain drivetrain;
   CargoIntake cIntake;
+  Climber climber;
   HatchIntake hIntake;
   Shoulder shoulder;
   Looper loop;
@@ -43,6 +44,7 @@ public class Robot extends TimedRobot {
     lime = new LimeLight();
     vision = new Vision();
     shoulder = new Shoulder();
+    climber = new Climber(cIntake, hIntake, shoulder);
 
     hatch = new Lights(7);
 
@@ -52,13 +54,14 @@ public class Robot extends TimedRobot {
     loop.add(hIntake::update);
     loop.add(shoulder::update);
     loop.add(lime::update);
+    loop.add(climber::update);
     loop.start();
 
     mode = Mode_Type.HATCH;
 
     shoulder.setBrakes( true );
-    hIntake.setSensors( true );
-
+    //hIntake.setSensors( true );
+    
     sensorState = true; //are using brakes and sensors
     brakeState = true;
 
@@ -105,7 +108,7 @@ public class Robot extends TimedRobot {
       mode = Mode_Type.CARGO;
     } else if ( opJoystick.getRisingEdge(3) ) {
       sensorState = !sensorState;
-      hIntake.setSensors( sensorState );
+  //    hIntake.setSensors( sensorState );
       // DriverStation.reportError( "sensorState: " + sensorState, false );
     } else if ( opJoystick.getRisingEdge(4) ) {
       brakeState = !brakeState;
@@ -172,6 +175,23 @@ public class Robot extends TimedRobot {
       break;
 
       case CLIMB:
+        if (rightJoystick.getRisingEdge(1)) 
+        {
+          climber.fireFront();
+        }
+        else if (rightJoystick.getRisingEdge(2))
+        {
+          climber.frontUp();
+        }
+        else if (leftJoystick.getRisingEdge(1))
+        {
+          climber.fireBack();
+        }
+        else if (leftJoystick.getRisingEdge(2))
+        {
+          climber.backUp();
+        }
+    
       break;
     }
   }
