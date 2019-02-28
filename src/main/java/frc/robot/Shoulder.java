@@ -30,7 +30,7 @@ public class Shoulder extends Subsystem {
   private boolean brakesActive;
 
   private double kP = 0.02;
-  private double kI = 0.0;
+  private double kI = 0.000001;
   private double kD = 0.0;
   private double kIz = 0.0;
   private double kFF = 0.0;
