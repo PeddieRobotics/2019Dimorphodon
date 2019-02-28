@@ -155,11 +155,11 @@ public class Robot extends TimedRobot {
           shoulder.setShoulder(-20);
           cargo.setEjectSpeed(-0.5);
         } 
-        else if (rightJoystick.getRisingEdge(2)) { //B
+        else if (rightJoystick.getRisingEdge(3)) { //B
           shoulder.setShoulder(20);
           cargo.setEjectSpeed(-0.7);
         } 
-        else if (rightJoystick.getRisingEdge(3)) { //B
+        else if (rightJoystick.getRisingEdge(2)) { //B
           shoulder.setShoulder(65);
           cargo.setEjectSpeed(-0.5);
         }

@@ -43,7 +43,7 @@ public class Shoulder extends Subsystem {
   private double allowedErr = 0.0;
 
   private double setPoint = 0;
-  private double distancePerPulse = 0.715;
+  private double distancePerPulse = 0.694; //0.715
 
   public Shoulder() {
     spark = new CANSparkMax(ElectricalLayout.MOTOR_CARGO_SHOULDER, MotorType.kBrushless);
