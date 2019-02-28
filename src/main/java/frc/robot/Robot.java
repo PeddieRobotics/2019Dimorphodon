@@ -45,7 +45,7 @@ public class Robot extends TimedRobot {
     lime = new LimeLight();
     vision = new Vision();
     shoulder = new Shoulder();
-    climber = new Climber(cargo, hatch, shoulder);
+    climber = new Climber();
 
     hatchLights = new Lights(7);
 
