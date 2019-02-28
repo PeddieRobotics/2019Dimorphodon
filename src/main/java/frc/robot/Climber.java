@@ -1,14 +1,15 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Solenoid;
-
+import edu.wpi.first.wpilibj.Timer;
 public class Climber {
     Solenoid front = new Solenoid(4);
     Solenoid back = new Solenoid(5);
-    private BetterTimer oneDelay = new BetterTimer(2000);
-    private BetterTimer twoDelay = new BetterTimer(2000);
-    private boolean first = false;
-    private boolean second = false;
+    private double startTime1 = 0;
+    private double currentTime = 0;
+    private double startTime2 = 0;
+    private double delay1 = 2;
+    private double delay2 = 2; 
     private boolean startedOne = false;
     private boolean startedTwo = false;
     CargoIntake cIntake = new CargoIntake();
@@ -23,55 +24,38 @@ public class Climber {
         startedOne = true;
         shoulder.setShoulder(-20);
         hIntake.pushOut();
-        oneDelay.start();
+        startTime1 = Timer.getFPGATimestamp();
+        
     }
     public void fireBack(){
         shoulder.setShoulder(110);
         hIntake.pullBack();
         startedTwo = true;
-        twoDelay.start();
+        startTime2 = Timer.getFPGATimestamp();
     }
-    public void backDown(){
+    public void backUp(){
         back.set(false);
     }
-    public void frontDown(){
+    public void frontUp(){
         front.set(false);
     }
+    
     public void update(){
-        if(startedOne){
-
-        }
-        if(oneDelay.isFinished()&&startedOne){
+        
+        currentTime = Timer.getFPGATimestamp();
+        
+        if(startedOne && (currentTime - startTime1) > delay1){
             front.set(true);
-            
             startedOne = false;
         }
-        if(twoDelay.isFinished()&&startedTwo){
+        //if we have started second and front is fired retract it
+        else if(startedTwo && (currentTime - startTime2) > delay2){
             back.set(true);
             startedTwo = false;
         }
-        //if we have started second and front is fired retract it
-        else if(startedTwo&&front.get()){
-            frontDown();
-        }
-   }
-   public boolean oneFinished(){
-    return oneDelay.isFinished();
-   }
-   public boolean twoFinished(){
-    return twoDelay.isFinished();
-   }
-   public boolean first(){
-       return first;
-   }
-   public boolean second(){
-       return second;
    }
    /**
     * In case of some random error
     */
-   public void reset(){
-       first = false;
-       second = false;
-   }
+   
 }
