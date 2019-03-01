@@ -29,8 +29,8 @@ public class Shoulder extends Subsystem {
   private double brakeTime;
   private boolean brakesActive;
 
-  private double kP = 0.02;
-  private double kI = 0.000001;
+  private double kP = 0.028;
+  private double kI = 0.00000;
   private double kD = 0.0;
   private double kIz = 0.0;
   private double kFF = 0.0;
@@ -136,7 +136,7 @@ public class Shoulder extends Subsystem {
       case DISENGAGING:
         //DriverStation.reportError("disengaging", false);
         brakeOn = false;
-        if(Timer.getFPGATimestamp() - moveTime > 0.1) {
+        if(Timer.getFPGATimestamp() - moveTime > 0.15) {
           mode = Mode_Type.MOVING;
         }
       break;
@@ -154,7 +154,7 @@ public class Shoulder extends Subsystem {
 
     }
     brake.set(!brakeOn);
-//    DriverStation.reportError(" " + encoder.getPosition() / distancePerPulse, false);
+    DriverStation.reportError(" " + encoder.getPosition() / distancePerPulse, false);
 //    DriverStation.reportError(" " + setPoint, false);
   }
 

@@ -107,8 +107,12 @@ public class Robot extends TimedRobot {
 
       if(leftJoystick.getRisingEdge(2)) {
         if( mode == Mode_Type.CARGO ) {
+          shoulder.setShoulder(0);
+          cargo.setIntakeSpeed(0);
+          hatch.pushOut();
           mode = Mode_Type.HATCH;
         } else if ( mode == Mode_Type.HATCH ) {
+          hatch.pullBack();
           mode = Mode_Type.CARGO;
         }
       }
@@ -119,23 +123,21 @@ public class Robot extends TimedRobot {
       } else if ( opJoystick.getRisingEdge(6) ) {
         mode = Mode_Type.CARGO;
       }
-      updateDash();
+      
       switch (mode) {
 
         case HATCH:
           updateLights();
-       
           drivetrain.arcadeDrive(-speed, turn);
           if(rightJoystick.getRisingEdge(1))  { 
             hatch.eject();
           } else if (rightJoystick.getRisingEdge(2)) {
             hatch.hold();
-          } else if (leftJoystick.getRisingEdge(3)) {
+          } else if (rightJoystick.getRisingEdge(3)) {
             hatch.pullBack();
-          } else if (leftJoystick.getRisingEdge(4)) {
+          } else if (rightJoystick.getRisingEdge(4)) {
             hatch.pushOut();
           } 
-
         break;
 
         case CARGO:
@@ -146,7 +148,6 @@ public class Robot extends TimedRobot {
          * changes to NO_BRAKE_DISENGAGING and etc automatically.
          */
           updateLights();
-          hatch.pullBack();
           drivetrain.arcadeDrive(speed, turn);
           if(rightJoystick.getRisingEdge(1))  { 
             cargo.eject();
@@ -165,7 +166,7 @@ public class Robot extends TimedRobot {
             cargo.setEjectSpeed(-0.7);
           } 
           else if (rightJoystick.getRisingEdge(2)) { //B
-            shoulder.setShoulder(65);
+            shoulder.setShoulder(67.5);
             cargo.setEjectSpeed(-0.5);
           }
           else if (leftJoystick.getRisingEdge(4)) { //A
@@ -173,7 +174,7 @@ public class Robot extends TimedRobot {
             cargo.setEjectSpeed(-1.0);
           } 
           else if(leftJoystick.getRisingEdge(1)){
-            shoulder.setShoulder(110);
+            shoulder.setShoulder(111);
             cargo.setIntakeSpeed(0.5);
             cargo.intake();
           }
@@ -207,6 +208,7 @@ public class Robot extends TimedRobot {
       
         break;
       }
+      updateDash();
     }
   }
 
