@@ -119,11 +119,12 @@ public class Robot extends TimedRobot {
       } else if ( opJoystick.getRisingEdge(6) ) {
         mode = Mode_Type.CARGO;
       }
-
+      updateDash();
       switch (mode) {
 
         case HATCH:
           updateLights();
+       
           drivetrain.arcadeDrive(-speed, turn);
           if(rightJoystick.getRisingEdge(1))  { 
             hatch.eject();
@@ -180,6 +181,7 @@ public class Robot extends TimedRobot {
         break;
 
         case CLIMB:
+  
           lime.off();//turn the lights off if we are climbing 
           hatchLights.set(false);
           if (rightJoystick.getRisingEdge(1)) 
@@ -215,37 +217,10 @@ public class Robot extends TimedRobot {
     lime.off();
   }
   public void updateDash() {
-    /*SmartDashboard.putString("CURRENT MODE", currentMode.toUpperCase());
-    SmartDashboard.putBoolean("We have a hatch", hatch.hasHatch());
-    SmartDashboard.putBoolean("We have cargo", cargo.hasCargo());
-    double currentTime = Timer.getFPGATimestamp();
-    if(currentTime-startTime>15){
-      SmartDashboard.putString("Sandstorm score ", "points: " + points);
-    }else {
-      SmartDashboard.putString("Total score" , "points: "+points);
-    }
-    SmartDashboard.putNumber("Cycles", cycles);
-    SmartDashboard.putNumber("Avg. Cycle time",(currentTime-startTime)/cycles);
-    SmartDashboard.putNumber("Last cycle time",currentScore-lastScore);
-    if(currentScore-lastScore<bestScoreTime){
-      bestScoreTime = currentScore - lastScore;
-    }
-    SmartDashboard.putNumber("Best cycle time",bestScoreTime);
-    SmartDashboard.putBoolean("Grabber State", hatch.grabber());
-    SmartDashboard.putString("Arm","below are a list of arm states");
-    SmartDashboard.putBoolean("Hatch Intake out" , hatch.pushOutState());
-    SmartDashboard.putBoolean("Arm: Vertical",(shoulder.setPoint()==0));
-    SmartDashboard.putBoolean("Arm: Rocket Level 2",(shoulder.setPoint()==20));
-    SmartDashboard.putBoolean("Arm: Rocket Level 1",(shoulder.setPoint()==65));
-    SmartDashboard.putBoolean("Arm: Intaking",(shoulder.setPoint()==115));
-    SmartDashboard.putBoolean("Arm: Reverese Cargo",(shoulder.setPoint()==15));
-    SmartDashboard.putBoolean("Arm: Cargo",(shoulder.setPoint()==-20));
-    
-    SmartDashboard.putBoolean("Arm Brake Engaged",shoulder.brakeOn());
-    SmartDashboard.putBoolean("Arm at Setpoint? ", shoulder.atTarget());
-    // Output Drive Dist Left
-    // Output Drive Dist Right
-    */
+    SmartDashboard.putBoolean("Have Hatch", hatch.hasHatch());
+    SmartDashboard.putBoolean("Have Cargo ", cargo.hasCargo());
+    SmartDashboard.putBoolean("Cargo Mode",(mode == Mode_Type.CARGO));
+    SmartDashboard.putBoolean("Hatch Mode",(mode==Mode_Type.HATCH));
   }
   public void updateLights(){
     boolean isHatch = (mode == Mode_Type.HATCH);
