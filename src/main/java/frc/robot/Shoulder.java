@@ -96,11 +96,13 @@ public class Shoulder extends Subsystem {
   public boolean atTarget() {
     return (Math.abs((encoder.getPosition() - setPoint)) < 1.5) && (Math.abs(encoder.getVelocity()) < 20.5);
   }
-
+  public double setPoint(){
+    return this.setPoint();
+  }
   public void update() {
     switch (mode) {
       case MOVING:
-        DriverStation.reportError("moving", false);
+        //DriverStation.reportError("moving", false);
         brakeOn = false;
         pidController.setReference(setPoint, ControlType.kPosition);
         if(atTarget()) {
@@ -110,7 +112,7 @@ public class Shoulder extends Subsystem {
       break;
 
       case NO_BRAKE_MOVING:
-        DriverStation.reportError("moving", false);
+        //DriverStation.reportError("moving", false);
         brakeOn = false;
         pidController.setReference(setPoint, ControlType.kPosition);
       break;
@@ -124,7 +126,7 @@ public class Shoulder extends Subsystem {
       break;
 
       case NO_BRAKE_DISENGAGING:
-        DriverStation.reportError("disengaging", false);
+        //DriverStation.reportError("disengaging", false);
         brakeOn = false;
         if(Timer.getFPGATimestamp() - moveTime > 0.1) {
           mode = Mode_Type.NO_BRAKE_MOVING;
@@ -132,7 +134,7 @@ public class Shoulder extends Subsystem {
       break;
 
       case DISENGAGING:
-        DriverStation.reportError("disengaging", false);
+        //DriverStation.reportError("disengaging", false);
         brakeOn = false;
         if(Timer.getFPGATimestamp() - moveTime > 0.1) {
           mode = Mode_Type.MOVING;
@@ -140,7 +142,7 @@ public class Shoulder extends Subsystem {
       break;
 
       case BRAKING:
-        DriverStation.reportError("braking", false);
+       // DriverStation.reportError("braking", false);
         brakeOn = true;
         spark.set(0);
       break;

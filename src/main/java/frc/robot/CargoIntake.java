@@ -87,7 +87,7 @@ public class CargoIntake extends Subsystem {
       case EJECTING:
         speed = ejectSpeed;
        
-        if (Timer.getFPGATimestamp() - ejectTime > 5.0) { 
+        if (Timer.getFPGATimestamp() - ejectTime > 2.0) { 
         	mode = Mode_Type.INTAKING;
         } 
       break;
@@ -99,7 +99,7 @@ public class CargoIntake extends Subsystem {
 
       leftClaw.set(ControlMode.PercentOutput, -speed);
       rightClaw.set(ControlMode.PercentOutput, speed);
-      DriverStation.reportError("" + rightSensor.getValue(), false);
+      //DriverStation.reportError("" + rightSensor.getValue(), false);
   }
 
   @Override

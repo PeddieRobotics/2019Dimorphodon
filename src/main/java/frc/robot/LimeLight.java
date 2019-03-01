@@ -91,6 +91,7 @@ public class LimeLight {
 
     public void blink(){
        lightState.setValue(2);
+       
     }
     public void off(){
         lightState.setValue(1);

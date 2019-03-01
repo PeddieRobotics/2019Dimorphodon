@@ -8,22 +8,13 @@ public class Lights{
     boolean state= false;
     boolean outsideState = false;
     Solenoid light;
-    BetterTimer on = new BetterTimer(200);
+    double switchTime = 0.5;
+    double startTime = 0;
     public Lights(int port){
         light = new Solenoid(port);
     }
-    public void update(boolean state1, boolean state2){
-        if(on.isFinished()){
-            on.start();
-            state = !state;
-        }
-        if(state1){//if outside state always true
-            light.set(state);
-        }
-        else{
-            light.set(state2);
-        }
-    
+    public void update(boolean state1){
+        light.set(state1);
     }
     public boolean state(){
         return this.state;

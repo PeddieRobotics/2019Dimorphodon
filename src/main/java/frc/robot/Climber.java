@@ -3,8 +3,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 public class Climber {
-    Solenoid front = new Solenoid(4);
-    Solenoid back = new Solenoid(5);
+    Solenoid front, back;
     private double startTime1 = 0;
     private double currentTime = 0;
     private double startTime2 = 0;
@@ -14,8 +13,9 @@ public class Climber {
     private boolean startedTwo = false;
     //CargoIntake cIntake = new CargoIntake();
     //HatchIntake hIntake = new HatchIntake();
-    Shoulder shoulder = new Shoulder();
     public Climber(){
+        front = new Solenoid(4);
+        back = new Solenoid(5);
     }
     public void fireFront(){
         startedOne = true;

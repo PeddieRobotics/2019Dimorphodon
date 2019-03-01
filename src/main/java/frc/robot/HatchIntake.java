@@ -48,7 +48,7 @@ public class HatchIntake extends Subsystem {
     grabberS = new Solenoid(ElectricalLayout.SOLENOID_HATCH_GRABBER);
     leftSensor = new AnalogInput(ElectricalLayout.SENSOR_LEFT_HATCH_INTAKE);
     rightSensor = new AnalogInput(ElectricalLayout.SENSOR_RIGHT_HATCH_INTAKE);
-
+   
 //    blinkin = new Blinkin();
   }
 
@@ -77,7 +77,6 @@ public class HatchIntake extends Subsystem {
   }
 
   public boolean hasHatch() {
-    mode = ModeType.INTAKING;
     return (leftSensor.getValue() < 3700 && rightSensor.getValue() < 3700);
   }
 
