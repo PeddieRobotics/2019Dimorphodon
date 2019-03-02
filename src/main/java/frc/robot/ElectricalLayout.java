@@ -19,6 +19,8 @@ public class ElectricalLayout {
   public static final int SOLENOID_HATCH_GRABBER = 3; //middle claw locking mechanism
   public static final int SOLENOID_HATCH_DEPLOY = 2;  //pushes the whole thing out
   public static final int SOLENOID_SHOULDER_BRAKE = 0; //check what port this actually is
+  public static final int SOLENOID_CLIMB_FRONT = 4;
+  public static final int SOLENOID_CLIMB_BACK = 5;
 
   
   //xbox "axes", anything that has a value that can change 

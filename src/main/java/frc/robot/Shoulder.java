@@ -94,7 +94,7 @@ public class Shoulder extends Subsystem {
   }
 
   public boolean atTarget() {
-    return (Math.abs((encoder.getPosition() - setPoint)) < 1.5) && (Math.abs(encoder.getVelocity()) < 20.5);
+    return (Math.abs((encoder.getPosition() - setPoint)) < 1.5) && (Math.abs(encoder.getVelocity()) < 25.0);
   }
   public double setPoint(){
     return this.setPoint();
@@ -120,7 +120,7 @@ public class Shoulder extends Subsystem {
       case ENGAGING:
         brakeOn = true;
         pidController.setReference(setPoint,ControlType.kPosition);
-        if(Timer.getFPGATimestamp() - brakeTime > 0.1) {
+        if(Timer.getFPGATimestamp() - brakeTime > 0.3) {
           mode = Mode_Type.BRAKING;
         }
       break;

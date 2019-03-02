@@ -15,7 +15,7 @@ public class HatchIntake extends Subsystem {
   private double lastTime;
 
   private static enum ModeType {
-    INTAKING, HOLDING, EJECTING, DISABLED, DISENGAGING
+    INTAKING, HOLDING, EJECTING, DISABLED, DISENGAGING, BACK
   };
 
   private ModeType mode = ModeType.DISABLED;
@@ -73,6 +73,10 @@ public class HatchIntake extends Subsystem {
   }
 
   public void pullBack() {
+    mode = ModeType.BACK;
+  }
+
+  public void disable() {
     mode = ModeType.DISABLED;
   }
 
@@ -119,6 +123,12 @@ public class HatchIntake extends Subsystem {
         	mode = ModeType.DISENGAGING; //if it has been waiting for 200ms, it begins to hold
         } 
 
+    break;
+
+    case BACK:
+
+        punching = false;
+        pushedOut = false;
     break;
 
     case DISABLED:

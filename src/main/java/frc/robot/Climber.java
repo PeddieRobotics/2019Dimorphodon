@@ -9,45 +9,31 @@ public class Climber {
     private double startTime2 = 0;
     private double delay1 = 2;
     private double delay2 = 2; 
-    private boolean startedOne = false;
-    private boolean startedTwo = false;
+    private boolean frontState = false;
+    private boolean backState = false;
     //CargoIntake cIntake = new CargoIntake();
     //HatchIntake hIntake = new HatchIntake();
     public Climber(){
-        front = new Solenoid(4);
-        back = new Solenoid(5);
+        front = new Solenoid(ElectricalLayout.SOLENOID_CLIMB_FRONT);
+        back = new Solenoid(ElectricalLayout.SOLENOID_CLIMB_BACK);
     }
     public void fireFront(){
-        startedOne = true;
-        
-        startTime1 = Timer.getFPGATimestamp();
+        frontState = true;
         
     }
     public void fireBack(){
-        
-        startedTwo = true;
-        startTime2 = Timer.getFPGATimestamp();
+        backState = true;
     }
     public void backUp(){
-        back.set(false);
+        backState = false;
     }
     public void frontUp(){
-        front.set(false);
+        frontState = false;
     }
     
     public void update(){
-        
-        currentTime = Timer.getFPGATimestamp();
-        
-        if(startedOne && (currentTime - startTime1) > delay1){
-            front.set(true);
-            startedOne = false;
-        }
-        //if we have started second and front is fired retract it
-        else if(startedTwo && (currentTime - startTime2) > delay2){
-            back.set(true);
-            startedTwo = false;
-        }
+        front.set(frontState);
+        back.set(backState);
    }
    /**
     * In case of some random error
