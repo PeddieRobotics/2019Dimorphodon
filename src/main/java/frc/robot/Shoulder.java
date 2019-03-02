@@ -77,7 +77,7 @@ public class Shoulder extends Subsystem {
   }
 
   public void setShoulder(double setpoint) {
-    if ( brakesActive == true ) {
+    if ( brakesActive ) {
       setPoint = setpoint * distancePerPulse;
       moveTime = Timer.getFPGATimestamp();
       mode = Mode_Type.DISENGAGING;
@@ -136,7 +136,8 @@ public class Shoulder extends Subsystem {
       case DISENGAGING:
         //DriverStation.reportError("disengaging", false);
         brakeOn = false;
-        if(Timer.getFPGATimestamp() - moveTime > 0.15) {
+//        spark.set(0.0);
+        if(Timer.getFPGATimestamp() - moveTime > 0.3) {
           mode = Mode_Type.MOVING;
         }
       break;
@@ -145,7 +146,7 @@ public class Shoulder extends Subsystem {
        // DriverStation.reportError("braking", false);
         brakeOn = true;
         spark.set(0);
-      break;
+      break; 
 
       case DISABLED:
         brakeOn = false;

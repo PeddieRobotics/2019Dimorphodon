@@ -79,6 +79,8 @@ public class Robot extends TimedRobot {
     sensorState = true; //are using brakes and sensors
     brakeState = true;
     systemsDelay = Timer.getFPGATimestamp();
+
+    updateDash();
   }
 
   public void robotPeriodic() {
@@ -306,23 +308,23 @@ public class Robot extends TimedRobot {
           lime.off();//turn the lights off if we are climbing 
           hatchLights.set(false);
           drivetrain.arcadeDrive(speed, turn);
-          if (rightJoystick.getRisingEdge(1)) 
+          if (rightJoystick.getRisingEdge(4)) 
           {
 //            shoulder.setShoulder(-20);
 //            hatch.pushOut();
             climber.fireFront();
           }
-          else if (rightJoystick.getRisingEdge(2))
+          else if (rightJoystick.getRisingEdge(3))
           {
             climber.frontUp();
           }
-          else if (leftJoystick.getRisingEdge(1))
+          else if (leftJoystick.getRisingEdge(4))
           {
             shoulder.setShoulder(67.5);
 //            hatch.pullBack();
             climber.fireBack();
           }
-          else if (leftJoystick.getRisingEdge(2))
+          else if (leftJoystick.getRisingEdge(3))
           {
             climber.backUp();
           }
@@ -337,6 +339,7 @@ public class Robot extends TimedRobot {
     
   }
   public void disabledInit(){
+    drivetrain.arcadeDrive(0,0);
     hatch.disable();
     lime.off();
   }
@@ -344,7 +347,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("Have Hatch", hatch.hasHatch());
     SmartDashboard.putBoolean("Have Cargo ", cargo.hasCargo());
     SmartDashboard.putBoolean("Cargo Mode",(mode == Mode_Type.CARGO));
-    SmartDashboard.putBoolean("Hatch Mode",(mode==Mode_Type.HATCH));
+    SmartDashboard.putBoolean("Hatch Mode",(mode == Mode_Type.HATCH));
+    SmartDashboard.putBoolean("Climb Mode",(mode == Mode_Type.CLIMB));
   }
   public void updateLights(){
     boolean isHatch = (mode == Mode_Type.HATCH);
