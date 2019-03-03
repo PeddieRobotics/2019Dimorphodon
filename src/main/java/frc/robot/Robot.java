@@ -38,6 +38,8 @@ public class Robot extends TimedRobot {
 
   boolean sensorState;
   boolean brakeState;
+  boolean lastHadCargo;
+  boolean intaking;
 
   double speedDeadBand = 0.07;
   double turnDeadBand = 0.07;
@@ -105,28 +107,6 @@ public class Robot extends TimedRobot {
 
     //cap speed in driveTrain
 
-      if(leftJoystick.getRisingEdge(2)) {
-        if( mode == Mode_Type.CARGO ) {
-          shoulder.setShoulder(0);
-          cargo.setIntakeSpeed(0);
-          hatch.pushOut();
-          mode = Mode_Type.HATCH;
-        } else if ( mode == Mode_Type.HATCH ) {
-          hatch.pullBack();
-          mode = Mode_Type.CARGO;
-        }
-      }
-      if ( opJoystick.getRisingEdge(1) ) {
-        mode = Mode_Type.CLIMB;
-      } else if ( opJoystick.getRisingEdge(5) ) {
-        mode = Mode_Type.HATCH;
-      } else if ( opJoystick.getRisingEdge(6) ) {
-        mode = Mode_Type.CARGO;
-      }
-      
-      switch (mode) {
-
-        case HATCH:
           updateLights();
           drivetrain.arcadeDrive(-speed, turn);
           if(rightJoystick.getRisingEdge(1))  { 
@@ -136,79 +116,9 @@ public class Robot extends TimedRobot {
           } else if (rightJoystick.getRisingEdge(3)) {
             hatch.pullBack();
           } else if (rightJoystick.getRisingEdge(4)) {
-            hatch.pushOut();
+            hatch.forward();
           } 
-        break;
-
-        case CARGO:
-
-        /**
-         * Now, instead of using a setNoBrake method to set the shoulder,
-         * simply change the angle but then set setBrakes to false. It
-         * changes to NO_BRAKE_DISENGAGING and etc automatically.
-         */
-          updateLights();
-          drivetrain.arcadeDrive(speed, turn);
-          if(rightJoystick.getRisingEdge(1))  { 
-            cargo.eject();
-          } 
-          else if (leftJoystick.getRisingEdge(3)) {
-            shoulder.setShoulder(0);
-            cargo.setEjectSpeed(0.0);
-            cargo.setIntakeSpeed(0.0);
-          }
-          else if (rightJoystick.getRisingEdge(4)) { //X
-            shoulder.setShoulder(-20);
-            cargo.setEjectSpeed(-0.4);
-          } 
-          else if (rightJoystick.getRisingEdge(3)) { //B
-            shoulder.setShoulder(20);
-            cargo.setEjectSpeed(-0.4);
-          } 
-          else if (rightJoystick.getRisingEdge(2)) { //B
-            shoulder.setShoulder(66);
-            cargo.setEjectSpeed(-0.5);
-          }
-          else if (leftJoystick.getRisingEdge(4)) { //A
-            shoulder.setShoulder(15);
-            cargo.setEjectSpeed(-1.0);
-          } 
-          else if(leftJoystick.getRisingEdge(1)){
-            shoulder.setShoulder(109);
-            cargo.setIntakeSpeed(0.5);
-            cargo.intake();
-          }
-
-        break;
-
-        case CLIMB:
-  
-          lime.off();//turn the lights off if we are climbing 
-          hatchLights.set(false);
-          drivetrain.arcadeDrive(speed, turn);
-          if (rightJoystick.getRisingEdge(1)) 
-          {
-//            shoulder.setShoulder(-20);
-//            hatch.pushOut();
-            climber.fireFront();
-          }
-          else if (rightJoystick.getRisingEdge(2))
-          {
-            climber.frontUp();
-          }
-          else if (leftJoystick.getRisingEdge(1))
-          {
-//            shoulder.setShoulder(110);
-//            hatch.pullBack();
-            climber.fireBack();
-          }
-          else if (leftJoystick.getRisingEdge(2))
-          {
-            climber.backUp();
-          }
-      
-        break;
-      }
+        
       updateDash();
     }
 
@@ -278,29 +188,39 @@ public class Robot extends TimedRobot {
             shoulder.setShoulder(0);
             cargo.setEjectSpeed(0.0);
             cargo.setIntakeSpeed(0.0);
+            intaking = false;
           }
           else if (rightJoystick.getRisingEdge(4)) { //X
             shoulder.setShoulder(-20);
             cargo.setEjectSpeed(-0.4);
+            intaking = false;
           } 
           else if (rightJoystick.getRisingEdge(3)) { //B
             shoulder.setShoulder(20);
             cargo.setEjectSpeed(-0.4);
+            intaking = false;
           } 
           else if (rightJoystick.getRisingEdge(2)) { //B
             shoulder.setShoulder(66);
             cargo.setEjectSpeed(-0.5);
+            intaking = false;
           }
           else if (leftJoystick.getRisingEdge(4)) { //A
             shoulder.setShoulder(15);
             cargo.setEjectSpeed(-1.0);
+            intaking = false;
           } 
           else if(leftJoystick.getRisingEdge(1)){
-            shoulder.setShoulder(109);
+            shoulder.setShoulder(111);
             cargo.setIntakeSpeed(0.5);
+            intaking = true;
             cargo.intake();
+            
           }
-
+          if (cargo.hasCargo() && !lastHadCargo && intaking) {
+            shoulder.setShoulder(20);
+            cargo.setEjectSpeed(-0.4);
+          }
         break;
 
         case CLIMB:
@@ -331,6 +251,7 @@ public class Robot extends TimedRobot {
       
         break;
       }
+      lastHadCargo = cargo.hasCargo();
       updateDash();
     }
   }

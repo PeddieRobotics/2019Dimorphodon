@@ -15,7 +15,7 @@ public class HatchIntake extends Subsystem {
   private double lastTime;
 
   private static enum ModeType {
-    INTAKING, HOLDING, EJECTING, DISABLED, DISENGAGING, BACK
+    INTAKING, HOLDING, EJECTING, DISABLED, DISENGAGING, BACK, FORWARD
   };
 
   private ModeType mode = ModeType.DISABLED;
@@ -72,6 +72,10 @@ public class HatchIntake extends Subsystem {
     mode = ModeType.INTAKING;
   }
 
+  public void forward() {
+    mode = ModeType.FORWARD;
+  }
+
   public void pullBack() {
     mode = ModeType.BACK;
   }
@@ -98,6 +102,15 @@ public class HatchIntake extends Subsystem {
             mode = ModeType.INTAKING; //continues to intake
           }
     break;
+
+    case FORWARD: // to keep grabbing but start moving
+    punching = false; // puncher back
+    pushedOut = true;
+        if ( hasHatch() == true ) {
+//            blinkin.strobeBlue();
+          mode = ModeType.HOLDING; //if it has been waiting for 200ms, it begins to hold
+        }
+  break;
 
     case DISENGAGING:
     grabbing = false; // middle grabber open/not holding hatch panel

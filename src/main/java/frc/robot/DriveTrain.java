@@ -15,7 +15,7 @@ public class DriveTrain {
   private CANSparkMax leftDriveMaster, rightDriveMaster, leftDriveFollower1, leftDriveFollower2, rightDriveFollower1,
       rightDriveFollower2;
   private double leftspeed, rightspeed;
-  private NavX navX;
+//  private NavX navX;
 
   private PID turnPID;
   private PID drivePID;
@@ -64,7 +64,7 @@ public class DriveTrain {
     rightEncoder = rightDriveMaster.getEncoder();
 
     // initialize navX
-    navX = new NavX();
+//    navX = new NavX();
 
     // initialize PID
     txPID = new PID(TX_P, TX_I,0,6);
@@ -84,9 +84,9 @@ public class DriveTrain {
   /**
    * resets the NavX to 0
    */
-  public void resetNavX() {
-    navX.reset();
-  }
+  // public void resetNavX() {
+  //   navX.reset();
+  // }
   public void startAuto(){
     txPID.set(txSetPoint);
     yDistPID.set(yDistSetPoint);
@@ -99,9 +99,9 @@ public class DriveTrain {
     mode = Mode_Type.TURNING;
   }
 
-  public double getAngle() {
-    return navX.getAngle();
-  }
+  // public double getAngle() {
+  //   return navX.getAngle();
+  // }
 
   public void arcadeDrive(double speed, double turn) {
     leftDriveMaster.setOpenLoopRampRate(0.5);
@@ -145,9 +145,9 @@ public class DriveTrain {
    * 
    * @return whether PID is at correct angle
    */
-  public boolean atAngle() {
-    return (Math.abs(turnPID.getSetpoint() - getAngle()) <= 5);
-  }
+  // public boolean atAngle() {
+  //   return (Math.abs(turnPID.getSetpoint() - getAngle()) <= 5);
+  // }
 
   /**
    * stop drivePID when robot is at correct distance
@@ -184,8 +184,8 @@ public class DriveTrain {
       break;
 
     case TURNING:
-      leftspeed = turnPID.getOutput(navX.getAngle());
-      rightspeed = -turnPID.getOutput(navX.getAngle());
+//      leftspeed = turnPID.getOutput(navX.getAngle());
+//      rightspeed = -turnPID.getOutput(navX.getAngle());
 
       if (leftspeed > capSpeed) {
         leftspeed = capSpeed;
