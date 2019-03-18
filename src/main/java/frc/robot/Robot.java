@@ -87,6 +87,7 @@ public class Robot extends TimedRobot {
   }
 
   public void robotPeriodic() {
+    
   }
 
   public void autonomousInit() {
@@ -107,19 +108,30 @@ public class Robot extends TimedRobot {
       //double fturn = xbox.getRawAxis(0);
 
     //cap speed in driveTrain
-
-          updateLights();
-          drivetrain.arcadeDrive(-speed, turn);
-          if(rightJoystick.getRisingEdge(1))  { 
-            hatch.eject();
-          } else if (rightJoystick.getRisingEdge(2)) {
-            hatch.hold();
-          } else if (rightJoystick.getRisingEdge(3)) {
-            hatch.pullBack();
-          } else if (rightJoystick.getRisingEdge(4)) {
-            hatch.forward();
-          } 
-        
+      updateLights();
+      double limecommand = 0;
+      if(leftJoystick.getRawButton(1)){
+        limecommand = -drivetrain.lime.generateOutput();
+      }
+      if(rightJoystick.getRisingEdge(1))  { 
+        hatch.eject();
+      } else if (rightJoystick.getRisingEdge(2)) {
+        hatch.hold();
+      } else if (rightJoystick.getRisingEdge(3)) {
+        hatch.pullBack();
+      } else if (rightJoystick.getRisingEdge(4)) {
+        hatch.pushOut();
+      }
+      drivetrain.arcadeDrive(-speed, turn+limecommand);  
+      if(opJoystick.getRisingEdge(2)){
+        drivetrain.lime.center();
+      }
+      if(opJoystick.getRisingEdge(5)){
+        drivetrain.lime.leftPipeline();
+      }
+      if(opJoystick.getRisingEdge(6)){
+        drivetrain.lime.rightPipeline();
+      }
       updateDash();
     }
 
@@ -151,9 +163,19 @@ public class Robot extends TimedRobot {
       }
       if ( opJoystick.getRisingEdge(1) ) {
         mode = Mode_Type.CLIMB;
-      } else if ( opJoystick.getRisingEdge(5) ) {
+      }
+      if(opJoystick.getRisingEdge(2)){
+        drivetrain.lime.center();
+      }
+      if(opJoystick.getRisingEdge(5)){
+        drivetrain.lime.leftPipeline();
+      }
+      if(opJoystick.getRisingEdge(6)){
+        drivetrain.lime.rightPipeline();
+      }
+       else if ( opJoystick.getRisingEdge(3) ) {
         mode = Mode_Type.HATCH;
-      } else if ( opJoystick.getRisingEdge(6) ) {
+      } else if ( opJoystick.getRisingEdge(4) ) {
         mode = Mode_Type.CARGO;
       }
       
@@ -269,7 +291,13 @@ public class Robot extends TimedRobot {
     
   }
   public void testPeriodic() {
-   
+   if(leftJoystick.getRawButton(1)){
+     drivetrain.lime.leftPipeline();
+     SmartDashboard.putBoolean("pressed",true);
+   }
+   if(leftJoystick.getRawButtonPressed(2)){
+     drivetrain.lime.rightPipeline();
+   }
   }
   public void disabledInit(){
     drivetrain.arcadeDrive(0,0);

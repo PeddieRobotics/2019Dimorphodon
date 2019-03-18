@@ -22,6 +22,7 @@ public class LimeLight {
     NetworkTableEntry tl;
     NetworkTableEntry tvert;
     NetworkTableEntry lightState; 
+    NetworkTableEntry pipeline; 
     final double mountAngle = 0.0;
     final double targetHeight = 29;
     final double mountHeight = 32.75;
@@ -43,6 +44,7 @@ public class LimeLight {
         tv = table.getEntry("tv");
         ts = table.getEntry("ts");
         tl = table.getEntry("tl");
+        pipeline = table.getEntry("pipeline");
         lightState = table.getEntry("ledMode");
         TX_PID = new PID(TX_P,TX_I,TX_D,6);
         tvert = table.getEntry("tvert");
@@ -82,7 +84,15 @@ public class LimeLight {
     public boolean hasTarget(){
         return(tv.getDouble(0.0)==1);
     }
-
+    public void rightPipeline(){
+        pipeline.setValue(2);
+    }
+    public void leftPipeline(){
+        pipeline.setValue(1);
+    }
+    public void center(){
+        pipeline.setValue(0);
+    }
     public double calcDist() {
         double distance = (targetHeight - mountHeight) / Math.tan(Math.toRadians(yAngle));
         return distance;
