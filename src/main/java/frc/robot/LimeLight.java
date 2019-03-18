@@ -8,30 +8,54 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
+import frc.robot.lib.PID;
+
+import edu.wpi.first.wpilibj.DriverStation;
+
 public class LimeLight {
     final double vertIterations = 0;
     NetworkTable table;
     NetworkTableEntry tx;
     NetworkTableEntry ty;
     NetworkTableEntry tv;
+    NetworkTableEntry ts; 
+    NetworkTableEntry tl;
     NetworkTableEntry tvert;
     NetworkTableEntry lightState; 
     final double mountAngle = 0.0;
     final double targetHeight = 29;
     final double mountHeight = 32.75;
+    private final double TX_P = 0.01; 
+    private final double TX_I = 0.0;
+    private final double TX_D = 0.00;
+    PID TX_PID;
+    private boolean atAngle = true;
     double yAngle = 0;
     double xAngle = 0;
     double verticalHeigth; 
     double currentTvert = 0;
     ArrayList<Double> averageTVert = new ArrayList<Double>();
+    
     public LimeLight() {
         table = NetworkTableInstance.getDefault().getTable("limelight");
         tx = table.getEntry("tx");
         ty = table.getEntry("ty");
         tv = table.getEntry("tv");
+        ts = table.getEntry("ts");
+        tl = table.getEntry("tl");
         lightState = table.getEntry("ledMode");
-        
+        TX_PID = new PID(TX_P,TX_I,TX_D,6);
         tvert = table.getEntry("tvert");
+        atAngle = true;
+    }
+    public void setPID(){
+        atAngle = false;
+        TX_PID.set(0);
+
+    }
+    public double generateOutput(){
+        return TX_PID.getOutput(xAngle);
+        
     }
     public double tx(){
         return this.xAngle;
@@ -79,6 +103,7 @@ public class LimeLight {
             averageTVert.remove(0);
         }
     }
+
     public double tvertAverage(){
         double average = 0;
         if(averageTVert.size()>0){

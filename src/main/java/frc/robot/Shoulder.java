@@ -155,7 +155,7 @@ public class Shoulder extends Subsystem {
 
     }
     brake.set(!brakeOn);
-    DriverStation.reportError(" " + encoder.getPosition() / distancePerPulse, false);
+    //DriverStation.reportError(" " + encoder.getPosition() / distancePerPulse, false);
 //    DriverStation.reportError(" " + setPoint, false);
   }
 

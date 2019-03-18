@@ -35,7 +35,7 @@ public class DriveTrain {
   private static final double DRIVE_KI = 0.000001;
   private static final double capSpeed = 0.5;
   private static final double TX_I = 0.000;//will have to tune these
-  private static final double TX_P=0.0;
+  private static final double TX_P=0.00558;
   private static final double YDIST_I=0.0;
   private static final double YDIST_P=0.0; 
   // tracking
@@ -92,6 +92,10 @@ public class DriveTrain {
     yDistPID.set(yDistSetPoint);
     mode = Mode_Type.AUTO;
   }
+  public void setLimePIDOn(){
+    lime.setPID();
+    DriverStation.reportError("On",true);
+  }
   public void turnTo(double angle) {
     leftDriveMaster.setOpenLoopRampRate(0.0);
     rightDriveMaster.setOpenLoopRampRate(0.0);
@@ -102,7 +106,9 @@ public class DriveTrain {
   // public double getAngle() {
   //   return navX.getAngle();
   // }
-
+  public void modeAuto(){
+    mode = Mode_Type.AUTO;
+  }
   public void arcadeDrive(double speed, double turn) {
     leftDriveMaster.setOpenLoopRampRate(0.5);
     rightDriveMaster.setOpenLoopRampRate(0.5);
@@ -160,7 +166,7 @@ public class DriveTrain {
 
   public void update() {
     double distance = getAvgDistanceTraveled() - lastDistance;
-
+    lime.update();
     distance = getAvgDistanceTraveled();
 
     switch (mode) {
@@ -202,13 +208,15 @@ public class DriveTrain {
       break;
 
     case TELEOP:
+
       leftDriveMaster.set(-leftspeed);
       rightDriveMaster.set(rightspeed);
       break;
     case AUTO:
       double turn = turnPID.getOutput(lime.tx());
-      leftspeed = -yDistPID.getOutput(verticalTable.get(lime.currentTvert))+turn;
-      rightspeed = yDistPID.getOutput(verticalTable.get(lime.currentTvert)) + turn;
+      leftspeed = -turn;
+      rightspeed = turn;
     }
   }
 }
+

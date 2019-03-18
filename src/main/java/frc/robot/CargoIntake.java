@@ -77,7 +77,7 @@ public class CargoIntake extends Subsystem {
       break;
   
       case HOLDING:
-        speed = 0.1;
+        speed = 0.175;
 
         if(!hasCargo()) {
           mode = Mode_Type.INTAKING;

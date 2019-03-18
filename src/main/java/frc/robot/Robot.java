@@ -44,7 +44,8 @@ public class Robot extends TimedRobot {
   double speedDeadBand = 0.07;
   double turnDeadBand = 0.07;
   double systemsDelay = 0;
-
+  boolean autoStarted = false;
+  
   public void robotInit() {
     leftJoystick = new BetterJoystick(0);
     rightJoystick = new BetterJoystick(1);
@@ -75,7 +76,7 @@ public class Robot extends TimedRobot {
     
     mode = Mode_Type.HATCH;
 
-    shoulder.setBrakes( true );
+    shoulder.setBrakes( false );
     //hIntake.setSensors( true );
     
     sensorState = true; //are using brakes and sensors
@@ -160,7 +161,10 @@ public class Robot extends TimedRobot {
 
         case HATCH:
           updateLights();
-          drivetrain.arcadeDrive(-speed, turn);
+          double limecommand = 0;
+          if(leftJoystick.getRawButton(1)){
+            limecommand = -drivetrain.lime.generateOutput();
+          }
           if(rightJoystick.getRisingEdge(1))  { 
             hatch.eject();
           } else if (rightJoystick.getRisingEdge(2)) {
@@ -169,7 +173,8 @@ public class Robot extends TimedRobot {
             hatch.pullBack();
           } else if (rightJoystick.getRisingEdge(4)) {
             hatch.pushOut();
-          } 
+          }
+          drivetrain.arcadeDrive(-speed, turn+limecommand); 
         break;
 
         case CARGO:
@@ -191,12 +196,12 @@ public class Robot extends TimedRobot {
             intaking = false;
           }
           else if (rightJoystick.getRisingEdge(4)) { //X
-            shoulder.setShoulder(-20);
+            shoulder.setShoulder(-35);
             cargo.setEjectSpeed(-0.4);
             intaking = false;
           } 
           else if (rightJoystick.getRisingEdge(3)) { //B
-            shoulder.setShoulder(20);
+            shoulder.setShoulder(35);
             cargo.setEjectSpeed(-0.4);
             intaking = false;
           } 
@@ -218,7 +223,7 @@ public class Robot extends TimedRobot {
             
           }
           if (cargo.hasCargo() && !lastHadCargo && intaking) {
-            shoulder.setShoulder(20);
+            shoulder.setShoulder(35);
             cargo.setEjectSpeed(-0.4);
           }
         break;
@@ -251,13 +256,20 @@ public class Robot extends TimedRobot {
       
         break;
       }
+      if(rightJoystick.getRawButton(6)){
+        
+        drivetrain.setLimePIDOn();
+      }
+      
       lastHadCargo = cargo.hasCargo();
       updateDash();
     }
   }
-
-  public void testPeriodic() {
+  public void testInit(){
     
+  }
+  public void testPeriodic() {
+   
   }
   public void disabledInit(){
     drivetrain.arcadeDrive(0,0);
@@ -274,7 +286,7 @@ public class Robot extends TimedRobot {
   public void updateLights(){
     boolean isHatch = (mode == Mode_Type.HATCH);
     hatchLights.update(hatch.hasHatch());//if we have a hatch it will blink, otherwise will be equal to is hatch
-    if(!isHatch){
+    if(isHatch){
       lime.solid();
     }else{//so if we aren't in cargo mode we want to be in hatch mode
       lime.off();
