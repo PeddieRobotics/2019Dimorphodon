@@ -254,6 +254,7 @@ public class Robot extends TimedRobot {
   
           lime.off();//turn the lights off if we are climbing 
           hatchLights.set(false);
+          hatch.disable();
           drivetrain.arcadeDrive(speed, turn);
           if (rightJoystick.getRisingEdge(4)) 
           {
