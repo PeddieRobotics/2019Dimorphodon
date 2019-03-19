@@ -74,6 +74,8 @@ public class Shoulder extends Subsystem {
     // pidController.setSmartMotionMaxAccel(maxAcc, smartMotionSlot);
     // pidController.setSmartMotionAllowedClosedLoopError(allowedErr,
     // smartMotionSlot);
+
+    spark.setSmartCurrentLimit(25);
   }
 
   public void setShoulder(double setpoint) {

@@ -2,6 +2,8 @@ package frc.robot;
 
 import frc.robot.framework.Looper;
 import frc.robot.lib.BetterJoystick;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 // import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Counter.Mode;
@@ -45,6 +47,8 @@ public class Robot extends TimedRobot {
   double turnDeadBand = 0.07;
   double systemsDelay = 0;
   boolean autoStarted = false;
+
+  PowerDistributionPanel pdp;
   
   public void robotInit() {
     leftJoystick = new BetterJoystick(0);
@@ -57,6 +61,8 @@ public class Robot extends TimedRobot {
     vision = new Vision();
     shoulder = new Shoulder();
     climber = new Climber();
+
+    pdp = new PowerDistributionPanel();
 
     hatchLights = new Lights(7);
     points = 0;
@@ -138,6 +144,9 @@ public class Robot extends TimedRobot {
   }
 
   public void teleopPeriodic() {
+
+    DriverStation.reportError( "PDP: " + pdp.getCurrent(12), false);
+
     double time = Timer.getFPGATimestamp();
     if(time-systemsDelay>0.1){
       // double speed = Math.pow(leftJoystick.getRawAxis(1), 3);
@@ -228,7 +237,7 @@ public class Robot extends TimedRobot {
             intaking = false;
           } 
           else if (rightJoystick.getRisingEdge(2)) { //B
-            shoulder.setShoulder(66);
+            shoulder.setShoulder(68); //was 66
             cargo.setEjectSpeed(-0.5);
             intaking = false;
           }
@@ -238,7 +247,7 @@ public class Robot extends TimedRobot {
             intaking = false;
           } 
           else if(leftJoystick.getRisingEdge(1)){
-            shoulder.setShoulder(111);
+            shoulder.setShoulder(108);  //was 111
             cargo.setIntakeSpeed(0.5);
             intaking = true;
             cargo.intake();
