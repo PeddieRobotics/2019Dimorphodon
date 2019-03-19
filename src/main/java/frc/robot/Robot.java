@@ -324,7 +324,7 @@ public class Robot extends TimedRobot {
   public void updateLights(){
     boolean isHatch = (mode == Mode_Type.HATCH);
     hatchLights.update(hatch.hasHatch());//if we have a hatch it will blink, otherwise will be equal to is hatch
-    if(isHatch){
+    if(!isHatch){
       lime.solid();
     }else{//so if we aren't in cargo mode we want to be in hatch mode
       lime.off();
