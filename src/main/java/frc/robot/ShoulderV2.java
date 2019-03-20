@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -139,6 +140,9 @@ public class ShoulderV2 extends Subsystem {
         //DriverStation.reportError("disengaging", false);
         brakeOn = false;
 //        spark.set(0.0);
+        if(encoder.getPosition() / distancePerPulse > 65 && encoder.getPosition() / distancePerPulse < 71) {
+          pidController.setReference(60.0 * distancePerPulse, ControlType.kSmartMotion);
+        }
         if(Timer.getFPGATimestamp() - moveTime > 0.3) {
           mode = Mode_Type.MOVING;
         }
@@ -157,7 +161,7 @@ public class ShoulderV2 extends Subsystem {
 
     }
     brake.set(!brakeOn);
-   
+    DriverStation.reportError("" + encoder.getPosition() / distancePerPulse, false);
   }
 
   public void initDefaultCommand() {

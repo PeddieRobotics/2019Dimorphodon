@@ -147,7 +147,7 @@ public class Robot extends TimedRobot {
 
   public void teleopPeriodic() {
 
-    DriverStation.reportError( "PDP: " + pdp.getCurrent(12), false);
+//    DriverStation.reportError( "PDP: " + pdp.getCurrent(12), false);
 
     double time = Timer.getFPGATimestamp();
     if(time-systemsDelay>0.1){
@@ -229,7 +229,7 @@ public class Robot extends TimedRobot {
             intaking = false;
           }
           else if (rightJoystick.getRisingEdge(4)) { //X
-            shoulder.setShoulder(-33.5);
+            shoulder.setShoulder(-35);
             cargo.setEjectSpeed(-0.4);
             intaking = false;
           } 
@@ -303,13 +303,18 @@ public class Robot extends TimedRobot {
     
   }
   public void testPeriodic() {
-   if(leftJoystick.getRawButton(1)){
-     drivetrain.lime.leftPipeline();
-     SmartDashboard.putBoolean("pressed",true);
-   }
-   if(leftJoystick.getRawButtonPressed(2)){
-     drivetrain.lime.rightPipeline();
-   }
+  //  if(leftJoystick.getRawButton(1)){
+  //    drivetrain.lime.leftPipeline();
+  //    SmartDashboard.putBoolean("pressed",true);
+  //  }
+  //  if(leftJoystick.getRawButtonPressed(2)){
+  //    drivetrain.lime.rightPipeline();
+  //  }
+  if(leftJoystick.getRawButton(1)) {
+    hatch.forward();
+  } else if(leftJoystick.getRawButton(2)) {
+    hatch.pullBack();
+  }
   }
   public void disabledInit(){
     drivetrain.arcadeDrive(0,0);
@@ -326,12 +331,13 @@ public class Robot extends TimedRobot {
   public void updateLights(){
     boolean isHatch = (mode == Mode_Type.HATCH);
     hatchLights.update(hatch.hasHatch());//if we have a hatch it will blink, otherwise will be equal to is hatch
-    if(!isHatch){
+    /*if(!isHatch){
       lime.solid();
     }else{//so if we aren't in cargo mode we want to be in hatch mode
       lime.off();
     }
-    
+    */
+    lime.solid();
   }
   public double deadband(double JoystickValue, double DeadbandCutoff) {
     double deadbandreturn;
