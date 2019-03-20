@@ -20,7 +20,8 @@ public class Robot extends TimedRobot {
   CargoIntake cargo;
   Climber climber;
   HatchIntake hatch;
-  Shoulder shoulder;
+  //Shoulder shoulder;
+  ShoulderV2 shoulder;
   Looper loop;
   Lights hatchLights;
   LimeLight lime;
@@ -59,7 +60,8 @@ public class Robot extends TimedRobot {
     hatch = new HatchIntake();
     lime = new LimeLight();
     vision = new Vision();
-    shoulder = new Shoulder();
+   // shoulder = new Shoulder();
+   shoulder = new ShoulderV2();
     climber = new Climber();
 
     pdp = new PowerDistributionPanel();
@@ -82,7 +84,7 @@ public class Robot extends TimedRobot {
     
     mode = Mode_Type.HATCH;
 
-    shoulder.setBrakes( false );
+    shoulder.setBrakes(true);
     //hIntake.setSensors( true );
     
     sensorState = true; //are using brakes and sensors
@@ -227,7 +229,7 @@ public class Robot extends TimedRobot {
             intaking = false;
           }
           else if (rightJoystick.getRisingEdge(4)) { //X
-            shoulder.setShoulder(-35);
+            shoulder.setShoulder(-33.5);
             cargo.setEjectSpeed(-0.4);
             intaking = false;
           } 
