@@ -21,6 +21,7 @@ public class LimeLight {
     NetworkTableEntry ts; 
     NetworkTableEntry tl;
     NetworkTableEntry tvert;
+    NetworkTableEntry camtran; 
     NetworkTableEntry lightState; 
     NetworkTableEntry pipeline; 
     final double mountAngle = 0.0;
@@ -30,6 +31,12 @@ public class LimeLight {
     private final double TX_I = 0.0;
     private final double TX_D = 0.00;
     PID TX_PID;
+    private double[] camtrans = new double[6];
+    private double camtran_x = 0; 
+    private final double CAMX_P = 0.005;
+    private final double CAMX_I = 0.00;
+    private final double CAMX_D = 0.00;
+    PID CAMX_PID; 
     private boolean atAngle = true;
     double yAngle = 0;
     double xAngle = 0;
@@ -55,9 +62,25 @@ public class LimeLight {
         TX_PID.set(0);
 
     }
+    public double getSign(double number){
+        if(number>0){
+            return 1; 
+        }return -1;
+    }
     public double generateOutput(){
-        return TX_PID.getOutput(xAngle);
-        
+
+        double TX_output = TX_PID.getOutput(xAngle);
+        double CAMX_output = CAMX_PID.getOutput(camtran_x);
+        if(Math.abs(TX_output)>1){
+            TX_output = getSign(TX_output);
+        }
+        if(Math.abs(CAMX_output)>1){
+            CAMX_output = -getSign(CAMX_output)/4;
+        }
+        if(currentTvert<180){CAMX_output = 0;}
+        return TX_output + CAMX_output;
+    
+    
     }
     public double tx(){
         return this.xAngle;
@@ -78,6 +101,10 @@ public class LimeLight {
             SmartDashboard.putNumber("tx", xAngle);
             SmartDashboard.putNumber("Distance", calcDist());
             SmartDashboard.putNumber("ty", yAngle);
+            CAMX_PID = new PID(CAMX_P, CAMX_I, CAMX_D,6);
+            double[] defaultValues = new double[6];
+            camtrans = camtran.getDoubleArray(defaultValues);
+            camtran_x = camtrans[0];
             // SmartDashboard.putNumber("radYAngle", Math.toRadians(yAngle));
         }
     }
