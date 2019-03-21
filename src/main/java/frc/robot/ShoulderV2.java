@@ -87,7 +87,13 @@ public class ShoulderV2 extends Subsystem {
       mode = Mode_Type.NO_BRAKE_DISENGAGING;
     }
   }
-
+  public void setIdleBrakeMode(boolean idleMode) {
+    if(idleMode) {
+      spark.setIdleMode(IdleMode.kBrake);
+    } else {
+      spark.setIdleMode(IdleMode.kCoast);
+    }
+  }
   public void setBrakes( boolean brakes ) {
     brakesActive = brakes;
   }
@@ -141,10 +147,10 @@ public class ShoulderV2 extends Subsystem {
         brakeOn = false;
 //        spark.set(0.0);
         if(encoder.getPosition() / distancePerPulse > 65 && encoder.getPosition() / distancePerPulse < 71) {
-          pidController.setReference(60.0 * distancePerPulse, ControlType.kSmartMotion);
+          pidController.setReference(65.0 * distancePerPulse, ControlType.kSmartMotion);
         }
         if(encoder.getPosition() / distancePerPulse > 30 && encoder.getPosition() / distancePerPulse < 40) {
-          pidController.setReference(25 * distancePerPulse, ControlType.kSmartMotion);
+          pidController.setReference(32.0 * distancePerPulse, ControlType.kSmartMotion);
         }
         if(Timer.getFPGATimestamp() - moveTime > 0.3) {
           mode = Mode_Type.MOVING;

@@ -92,6 +92,7 @@ public class Robot extends TimedRobot {
     brakeState = true;
     systemsDelay = Timer.getFPGATimestamp();
 
+    shoulder.setIdleBrakeMode(false);
     updateDash();
   }
 
@@ -135,10 +136,10 @@ public class Robot extends TimedRobot {
       if(opJoystick.getRisingEdge(2)){
         drivetrain.lime.center();
       }
-      if(opJoystick.getRisingEdge(5)){
+      if(opJoystick.getRisingEdge(3)){
         drivetrain.lime.leftPipeline();
       }
-      if(opJoystick.getRisingEdge(6)){
+      if(opJoystick.getRisingEdge(4)){
         drivetrain.lime.rightPipeline();
       }
       updateDash();
@@ -179,17 +180,25 @@ public class Robot extends TimedRobot {
       if(opJoystick.getRisingEdge(2)){
         drivetrain.lime.center();
       }
-      if(opJoystick.getRisingEdge(5)){
+      if(opJoystick.getRisingEdge(3)){
         drivetrain.lime.leftPipeline();
       }
-      if(opJoystick.getRisingEdge(6)){
+      if(opJoystick.getRisingEdge(4)){
         drivetrain.lime.rightPipeline();
       }
       
-       else if ( opJoystick.getRisingEdge(3) ) {
+       else if ( opJoystick.getRisingEdge(5) ) {
         mode = Mode_Type.HATCH;
-      } else if ( opJoystick.getRisingEdge(4) ) {
+      } else if ( opJoystick.getRisingEdge(6) ) {
         mode = Mode_Type.CARGO;
+      }
+      else if(opJoystick.getRawButton(7)) {
+        vision.camera1.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
+        vision.camera2.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
+    
+      } else if(opJoystick.getRawButton(8)) {
+        vision.camera1.setConnectionStrategy(ConnectionStrategy.kForceClose);
+        vision.camera2.setConnectionStrategy(ConnectionStrategy.kForceClose);
       }
       
       switch (mode) {
@@ -248,6 +257,7 @@ public class Robot extends TimedRobot {
           else if (leftJoystick.getRisingEdge(4)) { //A
             shoulder.setShoulder(15);
             cargo.setEjectSpeed(-1.0);
+
             intaking = false;
           } 
           else if(leftJoystick.getRisingEdge(1)){
@@ -312,16 +322,18 @@ public class Robot extends TimedRobot {
   //  if(leftJoystick.getRawButtonPressed(2)){
   //    drivetrain.lime.rightPipeline();
   //  }
-  if(leftJoystick.getRawButton(1)) {
-    hatch.forward();
-  } else if(leftJoystick.getRawButton(2)) {
-    hatch.pullBack();
-  }
+     if(leftJoystick.getRawButton(1)){
+      hatch.forward();
+   }
+   if(leftJoystick.getRawButton(2)){
+     hatch.pullBack();
+   }
   }
   public void disabledInit(){
     drivetrain.arcadeDrive(0,0);
     hatch.disable();
     lime.off();
+    shoulder.setIdleBrakeMode(false);
   }
   public void updateDash() {
     SmartDashboard.putBoolean("Have Hatch", hatch.hasHatch());
