@@ -143,6 +143,9 @@ public class ShoulderV2 extends Subsystem {
         if(encoder.getPosition() / distancePerPulse > 65 && encoder.getPosition() / distancePerPulse < 71) {
           pidController.setReference(60.0 * distancePerPulse, ControlType.kSmartMotion);
         }
+        if(encoder.getPosition() / distancePerPulse > 30 && encoder.getPosition() / distancePerPulse < 40) {
+          pidController.setReference(25 * distancePerPulse, ControlType.kSmartMotion);
+        }
         if(Timer.getFPGATimestamp() - moveTime > 0.3) {
           mode = Mode_Type.MOVING;
         }
@@ -161,7 +164,7 @@ public class ShoulderV2 extends Subsystem {
 
     }
     brake.set(!brakeOn);
-    DriverStation.reportError("" + encoder.getPosition() / distancePerPulse, false);
+    SmartDashboard.putNumber("encoder values " ,encoder.getPosition() / distancePerPulse);
   }
 
   public void initDefaultCommand() {

@@ -2,6 +2,7 @@ package frc.robot;
 
 import frc.robot.framework.Looper;
 import frc.robot.lib.BetterJoystick;
+import edu.wpi.cscore.VideoSource.ConnectionStrategy;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 // import edu.wpi.first.wpilibj.DriverStation;
@@ -184,6 +185,7 @@ public class Robot extends TimedRobot {
       if(opJoystick.getRisingEdge(6)){
         drivetrain.lime.rightPipeline();
       }
+      
        else if ( opJoystick.getRisingEdge(3) ) {
         mode = Mode_Type.HATCH;
       } else if ( opJoystick.getRisingEdge(4) ) {
