@@ -99,7 +99,7 @@ public class CargoIntake extends Subsystem {
 
       leftClaw.set(ControlMode.PercentOutput, -speed);
       rightClaw.set(ControlMode.PercentOutput, speed);
-      DriverStation.reportError("" + rightSensor.getVoltage(), false);
+      //DriverStation.reportError("" + rightSensor.getVoltage(), false);
   }
 
   @Override

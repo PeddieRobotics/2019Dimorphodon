@@ -89,6 +89,7 @@ public class LimeLight {
             
             // SmartDashboard.putNumber("radYAngle", Math.toRadians(yAngle));
         }
+        SmartDashboard.putBoolean("Has Target", hasTarget());
     }
     public boolean hasTarget(){
         return(tv.getDouble(0.0)==1);

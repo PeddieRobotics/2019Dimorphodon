@@ -46,7 +46,7 @@ public class ShoulderV2 extends Subsystem {
   private double maxAcc = 6500.0; //.....?????
   private double allowedErr = 0.0;
 
-  private double setPoint;
+  private double setPoint;  
   private double processVar;
   private double distancePerPulse = 0.694;
 

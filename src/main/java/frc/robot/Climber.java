@@ -33,7 +33,7 @@ public class Climber {
     }
     
     public void update(){
-        DriverStation.reportError("....." + frontState, false);
+        //DriverStation.reportError("....." + frontState, false);
         front.set(frontState);
         back.set(backState);
    }
