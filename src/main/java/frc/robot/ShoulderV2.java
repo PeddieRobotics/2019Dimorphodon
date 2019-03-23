@@ -41,9 +41,9 @@ public class ShoulderV2 extends Subsystem {
   private double kMinOutput = -1.0;
   private double maxRPM = 5700.0;
 
-  private double maxVel = 5500.0;
-  private double minVel = 0.0;
-  private double maxAcc = 4500.0;
+  private double maxVel = 5500.0; //rpm
+  private double minVel = 0.0; 
+  private double maxAcc = 6500.0; //.....?????
   private double allowedErr = 0.0;
 
   private double setPoint;
@@ -129,7 +129,7 @@ public class ShoulderV2 extends Subsystem {
       case ENGAGING:
         brakeOn = true;
         pidController.setReference(setPoint,ControlType.kPosition);
-        if(Timer.getFPGATimestamp() - brakeTime > 0.3) {
+        if(Timer.getFPGATimestamp() - brakeTime > 0.1) {
           mode = Mode_Type.BRAKING;
         }
       break;

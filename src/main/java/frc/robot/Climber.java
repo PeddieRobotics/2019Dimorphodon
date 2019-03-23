@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 public class Climber {
@@ -32,6 +33,7 @@ public class Climber {
     }
     
     public void update(){
+        DriverStation.reportError("....." + frontState, false);
         front.set(frontState);
         back.set(backState);
    }

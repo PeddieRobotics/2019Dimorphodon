@@ -139,7 +139,7 @@ public class Shoulder extends Subsystem {
         //DriverStation.reportError("disengaging", false);
         brakeOn = false;
 //        spark.set(0.0);
-        if(Timer.getFPGATimestamp() - moveTime > 0.3) {
+        if(Timer.getFPGATimestamp() - moveTime > 0.1) {
           mode = Mode_Type.MOVING;
         }
       break;

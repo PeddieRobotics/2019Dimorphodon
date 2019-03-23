@@ -234,33 +234,39 @@ public class Robot extends TimedRobot {
             cargo.eject();
           } 
           else if (leftJoystick.getRisingEdge(3)) {
+            shoulder.setBrakes(true);
             shoulder.setShoulder(0);
             cargo.setEjectSpeed(0.0);
             cargo.setIntakeSpeed(0.0);
             intaking = false;
           }
           else if (rightJoystick.getRisingEdge(4)) { //X
+            shoulder.setBrakes(true);
             shoulder.setShoulder(-35);
             cargo.setEjectSpeed(-0.4);
             intaking = false;
           } 
           else if (rightJoystick.getRisingEdge(3)) { //B
+            shoulder.setBrakes(true);
             shoulder.setShoulder(35);
             cargo.setEjectSpeed(-0.4);
             intaking = false;
           } 
           else if (rightJoystick.getRisingEdge(2)) { //B
+            shoulder.setBrakes(true);
             shoulder.setShoulder(68); //was 66
             cargo.setEjectSpeed(-0.5);
             intaking = false;
           }
           else if (leftJoystick.getRisingEdge(4)) { //A
+            shoulder.setBrakes(false);
             shoulder.setShoulder(15);
             cargo.setEjectSpeed(-1.0);
 
             intaking = false;
           } 
           else if(leftJoystick.getRisingEdge(1)){
+            shoulder.setBrakes(true);
             shoulder.setShoulder(108);  //was 111
             cargo.setIntakeSpeed(0.5);
             intaking = true;
@@ -268,6 +274,7 @@ public class Robot extends TimedRobot {
             
           }
           if (cargo.hasCargo() && !lastHadCargo && intaking) {
+            shoulder.setBrakes(true);
             shoulder.setShoulder(35);
             cargo.setEjectSpeed(-0.4);
           }

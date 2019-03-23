@@ -77,7 +77,7 @@ public class CargoIntake extends Subsystem {
       break;
   
       case HOLDING:
-        speed = 0.175;
+        speed = 0.1;
 
         if(!hasCargo()) {
           mode = Mode_Type.INTAKING;
@@ -99,7 +99,7 @@ public class CargoIntake extends Subsystem {
 
       leftClaw.set(ControlMode.PercentOutput, -speed);
       rightClaw.set(ControlMode.PercentOutput, speed);
-      //DriverStation.reportError("" + rightSensor.getValue(), false);
+      DriverStation.reportError("" + rightSensor.getVoltage(), false);
   }
 
   @Override
