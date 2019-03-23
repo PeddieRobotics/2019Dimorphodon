@@ -90,9 +90,6 @@ public class LimeLight {
             // SmartDashboard.putNumber("radYAngle", Math.toRadians(yAngle));
         }
     }
-    public double getPipeline(){
-        return pipeline.getDouble(-1);
-    }
     public boolean hasTarget(){
         return(tv.getDouble(0.0)==1);
     }

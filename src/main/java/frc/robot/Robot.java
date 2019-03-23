@@ -341,9 +341,6 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("Cargo Mode",(mode == Mode_Type.CARGO));
     SmartDashboard.putBoolean("Hatch Mode",(mode == Mode_Type.HATCH));
     SmartDashboard.putBoolean("Climb Mode",(mode == Mode_Type.CLIMB));
-    SmartDashboard.putBoolean("Limelight Center mode",(drivetrain.lime.getPipeline()==0));
-    SmartDashboard.putBoolean("Limelight Right mode",(drivetrain.lime.getPipeline()==2));
-    SmartDashboard.putBoolean("Limelight Left mode", (drivetrain.lime.getPipeline()==1));
   }
   public void updateLights(){
     boolean isHatch = (mode == Mode_Type.HATCH);
