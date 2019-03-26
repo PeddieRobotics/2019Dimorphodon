@@ -48,7 +48,7 @@ public class ShoulderV2 extends Subsystem {
 
   private double setPoint;  
   private double processVar;
-  private double distancePerPulse = 0.694;
+  private double distancePerPulse = 0.5787;
 
   public ShoulderV2() {
     spark = new CANSparkMax(ElectricalLayout.MOTOR_CARGO_SHOULDER, MotorType.kBrushless); 
