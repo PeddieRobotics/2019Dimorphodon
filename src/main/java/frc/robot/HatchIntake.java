@@ -157,7 +157,7 @@ public class HatchIntake extends Subsystem {
     }
 
     pushOut.set(pushedOut);
-    grabberS.set(grabbing);
+    grabberS.set(!grabbing);
     puncherS.set(punching);
 
   }

@@ -43,7 +43,7 @@ public class ShoulderV2 extends Subsystem {
 
   private double maxVel = 5500.0; //rpm
   private double minVel = 0.0; 
-  private double maxAcc = 6500.0; //.....?????
+  private double maxAcc = 7500.0; //.....?????
   private double allowedErr = 0.0;
 
   private double setPoint;  

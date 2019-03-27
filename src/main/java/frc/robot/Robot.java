@@ -149,7 +149,7 @@ public class Robot extends TimedRobot {
 
   public void teleopPeriodic() {
 
-//    DriverStation.reportError( "PDP: " + pdp.getCurrent(12), false);
+    DriverStation.reportError( "PDP: " + pdp.getCurrent(12), false);
 
     double time = Timer.getFPGATimestamp();
     if(time-systemsDelay>0.1){
