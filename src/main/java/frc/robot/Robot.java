@@ -295,17 +295,18 @@ public class Robot extends TimedRobot {
           else if (rightJoystick.getRisingEdge(3))
           {
             climber.frontUp();
+            shoulder.setShoulder(67.5);
+//          hatch.pullBack();
+            climber.fireBack();
           }
           else if (leftJoystick.getRisingEdge(4))
           {
-            shoulder.setShoulder(67.5);
-//            hatch.pullBack();
-            climber.fireBack();
-          }
-          else if (leftJoystick.getRisingEdge(3))
-          {
             climber.backUp();
           }
+         /* else if (leftJoystick.getRisingEdge(3))
+          {
+          }
+        */
       
         break;
       }
