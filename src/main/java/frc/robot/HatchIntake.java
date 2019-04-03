@@ -146,7 +146,7 @@ public class HatchIntake extends Subsystem {
 
     case DISABLED:
 
-      grabbing = false;
+      grabbing = true;
       punching = false;
       pushedOut = false; // pushes out
 
@@ -167,7 +167,7 @@ public class HatchIntake extends Subsystem {
    * spike
    */
   //to delete
-  public void updateCalculations() {
+  public void updateCalculations() {  
     if (loopsDone < numberOfLoops) {
       currentRawValue = leftSensor.getValue();
       averageRawValue += currentRawValue;

@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Counter.Mode;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.AutoRoutines.*;
 public class Robot extends TimedRobot {
 
   public static enum Mode_Type {
@@ -49,9 +50,25 @@ public class Robot extends TimedRobot {
   double turnDeadBand = 0.07;
   double systemsDelay = 0;
   boolean autoStarted = false;
-
+  boolean autoRun = false;
   PowerDistributionPanel pdp;
+  private static final String kDefaultAuto = "Default";
+  private static final String leftRocket = "Left Rocket";
   
+  private static final String rightRocket = "Right Rocket";
+  
+  private static final String leftCargo = "Left Cargo";
+
+  private static final String rightCargo = "Right Cargo";
+  private static final String leftCargoLevel2 = "Left Cargo L2";
+  private static final String leftRocketLevel2 = "Left Rocket L2";
+  
+  private static final String rightCargoLevel2 = "Right Cargo L2";
+  private static final String rightRocketLevel2 = "Right Rocket L2";
+  private String m_autoSelected;
+  private final SendableChooser<String> m_chooser = new SendableChooser<>();
+  boolean goBackLeftCargo = false;
+  boolean goBackRightCargo = false;
   public void robotInit() {
     leftJoystick = new BetterJoystick(0);
     rightJoystick = new BetterJoystick(1);
@@ -62,7 +79,7 @@ public class Robot extends TimedRobot {
     lime = new LimeLight();
     vision = new Vision();
    // shoulder = new Shoulder();
-   shoulder = new ShoulderV2();
+   shoulder = new ShoulderV2(); 
     climber = new Climber();
 
     pdp = new PowerDistributionPanel();
@@ -91,7 +108,18 @@ public class Robot extends TimedRobot {
     sensorState = true; //are using brakes and sensors
     brakeState = true;
     systemsDelay = Timer.getFPGATimestamp();
-
+    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
+    m_chooser.addOption("Right Cargo", rightCargo);
+    m_chooser.addOption("Right Rocket",rightRocket);
+    m_chooser.addOption("Left Cargo", leftCargo);
+    m_chooser.addOption("Left Rocket", leftRocket);
+    m_chooser.addOption("Left Cargo L2", leftCargoLevel2);
+    m_chooser.addOption("Left Rocket L2", leftRocketLevel2);
+    m_chooser.addOption("Right Cargo L2", rightCargoLevel2);
+    m_chooser.addOption("Right Rocket L2", rightRocketLevel2);
+    
+    
+    SmartDashboard.putData("Auto choices", m_chooser);
     shoulder.setIdleBrakeMode(false);
     updateDash();
   }
@@ -101,12 +129,46 @@ public class Robot extends TimedRobot {
   }
 
   public void autonomousInit() {
-
-    hatch.hold();
-
+    m_autoSelected = m_chooser.getSelected();
+    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
+    DriverStation.reportError("Auto selected: " + m_autoSelected,false);
+    //hatch.hold();
+    //OtherTest.run(drivetrain, hatch);
+    String AutoSelected = m_autoSelected;
+    if(m_autoSelected.equals(leftCargo)){
+      LeftForward.run(drivetrain,hatch,opJoystick);
+      goBackLeftCargo = true;
+    }
+    if(m_autoSelected.equals(leftRocket)){
+      RocketLeft.run(drivetrain,hatch,opJoystick);
+    }
+    if(m_autoSelected.equals(leftRocketLevel2)){
+      RocketLeftLevel2.run(drivetrain,hatch,opJoystick);
+    }
+    if(m_autoSelected.equals(leftCargoLevel2)){
+      CargoLeftLevel2.run(drivetrain,hatch,opJoystick);
+      goBackLeftCargo = true;
+      DriverStation.reportError("Left cargo selected",false);
+    }
+    if(m_autoSelected.equals(rightCargo)){
+      RightForward.run(drivetrain,hatch,opJoystick);
+      goBackRightCargo = true;
+    }
+    if(m_autoSelected.equals(rightRocket)){
+      RocketRight.run(drivetrain,hatch,opJoystick);
+    }
+    if(m_autoSelected.equals(rightRocketLevel2)){
+      RocketRightLevel2.run(drivetrain,hatch,opJoystick);
+    }
+    if(m_autoSelected.equals(rightCargoLevel2)){
+      CargoRightLevel2.run(drivetrain,hatch,opJoystick);
+      goBackRightCargo = true;
+    
+    }
   }
 
   public void autonomousPeriodic() {
+    
     double time = Timer.getFPGATimestamp();
     if(time-systemsDelay>0.1){
       // double speed = Math.pow(leftJoystick.getRawAxis(1), 3);
@@ -122,9 +184,31 @@ public class Robot extends TimedRobot {
       double limecommand = 0;
       if(leftJoystick.getRawButton(1)){
         limecommand = -drivetrain.lime.generateOutput();
+        if(drivetrain.lime.currentTvert>50){
+          if(speed<-0.1){
+            speed = -0.1;
+          }
+        } 
+        else if(drivetrain.lime.currentTvert>30){
+          if(speed<-0.2){
+            speed = -0.3;
+
+          }
+        }
       }
       if(rightJoystick.getRisingEdge(1))  { 
         hatch.eject();
+        if(!autoRun){
+          if(goBackLeftCargo){
+            LeftBack.run(drivetrain,hatch,opJoystick);
+            goBackLeftCargo = false;
+            autoRun = true;
+          }
+          if(goBackRightCargo){
+            RightBack.run(drivetrain,hatch,opJoystick);
+            goBackRightCargo= false;
+          }
+        }
       } else if (rightJoystick.getRisingEdge(2)) {
         hatch.hold();
       } else if (rightJoystick.getRisingEdge(3)) {
@@ -134,7 +218,7 @@ public class Robot extends TimedRobot {
       }
       drivetrain.arcadeDrive(-speed, turn+limecommand);  
       if(opJoystick.getRisingEdge(2)){
-        drivetrain.lime.center();
+        
       }
       if(opJoystick.getRisingEdge(3)){
         drivetrain.lime.leftPipeline();
@@ -142,14 +226,20 @@ public class Robot extends TimedRobot {
       if(opJoystick.getRisingEdge(4)){
         drivetrain.lime.rightPipeline();
       }
+      
+      
+    
       updateDash();
     }
-
+    
+    //DriverStation.reportError("has hatch" + hatch.hasHatch(),false);
+    
+    
   }
 
   public void teleopPeriodic() {
 
-    DriverStation.reportError( "PDP: " + pdp.getCurrent(12), false);
+    //DriverStation.reportError( "PDP: " + pdp.getCurrent(12), false);
 
     double time = Timer.getFPGATimestamp();
     if(time-systemsDelay>0.1){
@@ -208,6 +298,18 @@ public class Robot extends TimedRobot {
           double limecommand = 0;
           if(leftJoystick.getRawButton(1)){
             limecommand = -drivetrain.lime.generateOutput();
+            if(drivetrain.lime.currentTvert>50){
+              if(speed<-0.1){
+            
+                speed = -0.1;
+              }
+            } 
+            else if(drivetrain.lime.currentTvert>30){
+              if(speed<-0.2){
+                speed = -0.3;
+
+              }
+            }
           }
           if(rightJoystick.getRisingEdge(1))  { 
             hatch.eject();
@@ -259,7 +361,7 @@ public class Robot extends TimedRobot {
             intaking = false;
           }
           else if (leftJoystick.getRisingEdge(4)) { //A
-            shoulder.setBrakes(false);
+            shoulder.setBrakes(true);
             shoulder.setShoulder(15);
             cargo.setEjectSpeed(-1.0);
 
@@ -286,20 +388,20 @@ public class Robot extends TimedRobot {
           hatchLights.set(false);
           hatch.disable();
           drivetrain.arcadeDrive(speed, turn);
-          if (rightJoystick.getRisingEdge(4)) 
+          if (rightJoystick.getRisingEdge(1)) 
           {
 //            shoulder.setShoulder(-20);
 //            hatch.pushOut();
             climber.fireFront();
           }
-          else if (rightJoystick.getRisingEdge(3))
+          else if (rightJoystick.getRisingEdge(2))
           {
             climber.frontUp();
             shoulder.setShoulder(67.5);
 //          hatch.pullBack();
             climber.fireBack();
           }
-          else if (leftJoystick.getRisingEdge(4))
+          else if (leftJoystick.getRisingEdge(1))
           {
             climber.backUp();
           }
@@ -342,6 +444,7 @@ public class Robot extends TimedRobot {
     hatch.disable();
     lime.off();
     shoulder.setIdleBrakeMode(false);
+    autoRun = false;
   }
   public void updateDash() {
     SmartDashboard.putBoolean("Have Hatch", hatch.hasHatch());

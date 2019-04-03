@@ -115,6 +115,7 @@ public class ShoulderV2 extends Subsystem {
         pidController.setReference(setPoint, ControlType.kSmartMotion);
         processVar = encoder.getPosition();
         if(atTarget()) {
+          DriverStation.reportError("moving",false);
           brakeTime = Timer.getFPGATimestamp();
           mode = Mode_Type.ENGAGING;
         }

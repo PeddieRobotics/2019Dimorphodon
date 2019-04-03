@@ -18,7 +18,9 @@ public class BetterJoystick extends Joystick {
 		lastValRising[button] = cur;
 		return ret;
     }
-    
+		public boolean triggerPressed(){
+			return getRawButton(9);
+		}
 	public boolean getFallingEdge(int button) {
 		boolean cur = this.getRawButton(button);
 		boolean ret = lastValFalling[button] && !cur;
