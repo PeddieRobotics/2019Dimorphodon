@@ -12,7 +12,7 @@ public class CargoLeftLevel2{
         hatch.hold();
         train.setRight();
         DriverStation.reportError("deploying is working",false);
-        train.driveTo(-12.2);
+        train.driveTo(-13.2);
         Waiter.waitFor(train::atDistance,joystick::triggerPressed,5000,10);
         train.arcadeDrive(0, 0);
         train.turnTo(-30);

@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -90,6 +91,7 @@ public class HatchIntake extends Subsystem {
 
   public void update() {
 //    updateCalculations();
+    DriverStation.reportError("" + hasHatch(), false);
     switch (mode) {
       case INTAKING: // Holds panel up to grabber
       pushedOut = true;

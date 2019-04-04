@@ -10,7 +10,7 @@ public class RightForward{
     public static final void run(DriveTrain train, HatchIntake hatch,BetterJoystick joystick){
         Waiter.isAllowed = true;
         hatch.hold();
-        train.setRight();
+        train.setLeft();
         DriverStation.reportError("deploying is working",false);
         train.driveTo(-9);
         Waiter.waitFor(train::atDistance,joystick::triggerPressed,5000,10);

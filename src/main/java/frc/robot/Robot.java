@@ -109,14 +109,14 @@ public class Robot extends TimedRobot {
     brakeState = true;
     systemsDelay = Timer.getFPGATimestamp();
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("Right Cargo", rightCargo);
-    m_chooser.addOption("Right Rocket",rightRocket);
-    m_chooser.addOption("Left Cargo", leftCargo);
-    m_chooser.addOption("Left Rocket", leftRocket);
-    m_chooser.addOption("Left Cargo L2", leftCargoLevel2);
-    m_chooser.addOption("Left Rocket L2", leftRocketLevel2);
-    m_chooser.addOption("Right Cargo L2", rightCargoLevel2);
-    m_chooser.addOption("Right Rocket L2", rightRocketLevel2);
+    m_chooser.addOption("Right Cargo Level 1", rightCargo);
+    m_chooser.addOption("Right Rocket Level 1",rightRocket);
+    m_chooser.addOption("Left Cargo Level 1", leftCargo);
+    m_chooser.addOption("Left Rocket Level 1", leftRocket);
+    m_chooser.addOption("Left Cargo Level 2", leftCargoLevel2);
+    m_chooser.addOption("Left Rocket Level 2 ", leftRocketLevel2);
+    m_chooser.addOption("Right Cargo Level 2", rightCargoLevel2);
+    m_chooser.addOption("Right Rocket Level 2", rightRocketLevel2);
     
     
     SmartDashboard.putData("Auto choices", m_chooser);

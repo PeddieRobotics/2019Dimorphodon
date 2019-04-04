@@ -130,7 +130,7 @@ public class Shoulder extends Subsystem {
       case NO_BRAKE_DISENGAGING:
         //DriverStation.reportError("disengaging", false);
         brakeOn = false;
-        if(Timer.getFPGATimestamp() - moveTime > 0.1) {
+        if(Timer.getFPGATimestamp() - moveTime > 0.8) {
           mode = Mode_Type.NO_BRAKE_MOVING;
         }
       break;
@@ -139,7 +139,7 @@ public class Shoulder extends Subsystem {
         //DriverStation.reportError("disengaging", false);
         brakeOn = false;
 //        spark.set(0.0);
-        if(Timer.getFPGATimestamp() - moveTime > 0.1) {
+        if(Timer.getFPGATimestamp() - moveTime > 0.8) {
           mode = Mode_Type.MOVING;
         }
       break;
