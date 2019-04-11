@@ -5,7 +5,9 @@ import frc.robot.DriveTrain;
 import frc.robot.HatchIntake;
 import frc.robot.framework.Waiter;
 import frc.robot.lib.BetterJoystick;
-public class RocketLeft{
+
+public class RocketLeft {   //drives to the rocket from the left, level 1
+
     public static final void run(DriveTrain train, HatchIntake hatch,BetterJoystick joystick){
         Waiter.isAllowed = true;
         hatch.hold();

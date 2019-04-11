@@ -1,6 +1,5 @@
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
@@ -11,18 +10,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class HatchIntake extends Subsystem {
 
-//  Blinkin blinkin;
-
-  private double lastTime;
-
   private static enum ModeType {
     INTAKING, HOLDING, EJECTING, DISABLED, DISENGAGING, BACK, FORWARD
   };
 
   private ModeType mode = ModeType.DISABLED;
-
-  private boolean intaking; // Used to set lastTime
-  private boolean ejecting; // Used to set lastTime
 
   public boolean pushedOut;
   private Solenoid pushOut; // pushes the entire mechanism out
@@ -49,8 +41,6 @@ public class HatchIntake extends Subsystem {
     grabberS = new Solenoid(ElectricalLayout.SOLENOID_HATCH_GRABBER);
     leftSensor = new AnalogInput(ElectricalLayout.SENSOR_LEFT_HATCH_INTAKE);
     rightSensor = new AnalogInput(ElectricalLayout.SENSOR_RIGHT_HATCH_INTAKE);
-   
-//    blinkin = new Blinkin();
   }
 
   public void initDefaultCommand() {
@@ -90,41 +80,41 @@ public class HatchIntake extends Subsystem {
   }
 
   public void update() {
-//    updateCalculations();
+    // updateCalculations();
     DriverStation.reportError("" + hasHatch(), false);
     switch (mode) {
-      case INTAKING: // Holds panel up to grabber
+
+    case INTAKING: // Holds panel up to grabber
       pushedOut = true;
-      grabbing = false;  // middle grabber open
+      grabbing = false; // middle grabber open
       punching = false; // puncher back
-          if ( hasHatch() == true ) {
-//            blinkin.strobeBlue();
-            mode = ModeType.HOLDING; //if it has been waiting for 200ms, it begins to hold
-          } else {
-            mode = ModeType.INTAKING; //continues to intake
-          }
+      if (hasHatch() == true) {
+        mode = ModeType.HOLDING; // if it has been waiting for 200ms, it begins to hold
+      } else {
+        mode = ModeType.INTAKING; // continues to intake
+      }
     break;
 
     case FORWARD: // to keep grabbing but start moving
-    punching = false; // puncher back
-    pushedOut = true;
-        if ( hasHatch() == true ) {
-//            blinkin.strobeBlue();
-          mode = ModeType.HOLDING; //if it has been waiting for 200ms, it begins to hold
-        }
-  break;
-
-    case DISENGAGING:
-    grabbing = false; // middle grabber open/not holding hatch panel
-    punching = false; // punches
-
-      if (Timer.getFPGATimestamp() - ejectTime > 1.2) { //compares the time we started waiting to current time
-        mode = ModeType.INTAKING; //if it has been waiting for 200ms, it begins to hold
+      punching = false; // puncher back
+      pushedOut = true;
+      if (hasHatch() == true) {
+        mode = ModeType.HOLDING; // if it has been waiting for 200ms, it begins to hold
       }
     break;
+
+    case DISENGAGING:
+      grabbing = false; // middle grabber open/not holding hatch panel
+      punching = false; // punches
+
+      if (Timer.getFPGATimestamp() - ejectTime > 1.2) { // compares the time we started waiting to current time
+        mode = ModeType.INTAKING; // if it has been waiting for 200ms, it begins to hold
+      }
+    break;
+
     case HOLDING: // Holds panel up to grabber
 
-      grabbing = true;  // middle grabber locks/holding on a hatch panel
+      grabbing = true; // middle grabber locks/holding on a hatch panel
       punching = false; // puncher back
 
     break;
@@ -132,18 +122,18 @@ public class HatchIntake extends Subsystem {
     case EJECTING: // Punches panel out
 
       grabbing = false; // middle grabber open/not holding hatch panel
-      punching = true;  // punches
+      punching = true; // punches
 
-        if (Timer.getFPGATimestamp() - ejectTime > 0.6) { //compares the time we started waiting to current time
-        	mode = ModeType.DISENGAGING; //if it has been waiting for 200ms, it begins to hold
-        } 
+      if (Timer.getFPGATimestamp() - ejectTime > 0.6) { // compares the time we started waiting to current time
+        mode = ModeType.DISENGAGING; // if it has been waiting for 200ms, it begins to hold
+      }
 
     break;
 
     case BACK:
 
-        punching = false;
-        pushedOut = false;
+      punching = false;
+      pushedOut = false;
     break;
 
     case DISABLED:
@@ -152,9 +142,7 @@ public class HatchIntake extends Subsystem {
       punching = false;
       pushedOut = false; // pushes out
 
-//      blinkin.fireLarge();
-
-      break;
+    break;
 
     }
 
@@ -168,8 +156,9 @@ public class HatchIntake extends Subsystem {
    * The point of this is to do an average of the values incase Of some random
    * spike
    */
-  //to delete
-  public void updateCalculations() {  
+  // to delete
+  public void updateCalculations() {
+    
     if (loopsDone < numberOfLoops) {
       currentRawValue = leftSensor.getValue();
       averageRawValue += currentRawValue;

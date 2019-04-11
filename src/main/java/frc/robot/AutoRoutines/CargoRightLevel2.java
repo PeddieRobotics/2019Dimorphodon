@@ -5,7 +5,9 @@ import frc.robot.DriveTrain;
 import frc.robot.HatchIntake;
 import frc.robot.framework.Waiter;
 import frc.robot.lib.BetterJoystick;
-public class CargoRightLevel2{
+
+public class CargoRightLevel2 { //drives to the right side of the cargo ship, from level 2
+    
     public static final void run(DriveTrain train, HatchIntake hatch,BetterJoystick joystick){
         Waiter.isAllowed = true;
         hatch.hold();

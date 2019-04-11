@@ -5,9 +5,7 @@ import frc.robot.lib.BetterJoystick;
 import edu.wpi.cscore.VideoSource.ConnectionStrategy;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
-// import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Counter.Mode;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.AutoRoutines.*;
@@ -34,13 +32,6 @@ public class Robot extends TimedRobot {
   BetterJoystick rightJoystick;
   BetterJoystick opJoystick;
   // BetterJoystick leftJoystick, rightJoystick;
-  private double startTime;
-  private double currentScore;
-  private double lastScore;
-  private double bestScoreTime;
-  private String currentMode;
-  private double points;
-  private double cycles;
   boolean isDown = false;
 
   boolean sensorState;
@@ -90,11 +81,6 @@ public class Robot extends TimedRobot {
     pdp = new PowerDistributionPanel();
 
     hatchLights = new Lights(7);
-    points = 0;
-    cycles = 0;
-    currentScore = -1000;// random numbers
-    lastScore = -10000;
-    bestScoreTime = currentScore - lastScore;
 
     loop = new Looper(10);
     loop.add(drivetrain::update);
@@ -139,34 +125,26 @@ public class Robot extends TimedRobot {
     DriverStation.reportError("Auto selected: " + m_autoSelected, false);
     // hatch.hold();
     // OtherTest.run(drivetrain, hatch);
-    String AutoSelected = m_autoSelected;
     if (m_autoSelected.equals(leftCargo)) {
       LeftForward.run(drivetrain, hatch, opJoystick);
       goBackLeftCargo = true;
-    }
-    if (m_autoSelected.equals(leftRocket)) {
+    } else if (m_autoSelected.equals(leftRocket)) {
       RocketLeft.run(drivetrain, hatch, opJoystick);
-    }
-    if (m_autoSelected.equals(leftRocketLevel2)) {
+    } else if (m_autoSelected.equals(leftRocketLevel2)) {
       RocketLeftLevel2.run(drivetrain, hatch, opJoystick);
-    }
-    if (m_autoSelected.equals(leftCargoLevel2)) {
+    } else if (m_autoSelected.equals(leftCargoLevel2)) {
       CargoLeftLevel2.run(drivetrain, hatch, opJoystick);
       goBackLeftCargo = true;
       DriverStation.reportError("Left cargo selected", false);
-    }
-    if (m_autoSelected.equals(rightCargo)) {
+    } else if (m_autoSelected.equals(rightCargo)) {
       RightForward.run(drivetrain, hatch, opJoystick);
       goBackRightCargo = true;
-    }
-    if (m_autoSelected.equals(rightCargoLevel2)) {
+    } else if (m_autoSelected.equals(rightCargoLevel2)) {
       CargoRightLevel2.run(drivetrain, hatch, opJoystick);
       goBackRightCargo = true;
-    }
-    if (m_autoSelected.equals(rightRocket)) {
+    } else if (m_autoSelected.equals(rightRocket)) {
       RocketRight.run(drivetrain, hatch, opJoystick);
-    }
-    if (m_autoSelected.equals(rightRocketLevel2)) {
+    } else if (m_autoSelected.equals(rightRocketLevel2)) {
       RocketRightLevel2.run(drivetrain, hatch, opJoystick);
     }
   }
@@ -470,7 +448,6 @@ public class Robot extends TimedRobot {
   }
 
   public void updateLights() {
-    boolean isHatch = (mode == Mode_Type.HATCH);
     hatchLights.update(hatch.hasHatch());// if we have a hatch it will blink, otherwise will be equal to is hatch
     /*
      * if(!isHatch){ lime.solid(); }else{//so if we aren't in cargo mode we want to

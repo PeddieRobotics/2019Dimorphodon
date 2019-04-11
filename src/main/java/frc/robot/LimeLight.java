@@ -10,8 +10,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 
 import frc.robot.lib.PID;
 
-import edu.wpi.first.wpilibj.DriverStation;
-
 public class LimeLight {
     final double vertIterations = 0;
     NetworkTable table;
@@ -54,25 +52,27 @@ public class LimeLight {
     public void setPID(){
         atAngle = false;
         TX_PID.set(0);
+    }
 
-    }
     public double getSign(double number){
-        if(number>0){
+        if( number > 0 ) {
             return 1; 
-        }return -1;
+        }
+        return -1;
     }
+
     public double generateOutput(){
-    return TX_PID.getOutput(xAngle);
-       
-    
-    
+        return TX_PID.getOutput(xAngle);
     }
+
     public double tx(){
         return this.xAngle;
     }
+
     public double ty(){
         return this.yAngle;
     }
+
     /**
      * Make sure we are constantly updating our network table values
      */
@@ -91,32 +91,41 @@ public class LimeLight {
         }
         SmartDashboard.putBoolean("Has Target", hasTarget());
     }
+
     public boolean hasTarget(){
         return(tv.getDouble(0.0)==1);
     }
+
     public void rightPipeline(){
         pipeline.setValue(2);
     }
+
     public void leftPipeline(){
         pipeline.setValue(1);
     }
+
     public void center(){
         pipeline.setValue(0);
     }
+
     public double calcDist() {
         double distance = (targetHeight - mountHeight) / Math.tan(Math.toRadians(yAngle));
         return distance;
     }
+
     public double calcXDist(){
         double distance = calcDist()/Math.tan(Math.toRadians(xAngle));
         return distance;
     }
+
     public double calcAngle() {
         return xAngle;
     }
+
     public double toFeet(double inches){
         return inches/12;
     }
+
     public void updateTVert(double current){
         averageTVert.add(current);
         if(averageTVert.size()>vertIterations){
@@ -136,14 +145,16 @@ public class LimeLight {
 
     public void blink(){
        lightState.setValue(2);
-       
     }
+
     public void off(){
         lightState.setValue(1);
     }
+
     public void solid(){
         lightState.setValue(3);
     }
+    
     public void defaultValue(){
         lightState.setValue(4);
     }
