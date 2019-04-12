@@ -77,6 +77,10 @@ public class Shoulder extends Subsystem {
     spark.setSmartCurrentLimit(25);
   }
 
+  /**
+   * Sets the shoulder to a setpoint, in degrees, the vertical being 0.
+   * @param setpoint
+   */
   public void setShoulder(double setpoint) {
     if ( brakesActive ) {
       setPoint = setpoint * distancePerPulse;
@@ -89,7 +93,10 @@ public class Shoulder extends Subsystem {
     }
   }
 
-
+  /**
+   * Sets the brake state to active or not
+   * @param brakes
+   */
   public void setBrakes( boolean brakes ) {
     brakesActive = brakes;
   }
@@ -97,9 +104,11 @@ public class Shoulder extends Subsystem {
   public boolean atTarget() {
     return (Math.abs((encoder.getPosition() - setPoint)) < 1.5) && (Math.abs(encoder.getVelocity()) < 25.0);
   }
+
   public double setPoint(){
     return this.setPoint();
   }
+
   public void update() {
     switch (mode) {
       case MOVING:

@@ -75,6 +75,10 @@ public class ShoulderV2 extends Subsystem {
     brakesActive = true;
   }
 
+  /**
+   * sets the shoulder to an angle, in degrees, the vertical being 0
+   * @param setpoint
+   */
   public void setShoulder(double setpoint) {
     if ( brakesActive ) {
       setPoint = setpoint * distancePerPulse;
@@ -86,6 +90,7 @@ public class ShoulderV2 extends Subsystem {
       mode = Mode_Type.NO_BRAKE_DISENGAGING;
     }
   }
+
   public void setIdleBrakeMode(boolean idleMode) {
     if(idleMode) {
       spark.setIdleMode(IdleMode.kBrake);
@@ -93,6 +98,11 @@ public class ShoulderV2 extends Subsystem {
       spark.setIdleMode(IdleMode.kCoast);
     }
   }
+
+  /**
+   * sets the brake state to active or not
+   * @param brakes
+   */
   public void setBrakes( boolean brakes ) {
     brakesActive = brakes;
   }

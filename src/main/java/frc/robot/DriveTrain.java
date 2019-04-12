@@ -104,6 +104,9 @@ public class DriveTrain {
     // DriverStation.reportError("On",true);
   }
 
+  /**
+   * turns to specified angle, in degrees
+   */
   public void turnTo(double angle) {
     resetEncoders();
     resetNavX();
@@ -122,6 +125,9 @@ public class DriveTrain {
     return (Math.abs(navX.getAngle() - turnPID.getSetpoint()) < 3 && leftspeed < 0.1);
   }
 
+  /**
+   * drives to a specified distance (in FEET because 'MERICA!)
+   */
   public void driveTo(double distance) {
     resetEncoders();
     resetNavX();
@@ -183,13 +189,11 @@ public class DriveTrain {
    * 
    * @return whether PID is at correct distance
    */
-
   public boolean atDistance() {
     return (Math.abs(-leftEncoder.getPosition() - drivePID.getSetpoint()) <= 2 && leftspeed < 0.08);
   }
 
   public void resetEncoders() {
-
     leftEncoder.setPosition(0.0);
     rightEncoder.setPosition(0.0);
   }
