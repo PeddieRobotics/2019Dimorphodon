@@ -58,10 +58,16 @@ public class CargoIntake extends Subsystem {
     mode = Mode_Type.DISABLED;
   }
 
+  /**
+   * @param eject speed in motor %
+   */
   public void setEjectSpeed(double eject) {
     ejectSpeed = eject;
   }
 
+  /**
+   * @param intake speed in motor %
+   */
   public void setIntakeSpeed(double intake) {
     intakeSpeed = intake;
   }

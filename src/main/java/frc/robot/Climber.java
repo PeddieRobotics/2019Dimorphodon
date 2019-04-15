@@ -18,16 +18,19 @@ public class Climber {
         front = new Solenoid(ElectricalLayout.SOLENOID_CLIMB_FRONT);
         back = new Solenoid(ElectricalLayout.SOLENOID_CLIMB_BACK);
     }
+
     public void fireFront(){
         frontState = true;
-        
     }
+
     public void fireBack(){
         backState = true;
     }
+
     public void backUp(){
         backState = false;
     }
+    
     public void frontUp(){
         frontState = false;
     }

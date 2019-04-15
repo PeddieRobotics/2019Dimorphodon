@@ -95,17 +95,22 @@ public class DriveTrain {
 
   }
 
+  /**
+   * resets NavX to 0
+   */
   public void resetNavX() {
     navX.reset();
   }
 
+  /**
+   * sets the limelight PID
+   */
   public void setLimePIDOn() {
     lime.setPID();
-    // DriverStation.reportError("On",true);
   }
 
   /**
-   * turns to specified angle, in degrees
+   * @param angle the angle the robot turns to (in degrees)
    */
   public void turnTo(double angle) {
     resetEncoders();
@@ -117,16 +122,15 @@ public class DriveTrain {
 
   }
 
-  // public double getAngle() {
-  // return navX.getAngle();
-  // }
-
+  /**
+   * @return whether the robot is at the desired angle or not
+   */
   public boolean atAngle() {
     return (Math.abs(navX.getAngle() - turnPID.getSetpoint()) < 3 && leftspeed < 0.1);
   }
 
   /**
-   * drives to a specified distance (in FEET because 'MERICA!)
+   * @param distance the distance the robot drives to (in FEET because 'MERICA!)
    */
   public void driveTo(double distance) {
     resetEncoders();
@@ -193,6 +197,9 @@ public class DriveTrain {
     return (Math.abs(-leftEncoder.getPosition() - drivePID.getSetpoint()) <= 2 && leftspeed < 0.08);
   }
 
+  /**
+   * resets encoders to 0
+   */
   public void resetEncoders() {
     leftEncoder.setPosition(0.0);
     rightEncoder.setPosition(0.0);

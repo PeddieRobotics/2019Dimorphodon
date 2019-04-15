@@ -76,8 +76,7 @@ public class ShoulderV2 extends Subsystem {
   }
 
   /**
-   * sets the shoulder to an angle, in degrees, the vertical being 0
-   * @param setpoint
+   * @param setpoint the angle to set the arm to, with the vertical as 0
    */
   public void setShoulder(double setpoint) {
     if ( brakesActive ) {
@@ -91,6 +90,9 @@ public class ShoulderV2 extends Subsystem {
     }
   }
 
+  /**
+   * @param idleMode the mode for the motor to go into when idle (brake/coast)
+   */
   public void setIdleBrakeMode(boolean idleMode) {
     if(idleMode) {
       spark.setIdleMode(IdleMode.kBrake);
@@ -100,13 +102,15 @@ public class ShoulderV2 extends Subsystem {
   }
 
   /**
-   * sets the brake state to active or not
-   * @param brakes
+   * @param brakes sets the brakes to true (active) or false (not active)
    */
   public void setBrakes( boolean brakes ) {
     brakesActive = brakes;
   }
 
+  /**
+   * @return whether the arm is at the target angle or not
+   */
   public boolean atTarget() {
     return (Math.abs((encoder.getPosition() - setPoint)) < 1.5) && (Math.abs(encoder.getVelocity()) < 25.0);
   }

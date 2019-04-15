@@ -46,35 +46,59 @@ public class HatchIntake extends Subsystem {
   public void initDefaultCommand() {
   }
 
+  /**
+   * push the intake out
+   */
   public void pushOut() {
     mode = ModeType.INTAKING;
   }
 
+  /**
+   * hold a hatch
+   */
   public void hold() {
     mode = ModeType.HOLDING;
   }
 
+  /**
+   * eject a hatch
+   */
   public void eject() {
     ejectTime = Timer.getFPGATimestamp();
     mode = ModeType.EJECTING;
   }
 
+  /**
+   * intake a hatch
+   */
   public void intake() {
     mode = ModeType.INTAKING;
   }
 
+  /**
+   * push the intake forward but don't be ready to intake
+   */
   public void forward() {
     mode = ModeType.FORWARD;
   }
 
+  /**
+   * pull the intake back but don't disable it
+   */
   public void pullBack() {
     mode = ModeType.BACK;
   }
 
+  /**
+   * disable intake
+   */
   public void disable() {
     mode = ModeType.DISABLED;
   }
 
+  /**
+   * @return whether the intake has a hatch or not
+   */
   public boolean hasHatch() {
     return (leftSensor.getValue() < 3700 && rightSensor.getValue() < 3700);
   }

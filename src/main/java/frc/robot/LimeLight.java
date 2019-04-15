@@ -93,6 +93,9 @@ public class LimeLight {
         SmartDashboard.putBoolean("Has Target", hasTarget());
     }
 
+    /**
+     * @return whether the limelight sees a target or not
+     */
     public boolean hasTarget(){
         return(tv.getDouble(0.0)==1);
     }
@@ -109,20 +112,33 @@ public class LimeLight {
         pipeline.setValue(0);
     }
 
+    /**
+     * @return y distance
+     */
     public double calcDist() {
         double distance = (targetHeight - mountHeight) / Math.tan(Math.toRadians(yAngle));
         return distance;
     }
 
+    /**
+     * @return x distance
+     */
     public double calcXDist(){
         double distance = calcDist()/Math.tan(Math.toRadians(xAngle));
         return distance;
     }
 
+    /**
+     * @return x angle
+     */
     public double calcAngle() {
         return xAngle;
     }
 
+    /**
+     * @param inches the number of inches to convert to feet
+     * @return feet
+     */
     public double toFeet(double inches){
         return inches/12;
     }
